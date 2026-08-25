@@ -835,7 +835,7 @@ details.sig .last{padding:0 16px 14px; font-size:11.5px; color:var(--clay); opac
 .sheet{position:fixed; inset:0; background:rgba(20,17,13,.5); display:none; align-items:flex-end; justify-content:center; z-index:50}
 .sheet.on{display:flex}
 .sheet .in{background:var(--panel); width:100%; max-width:440px; border-radius:22px 22px 0 0;
-  padding:16px 16px calc(18px + env(safe-area-inset-bottom)); max-height:90vh; overflow-y:auto}
+  padding:16px 16px calc(18px + env(safe-area-inset-bottom)); max-height:90vh; overflow-y:auto; overscroll-behavior:contain}
 .grab{width:38px;height:4px;border-radius:9px;background:var(--line);margin:0 auto 14px}
 .firm3{display:grid; grid-template-columns:repeat(3,1fr); gap:9px}
 .firm3 button{border:1px solid var(--line); background:var(--panel-2); border-radius:14px; padding:16px 0 13px; color:var(--ink)}
@@ -1462,7 +1462,10 @@ function segsOf(pts){
 var K_ROAD=0.031;   // 실측 보정 후 S.K로 덮어씀
 function roadTemp(air,sw,wind,shade,soil0){
   var day=sw>5;
-  var t=day? air+K_ROAD*sw*(1-shade)*0.92/(1+0.2*(wind||1.5)) : air-1.5;
+  // wind가 진짜 0(무풍)일 때 (wind||1.5)가 1.5로 덮어써서 노면을 시원하게 계산했다.
+  // 안전과 반대 방향으로 틀리는 버그라 명시적으로 검사한다.
+  var wv=(typeof wind==="number"&&isFinite(wind)&&wind>=0)?wind:1.5;
+  var t=day? air+K_ROAD*sw*(1-shade)*0.92/(1+0.2*wv) : air-1.5;
   if(typeof soil0==="number"&&!isNaN(soil0)){
     // soil_temperature_0cm은 햇빛 받는 지표 기준이라 그늘에 그대로 못 쓴다.
     // 낮에는 그늘 비율만큼 기온 쪽으로 당겨서 하한을 잡는다.
@@ -1882,7 +1885,14 @@ function enterMain(){
   $("hdr").textContent=S.dog?S.dog.ava+" "+S.dog.name:"꾹꾹꾹";
   renderLog();renderParty();
   if(!WX){WX=fallbackWx();WXLIVE=false;renderHome();}   // 위치를 기다리는 동안 화면을 비워두지 않는다
-  if(S.live&&S.live.start)begin(S.live);
+  if(S.live&&S.live.start){
+    // 정지를 못 누른 채 앱을 껐다가 다음 날 열면 20시간짜리 "진행 중" 산책이 뜬다.
+    // 그대로 정지를 누르면 그 산책이 기준선을 오염시킨다. 5시간 넘으면 버린다.
+    if(Date.now()-S.live.start>5*3600e3){
+      S.live=null;save();
+      setTimeout(function(){toast("정지 안 된 채 남아 있던 산책을 정리했어요");},900);
+    } else begin(S.live);
+  }
 }
 function boot(){
   if(typeof S.K==="number"&&S.K>0&&S.K<0.12)K_ROAD=S.K;
@@ -1964,6 +1974,9 @@ function tick(){
 }
 function startGPS(){
   if(!navigator.geolocation)return;
+  // 앱이 뒤로 갔다 오거나 강제종료에서 복구되면 lastFix가 비어 있다.
+  // 그 사이 이동을 직선으로 이어붙이면 안 되니 첫 fix를 끊김으로 찍는다.
+  var resuming = !lastFix && W && (W.pts||[]).length>0;
   watchId=navigator.geolocation.watchPosition(function(p){
     var f={lat:p.coords.latitude,lng:p.coords.longitude,t:Date.now(),acc:p.coords.accuracy};
     if(f.acc>60)return;
@@ -1980,14 +1993,24 @@ function startGPS(){
       else if(dd>2.5)W.dist+=dd;
       else W.sniff+=Math.min(dt,20)*1000;
     }
+    else if(resuming){ gapFlag=true; W.gaps=(W.gaps||0)+1; resuming=false; }
     lastFix=f;
     W.pts.push(gapFlag?[+f.lat.toFixed(6),+f.lng.toFixed(6),1]:[+f.lat.toFixed(6),+f.lng.toFixed(6)]);
-    tick();S.live=W;save();
+    tick();S.live=W;persistLive();
   },function(){},{enableHighAccuracy:true,maximumAge:3000,timeout:20000});
 }
 /* iOS Safari는 화면이 꺼지거나 앱이 뒤로 가면 GPS를 끊는다.
    화면 잠금을 붙잡아 두고, 돌아왔을 때 다시 잡는다. 그래도 끊기면 솔직히 말한다. */
 var wake=null;
+/* localStorage가 꽉 차면 save()는 false를 돌려준다. 그걸 버리면
+   "기록했어요"라고 말해놓고 실제로는 아무것도 안 남는다. 한 번만 말한다. */
+var quotaWarned=false;
+function persistLive(){
+  if(save()){quotaWarned=false;return true;}
+  if(!quotaWarned){quotaWarned=true;
+    toast("저장 공간이 꽉 찼어요 · 지금부터 기록이 안 남아요");}
+  return false;
+}
 function holdScreen(){
   if(!navigator.wakeLock||!navigator.wakeLock.request)return;
   navigator.wakeLock.request("screen").then(function(s){wake=s;}).catch(function(){});
@@ -1995,7 +2018,12 @@ function holdScreen(){
 document.addEventListener("visibilitychange",function(){
   if(document.visibilityState==="visible"&&W){
     holdScreen();
-    if(watchId==null)startGPS();     // iOS는 뒤로 가면 watch를 죽인다. 돌아오면 다시 건다
+    /* iOS는 뒤로 가면 watch 콜백을 죽이지만 watchId 값은 그대로 남는다.
+       그래서 "watchId==null이면 다시 건다"는 한 번도 참이 되지 않았고,
+       문자 한 번 확인하고 돌아오면 그 산책은 끝까지 경로가 안 그려졌다.
+       살아 있든 죽었든 무조건 걷어내고 새로 건다. 죽은 id를 clear해도 안전하다. */
+    if(watchId!=null){try{navigator.geolocation.clearWatch(watchId);}catch(e){}}
+    watchId=null; startGPS();
     tick();
   }
 });
@@ -2173,7 +2201,7 @@ function renderWalks(){
       '</div></div><div class="rt">'+B.n+'회</div></div>');
   });
   bc.innerHTML = rows.length
-    ? '<div class="lbl" style="margin-bottom:6px">내 기준선 — 최근 2주</div>'+rows.join("")+
+    ? '<div class="lbl" style="margin-bottom:6px">내 기준선 — 최근 14회</div>'+rows.join("")+
       '<div class="src" style="margin-top:9px">꾹게이지 100점은 <b>'+(S.dog?S.dog.name:"우리 아이")+
       '가 그 시간대에 평소 하던 만큼</b>이에요. 논문 배점이 아니라 자기 기록이 기준입니다.<br>'+
       '같은 시간대 5회부터 점수가 나오고, 💩을 평소 절반 이상 싸는 시간대에만 채점에 넣어요.</div>'
@@ -2479,10 +2507,19 @@ function openEditor(){
         '<b>'+(t.getMonth()+1)+'/'+t.getDate()+' '+pad(t.getHours())+':'+pad(t.getMinutes())+'</b>'+
         '<span>'+(w.dist/1000).toFixed(2)+'km · GPS '+w.pts.length+'개</span></button>';
     }).join("");
-    pickWalk(cands[0].start);
   }
+  /* 시트가 display:none인 채로 pickWalk를 부르면 #e-leaf가 0×0이라
+     Leaflet의 fitBounds가 빈 화면 기준으로 줌·중심을 잡는다.
+     그래서 지도를 그리기 전에 먼저 시트를 띄운다. */
   $("esheet").classList.add("on");
-  setTimeout(function(){ if(MAP)MAP.invalidateSize(); },260);
+  if(cands.length){
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        if(MAP)MAP.invalidateSize();
+        pickWalk(cands[0].start);
+      });
+    });
+  }
 }
 function pickWalk(id){
   var w=S.walks.filter(function(x){return x.start===id;})[0];
