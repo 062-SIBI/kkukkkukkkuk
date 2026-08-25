@@ -940,6 +940,14 @@ details.calib[open] summary::after{content:" ▴"}
 .calib .mini2{display:flex; gap:7px; margin-top:10px}
 .calib .mini2 button{flex:1; border:1px solid var(--line); background:var(--panel-2); border-radius:11px;
   padding:10px 0; font-size:12.5px; color:var(--ink-2)}
+.tier2{margin-top:16px;border-top:1px dashed var(--line);padding-top:14px}
+.tierhead{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  background:none;border:0;padding:2px 0;color:var(--ink);font:inherit;font-size:14.5px;cursor:pointer;text-align:left}
+.tierhead .ar{transition:transform .18s;opacity:.5;font-size:12px}
+.tierhead[aria-expanded="true"] .ar{transform:rotate(180deg)}
+.tiernote{font-size:12px;color:var(--ink-2);line-height:1.62;margin:6px 0 0}
+#f-morebox{margin-top:12px}
+.sig ol .g{display:inline-block;margin-left:4px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:600;color:var(--brand-deep);opacity:.85;white-space:nowrap}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -975,7 +983,7 @@ details.calib[open] summary::after{content:" ▴"}
   <div class="step" id="st2">
     <div class="dots"><i class="on"></i><i class="on"></i><i></i><i></i></div>
     <h2>누구랑 걷나요</h2>
-    <p class="lead">체중과 코 길이로 위험 기준이 달라져요. 딱 두 개만 묻습니다.</p>
+    <p class="lead">위험 기준을 정하는 데 <b>꼭 필요한 것만</b> 먼저 묻습니다. 나머지는 선택이에요.</p>
     <div class="avapick" id="avapick">
       <button aria-pressed="true">🐕</button><button aria-pressed="false">🐩</button>
       <button aria-pressed="false">🦮</button><button aria-pressed="false">🐕‍🦺</button>
@@ -991,6 +999,26 @@ details.calib[open] summary::after{content:" ▴"}
       <span class="t"><b>코가 납작한 편이에요</b>
       <span>퍼그·불독·시추·페키니즈 등. 열사병 위험이 2.1배 높아 기준을 한 단계 올립니다.</span></span>
     </button>
+
+    <div class="tier2">
+      <button class="tierhead" id="f-more" aria-expanded="false">
+        <b>우리 아이에 대해 조금 더</b>
+        <span class="ar">▾</span>
+      </button>
+      <p class="tiernote" id="f-tiernote">안 적어도 됩니다. 적으면 <b>경고 문구가 바뀌어요.</b>
+      산책 시간이나 거리를 계산해 주지는 않아요 — 그걸 계산할 근거가 되는 연구가 아직 없거든요.</p>
+      <div id="f-morebox" style="display:none">
+        <div class="field"><label for="f-age">나이 (살)</label>
+          <input id="f-age" type="number" inputmode="numeric" step="1" min="0" max="25" placeholder="7">
+          <div class="hint" id="agehint">12살이 넘으면 <b>더운 날 밖에 세워두는 것</b>에 대한 경고가 세집니다.
+          산책량을 깎지는 않아요.</div></div>
+        <button class="chk" id="f-joint" aria-pressed="false">
+          <span class="bx">✓</span>
+          <span class="t"><b>다리·관절이 불편해요</b>
+          <span>관절염 진단을 받았거나 절뚝이는 편. 한 번에 길게보다 짧게 나누라는 안내가 붙습니다.</span></span>
+        </button>
+      </div>
+    </div>
     <button class="big" id="dogNext" disabled style="margin-top:18px">다음</button>
     <div style="height:24px"></div>
   </div>
@@ -998,12 +1026,16 @@ details.calib[open] summary::after{content:" ▴"}
   <div class="step" id="st3">
     <div class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
     <h2>왜 바닥 온도를<br>보게 하냐면</h2>
-    <p class="lead">영국에서 개 열사병 원인을 조사했더니, 차 안이 아니라 <b>산책이 74%</b>였어요.</p>
+    <p class="lead">영국 1차 진료 기록에서 개 열사병의 원인을 따져봤더니,
+    원인이 적힌 879건 중 <b>652건(74%)이 운동 중</b>이었어요. 차 안이 아니라 <b>산책</b>이 가장 많았습니다.</p>
     <div class="card" style="margin-bottom:11px">
       <div style="font-family:Hahmlet,serif;font-weight:700;font-size:16px;margin-bottom:6px">초기에 알아채면 98%가 산다</div>
-      <div style="font-size:13px;color:var(--ink-2);line-height:1.6">헐떡임·처짐 단계에서 병원에 가면 생존율 98%.
-      비틀거림·경련까지 가면 43%로 떨어집니다.</div>
-      <div class="src" style="margin-top:9px">VetCompass, 영국 왕립수의대 · Scientific Reports 2021</div>
+      <div style="font-size:13px;color:var(--ink-2);line-height:1.6">
+      헐떡임·처짐 정도(경증)에서 병원에 가면 생존율 <b>97.8%</b>.<br>
+      토하거나 발작을 한 번 한 정도(중등증)면 <b>94.5%</b>.<br>
+      비틀거림·발작 반복·반응 없음(중증)까지 가면 <b>43.2%</b>로 떨어집니다.</div>
+      <div class="src" style="margin-top:9px">Hall 외, Animals 2020;10:1324 (원인) ·
+      Hall 외, Scientific Reports 2021;11:6828 (등급별 생존율) · VetCompass</div>
     </div>
     <div class="grow"></div>
     <button class="big" data-go="4">알겠어요</button>
@@ -1036,18 +1068,19 @@ details.calib[open] summary::after{content:" ▴"}
       <div class="why" id="l-why">위치와 날씨를 받아오고 있어요</div>
       <div class="when" id="l-side" style="display:none"></div>
       <div class="when" id="l-when" style="display:none"></div>
+      <div class="when" id="l-tip" style="display:none"></div>
     </div>
 
     <details class="sig" id="sig">
       <summary>더울 때 이 신호가 보이면 즉시 멈추세요</summary>
       <ol>
-        <li>격렬한 헐떡임, 숨 쉬기 힘들어함</li>
-        <li>처지거나 걷기 싫어함</li>
-        <li>토하거나 설사, 침을 심하게 흘림</li>
-        <li>비틀거림, 주저앉음</li>
-        <li>경련, 반응 없음 → <b>바로 병원</b></li>
+        <li><b>경증</b> — 격렬한 헐떡임 · 처지거나 걷기 싫어함 <span class="g">생존 97.8%</span></li>
+        <li><b>중등증</b> — 토함 · 설사 · 침 심하게 흘림 · 한 번 주저앉음 · 발작 1회 <span class="g">94.5%</span></li>
+        <li><b>중증</b> — 비틀거림 · 발작 2회 이상 · 반응 없음 · 혼수 <span class="g">43.2%</span> → <b>바로 병원</b></li>
       </ol>
-      <div class="last">1~2번에서 병원에 가면 98%가 삽니다. 4~5번까지 가면 43%.<br>VetCompass · Scientific Reports 2021</div>
+      <div class="last">숫자는 등급별 생존율입니다. <b>발작을 한 번 했다고 43%가 되는 게 아니에요</b> —
+      반복되거나 비틀거림·무반응이 같이 올 때가 중증입니다.<br>
+      Hall 외, Scientific Reports 2021;11:6828 · VetCompass, 영국 왕립수의대</div>
     </details>
 
     <div id="pickcard"></div>
@@ -1242,6 +1275,10 @@ details.calib[open] summary::after{content:" ▴"}
         <button id="e-reset">되돌리기</button>
       </div>
 
+      <p class="tiernote" id="e-lock" style="display:none;margin:9px 0 0">
+      🔒 핀을 옮긴 뒤라 자르기를 잠갔어요. 자르기부터 하고 핀을 옮기거나,
+      <b>되돌리기</b>를 누르면 다시 열립니다.</p>
+
       <div class="trim">
         <label for="e-a">시작 자르기 <span class="mono" id="e-alab">0%</span></label>
         <input type="range" id="e-a" min="0" max="45" value="0" step="1">
@@ -1282,6 +1319,36 @@ details.calib[open] summary::after{content:" ▴"}
     <button class="big" id="r-save" style="margin-top:14px">저장</button>
     <button class="big ghost" id="r-del" style="margin-top:8px;color:var(--clay)">이 꾹꾹로 지우기</button>
     <button class="big ghost" id="r-close" style="margin-top:8px">닫기</button>
+  </div>
+</div>
+
+<!-- 프로필 -->
+<div class="sheet" id="dsheet" role="dialog" aria-modal="true" aria-label="프로필">
+  <div class="in">
+    <div class="grab"></div>
+    <h3 style="font-size:19px;margin-bottom:4px" id="d-title">프로필</h3>
+    <p class="tiernote" style="margin-bottom:13px">체중·코 길이는 <b>위험 기준</b>을 정합니다.
+    나이·관절은 <b>안내 문구</b>만 바꿔요.</p>
+    <div class="field"><label for="d-name">이름</label>
+      <input id="d-name" autocomplete="off"></div>
+    <div class="field"><label for="d-weight">체중 (kg)</label>
+      <input id="d-weight" type="number" inputmode="decimal" step="0.1">
+      <div class="hint" id="d-sizehint"></div></div>
+    <button class="chk" id="d-brachy" aria-pressed="false">
+      <span class="bx">✓</span>
+      <span class="t"><b>코가 납작한 편이에요</b>
+      <span>열사병 위험 2.10배(95% CI 1.68–2.64) → 기준을 한 단계 올립니다</span></span>
+    </button>
+    <div class="field" style="margin-top:13px"><label for="d-age">나이 (살) · 선택</label>
+      <input id="d-age" type="number" inputmode="numeric" step="1" min="0" max="25" placeholder="안 적어도 돼요">
+      <div class="hint" id="d-agehint"></div></div>
+    <button class="chk" id="d-joint" aria-pressed="false">
+      <span class="bx">✓</span>
+      <span class="t"><b>다리·관절이 불편해요</b>
+      <span>짧게 나눠 걸으라는 안내가 붙습니다</span></span>
+    </button>
+    <button class="big" id="d-save" style="margin-top:14px">저장</button>
+    <button class="big ghost" id="d-close" style="margin-top:8px">닫기</button>
   </div>
 </div>
 
@@ -1599,6 +1666,35 @@ $("pickcard").addEventListener("click",function(e){
   startWalk(+b.dataset.goid);
 });
 
+/* ══ 맞춤 한 줄 ═══════════════════════════════════════════════════
+   온보딩 "추가 작성"에서 받은 값이 실제로 화면을 바꾸는 유일한 곳이다.
+   소비처를 못 대는 값은 애초에 받지 않는다.
+
+   ① 나이 ≥12 + 더운 날
+      Hall·Carter·O'Neill 2020(Animals 10:1324, VetCompass n=1,259)에서
+      열사병을 원인별로 나눴더니 방향이 갈렸다.
+        환경형(묶어둠·차 안·그늘 없음): ≥12세 OR 3.15 (95% CI 1.56–6.37)
+        운동형(산책·달리기):          8–10세 OR 0.67 (95% CI 0.52–0.86)
+      즉 노령견은 산책이 아니라 세워두는 쪽이 위험하다.
+      그래서 "산책을 줄이세요"가 아니라 "세워두지 마세요"라고 쓴다.
+      노령견 산책량을 깎는 수치 근거는 어디에도 없다.
+
+   ② 관절
+      OA-COAST 캐나다 합의 가이드라인(Wright 외 2022, Front Vet Sci 9:830098)에
+      "regular, short, but frequent, low impact walks"라는 문장이 있다.
+      방향만 있고 분·횟수는 없다. 그래서 숫자를 쓰지 않는다. */
+function renderTip(c){
+  var t=$("l-tip"), d=S.dog;
+  if(!d){t.style.display="none";return;}
+  var msg=null;
+  if(d.age!=null&&d.age>=12&&c.gHeat>=1){
+    msg="🕒 <b>"+d.age+"살</b>이면 더운 날 <b>세워두는 것</b>이 걷는 것보다 위험해요 · 그늘 없는 데 묶어두거나 차에 두지 마세요";
+  } else if(d.joint){
+    msg="🦴 다리가 불편하면 한 번에 길게보다 <b>짧게 여러 번</b>이 좋아요";
+  }
+  if(!msg){t.style.display="none";return;}
+  t.style.display="";t.innerHTML=msg;
+}
 function renderHome(){
   if(!WX)return;
   var el=$("light");
@@ -1624,6 +1720,7 @@ function renderHome(){
       this.outerHTML='<span style="font-size:11.5px;opacity:.85;display:block;margin-top:6px;line-height:1.6">'+
         diagText()+'</span>';
     });
+    $("l-tip").style.display="none";
     $("sig").style.display="";
     $("pickcard").innerHTML="";setStartBtn(false);
     $("homenote").innerHTML="위치 없이도 꾹·💩 기록은 됩니다. 나가기 전에 <b>손등을 바닥에 5초</b> 대보세요.";
@@ -1662,6 +1759,7 @@ function renderHome(){
     side.style.display="";
     side.innerHTML="해가 "+COMPASS[Math.round((sun.az/45))%8]+"쪽에 있어요 · <b>길 "+shadeSide(sun.az)+"쪽</b>에 붙어 걸으세요";
   } else side.style.display="none";
+  renderTip(c);
   $("sig").style.display=c.g>0?"":"none";
   renderPick();
   $("homenote").innerHTML=(S.manual
@@ -1672,7 +1770,9 @@ function renderHome(){
     (WXLIVE
     ? "기온·일사량 자동 연동 (Open-Meteo). "
     : "날씨 서버에 연결 못 해 계절·시간으로 <b>추정</b>했어요. ")+
-    "바닥 온도는 <b>추정값</b>이에요 — 나가기 전 손등을 바닥에 5초 대보세요.";
+    "바닥 온도는 <b>추정값</b>이에요 — 나가기 전 손등을 바닥에 5초 대보세요."+
+    ((S.dog&&S.dog.age==null&&!S.dog.joint)
+      ? "<br>위의 <b>이름을 누르면</b> "+S.dog.name+" 나이·관절을 더 적을 수 있어요 (선택)" : "");
   var cg=$("chgloc"); if(cg)cg.addEventListener("click",openCity);
   var rg=$("regps");  if(rg)rg.addEventListener("click",function(){
     toast("위치 확인 중…");
@@ -1730,7 +1830,9 @@ $("f-brachy").addEventListener("click",function(){
   this.setAttribute("aria-pressed",this.getAttribute("aria-pressed")==="true"?"false":"true");checkDog();});
 function checkDog(){
   var kg=parseFloat($("f-weight").value);
-  $("dogNext").disabled=!($("f-name").value.trim()&&kg>0);
+  var nm0=$("f-name").value.trim();
+  $("dogNext").disabled=!(nm0&&kg>0);
+  $("f-more").querySelector("b").textContent=(nm0?nm0:"우리 아이")+"에 대해 조금 더";
   if(kg>0){
     var c=sizeClass(kg),nm={small:"소형견",medium:"중형견",large:"대형견"}[c];
     var th=c==="small"?{w:48,d:54}:c==="large"?{w:44,d:50}:{w:46,d:52};
@@ -1741,9 +1843,26 @@ function checkDog(){
 }
 $("f-name").addEventListener("input",checkDog);
 $("f-weight").addEventListener("input",checkDog);
+$("f-more").addEventListener("click",function(){
+  var open=this.getAttribute("aria-expanded")!=="true";
+  this.setAttribute("aria-expanded",open?"true":"false");
+  $("f-morebox").style.display=open?"":"none";
+});
+$("f-joint").addEventListener("click",function(){
+  this.setAttribute("aria-pressed",this.getAttribute("aria-pressed")==="true"?"false":"true");});
+$("f-age").addEventListener("input",function(){
+  var a=parseInt(this.value,10);
+  $("agehint").innerHTML = (a>=12)
+    ? "<b>"+a+"살</b> · 더운 날 <b>그늘 없는 곳에 묶어두거나 차에 두는 것</b>을 더 세게 말립니다.<br>"+
+      "산책 자체는 오히려 어린 개보다 위험이 낮게 나와요 — 그래서 산책량은 깎지 않습니다."
+    : "12살이 넘으면 <b>더운 날 밖에 세워두는 것</b>에 대한 경고가 세집니다. 산책량을 깎지는 않아요.";
+});
 $("dogNext").addEventListener("click",function(){
+  var a=parseInt($("f-age").value,10);
   S.dog={ava:avaSel,name:$("f-name").value.trim(),kg:parseFloat($("f-weight").value),
-    brachy:$("f-brachy").getAttribute("aria-pressed")==="true"};
+    brachy:$("f-brachy").getAttribute("aria-pressed")==="true",
+    age:(a>=0&&a<=25)?a:null,
+    joint:$("f-joint").getAttribute("aria-pressed")==="true"};
   save();step(3);});
 $("askperm").addEventListener("click",function(){
   var btn=this; btn.disabled=true; btn.textContent="위치 확인 중…";
@@ -2244,7 +2363,7 @@ function rebuildEdit(){                        // 슬라이더·정리 토글이
   var src=E.clean?despike(E.pts):E.pts, n=src.length;
   var i0=Math.floor(n*E.a/100), i1=n-Math.floor(n*E.b/100);
   if(i1-i0<4)i1=Math.min(n,i0+4);
-  E.edit=simplifyForEdit(src.slice(i0,i1),40);
+  E.edit=simplifyForEdit(src.slice(i0,i1),28);
 }
 function pathLen(pts){
   var d=0;
@@ -2282,7 +2401,7 @@ function ensureMap(){
       if(d<bd){bd=d;best=i;}
     }
     E.edit.splice(best,0,[+ll.lat.toFixed(6),+ll.lng.toFixed(6)]);
-    drawEditor();
+    markEdited(); drawEditor();
   });
   return MAP;
 }
@@ -2302,12 +2421,12 @@ function drawMap(){
     mk.on("dragend",function(e){
       var ll=e.target.getLatLng();
       E.edit[i]=[+ll.lat.toFixed(6),+ll.lng.toFixed(6)];
-      drawEditor();
+      markEdited(); drawEditor();
     });
     mk.on("click",function(){
       if(ETOOL!=="del")return;
       if(E.edit.length<=3){toast("점이 너무 적어요");return;}
-      E.edit.splice(i,1); drawEditor();
+      E.edit.splice(i,1); markEdited(); drawEditor();
     });
     MMARK.push(mk);
   });
@@ -2340,7 +2459,7 @@ function updateStat(keep){
   var segs=segsOf(keep),km=pathLen(keep)/1000;
   var b=routeBest({segs:segs});
   var brk=keep.filter(function(p){return p[2]===1;}).length;
-  $("e-stat").innerHTML="남는 길 <b>"+km.toFixed(2)+"km</b> · 점 "+keep.length+"개 · 구간 "+segs.length+"개"+
+  $("e-stat").innerHTML="남는 길 <b>"+km.toFixed(2)+"km</b> · 핀 "+keep.length+"개 · 구간 "+segs.length+"개"+
     (brk?" · <span style=\"color:var(--amber)\">끊김 "+brk+"곳</span>":"")+
     (b?"<br>이 길은 <b>"+b.h+"시</b>가 가장 시원해요 · "+(b.alt<3?"해 없음":"그늘 "+Math.round(b.sh*100)+"%"):
         "<br>날씨를 받으면 시원한 시각이 나와요")+
@@ -2358,7 +2477,7 @@ function openEditor(){
       var t=new Date(w.start);
       return '<button data-eid="'+w.start+'" aria-pressed="'+(i===0?"true":"false")+'">'+
         '<b>'+(t.getMonth()+1)+'/'+t.getDate()+' '+pad(t.getHours())+':'+pad(t.getMinutes())+'</b>'+
-        '<span>'+(w.dist/1000).toFixed(2)+'km · '+w.pts.length+'점</span></button>';
+        '<span>'+(w.dist/1000).toFixed(2)+'km · GPS '+w.pts.length+'개</span></button>';
     }).join("");
     pickWalk(cands[0].start);
   }
@@ -2368,7 +2487,8 @@ function openEditor(){
 function pickWalk(id){
   var w=S.walks.filter(function(x){return x.start===id;})[0];
   if(!w||!w.pts)return;
-  E.walk=id; E.pts=w.pts; E.a=0; E.b=0; E.edit=null; EBASE=null;
+  E.walk=id; E.pts=w.pts; E.a=0; E.b=0; E.edit=null; EBASE=null; E.dirty=false;
+  lockTrim(false);
   rebuildEdit();
   $("e-a").value=0; $("e-b").value=0;
   var t=new Date(w.start);
@@ -2378,7 +2498,8 @@ function pickWalk(id){
 }
 press($("e-tools"),function(b){ if(b.id==="e-reset")return; ETOOL=b.dataset.tool; drawEditor(); });
 $("e-reset").addEventListener("click",function(){
-  rebuildEdit(); EBASE=null; drawEditor(); toast("걸은 그대로 되돌렸어요");
+  rebuildEdit(); EBASE=null; E.dirty=false; lockTrim(false); drawEditor();
+  toast("걸은 그대로 되돌렸어요");
 });
 $("r-new").addEventListener("click",openEditor);
 $("e-picks").addEventListener("click",function(e){
@@ -2387,6 +2508,17 @@ $("e-picks").addEventListener("click",function(e){
   b.setAttribute("aria-pressed","true");
   pickWalk(+b.dataset.eid);
 });
+/* 핀을 옮기거나 지운 뒤에 자르기 슬라이더를 만지면 rebuildEdit()가 편집본을 통째로
+   다시 만들어서 손댄 게 전부 날아갔다. 말없이 날리는 대신 자르기를 잠근다.
+   "되돌리기"를 누르면 다시 열린다. */
+function lockTrim(on){
+  ["e-a","e-b","e-clean"].forEach(function(id){
+    var el=$(id); el.disabled=on; el.style.opacity=on?".45":"";
+    el.style.pointerEvents=on?"none":"";
+  });
+  $("e-lock").style.display=on?"":"none";
+}
+function markEdited(){ if(!E.dirty){E.dirty=true;lockTrim(true);} }
 $("e-a").addEventListener("input",function(){E.a=+this.value;rebuildEdit();drawEditor();});
 $("e-b").addEventListener("input",function(){E.b=+this.value;rebuildEdit();drawEditor();});
 $("e-clean").addEventListener("click",function(){
@@ -2446,6 +2578,57 @@ $("r-del").addEventListener("click",function(){
   S.routes=S.routes.filter(function(x){return x.id!==curRoute;});
   if(S.mainRoute===curRoute)delete S.mainRoute;
   save();$("rsheet").classList.remove("on");renderLog();renderHome();toast("지웠어요");
+});
+
+/* ══ 프로필 ══════════════════════════════════════
+   헤더의 이름을 누르면 열린다. 온보딩에서 건너뛴 "추가 작성"을 여기서 마저 채운다. */
+function dAgeHint(){
+  var a=parseInt($("d-age").value,10);
+  $("d-agehint").innerHTML=(a>=12)
+    ? "<b>"+a+"살</b> · 더운 날 <b>세워두지 말라</b>는 줄이 홈에 붙어요. 산책량은 깎지 않습니다."
+    : "12살이 넘으면 홈에 안내 한 줄이 붙습니다. 그 외엔 아무것도 바뀌지 않아요.";
+}
+function dSizeHint(){
+  var kg=parseFloat($("d-weight").value);
+  if(!(kg>0)){$("d-sizehint").textContent="10kg 미만 소형 · 10~25kg 중형 · 25kg 초과 대형";return;}
+  var cl=sizeClass(kg),nm={small:"소형견",medium:"중형견",large:"대형견"}[cl];
+  var th=cl==="small"?{w:48,d:54}:cl==="large"?{w:44,d:50}:{w:46,d:52};
+  var br=$("d-brachy").getAttribute("aria-pressed")==="true";
+  $("d-sizehint").innerHTML="<b>"+nm+"</b> · 바닥 "+th.w+"℃부터 주의, "+th.d+"℃부터 위험"+
+    ((br||kg>=50)?"<br>열사병 기준을 한 단계 올렸어요":"");
+}
+function openProfile(){
+  var d=S.dog||{};
+  $("d-title").textContent=(d.name||"우리 아이")+" 프로필";
+  $("d-name").value=d.name||"";
+  $("d-weight").value=d.kg!=null?d.kg:"";
+  $("d-age").value=d.age!=null?d.age:"";
+  $("d-brachy").setAttribute("aria-pressed",d.brachy?"true":"false");
+  $("d-joint").setAttribute("aria-pressed",d.joint?"true":"false");
+  dSizeHint();dAgeHint();
+  $("dsheet").classList.add("on");
+}
+$("hdr").style.cursor="pointer";
+$("hdr").addEventListener("click",openProfile);
+$("d-age").addEventListener("input",dAgeHint);
+$("d-weight").addEventListener("input",dSizeHint);
+$("d-brachy").addEventListener("click",function(){
+  this.setAttribute("aria-pressed",this.getAttribute("aria-pressed")==="true"?"false":"true");dSizeHint();});
+$("d-joint").addEventListener("click",function(){
+  this.setAttribute("aria-pressed",this.getAttribute("aria-pressed")==="true"?"false":"true");});
+$("d-close").addEventListener("click",function(){$("dsheet").classList.remove("on");});
+$("dsheet").addEventListener("click",function(e){if(e.target===this)this.classList.remove("on");});
+$("d-save").addEventListener("click",function(){
+  var nm=$("d-name").value.trim(), kg=parseFloat($("d-weight").value), a=parseInt($("d-age").value,10);
+  if(!nm||!(kg>0)){toast("이름과 체중은 있어야 해요");return;}
+  if(!S.dog)S.dog={ava:"🐕"};
+  S.dog.name=nm.slice(0,12); S.dog.kg=kg;
+  S.dog.brachy=$("d-brachy").getAttribute("aria-pressed")==="true";
+  S.dog.joint=$("d-joint").getAttribute("aria-pressed")==="true";
+  S.dog.age=(a>=0&&a<=25)?a:null;
+  save();$("dsheet").classList.remove("on");
+  $("hdr").textContent=S.dog.ava+" "+S.dog.name;
+  renderHome();renderLog();toast("저장했어요");
 });
 
 /* ══ 파티꾹 ══════════════════════════════════════
@@ -2522,6 +2705,10 @@ document.querySelectorAll("#tabs button").forEach(function(b){
     if(b.dataset.v==="log"){renderLog();if($("calib").open)renderCalib();}
     else if(b.dataset.v==="party")renderParty();
     else renderHome();});});
+/* 자동 테스트용 훅. 앱은 이걸 쓰지 않는다 — 헤드리스 브라우저에서 계산을 검증하려고 연다.
+   저장되는 값은 전부 이 기기 localStorage 안에 있고 새로 노출되는 비밀은 없다. */
+window.__kk={get S(){return S;},baseline:baseline,gaugeDetail:gaugeDetail,
+  slotOf:slotOf,gradeAt:gradeAt,roadTemp:roadTemp,solar:solar,renderHome:renderHome};
 boot();
 })();
 </script>
