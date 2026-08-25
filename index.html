@@ -1,0 +1,1699 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#A9713F">
+<title>꾹꾹꾹</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@700;900&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  --ground:#F4F2ED; --panel:#FFFFFF; --panel-2:#EDEAE3; --line:#DCD7CC;
+  --ink:#221E19; --ink-2:#5B554C; --ink-3:#8C857A;
+  --brand:#A9713F; --brand-deep:#7C4E27; --brand-tint:#F0E3D5;
+  --moss:#3F7A4C; --moss-tint:#DCE9DC;
+  --amber:#B07914; --amber-tint:#F5E7CB;
+  --clay:#B03A25; --clay-tint:#F4DBD5;
+  --shadow:0 1px 2px rgba(34,30,25,.06),0 10px 28px -14px rgba(34,30,25,.28);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#17150F; --panel:#221F19; --panel-2:#2B2721; --line:#3A352C;
+  --ink:#F1EDE4; --ink-2:#B4ACA0; --ink-3:#847C70;
+  --brand:#D9A06B; --brand-deep:#B57F4C; --brand-tint:#3A2C1E;
+  --moss:#8CC08F; --moss-tint:#22301F;
+  --amber:#E5B44F; --amber-tint:#352B14;
+  --clay:#E08571; --clay-tint:#3B211B;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px -16px rgba(0,0,0,.8);
+}}
+:root[data-theme="dark"]{
+  --ground:#17150F; --panel:#221F19; --panel-2:#2B2721; --line:#3A352C;
+  --ink:#F1EDE4; --ink-2:#B4ACA0; --ink-3:#847C70;
+  --brand:#D9A06B; --brand-deep:#B57F4C; --brand-tint:#3A2C1E;
+  --moss:#8CC08F; --moss-tint:#22301F;
+  --amber:#E5B44F; --amber-tint:#352B14;
+  --clay:#E08571; --clay-tint:#3B211B;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px -16px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+body{margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans KR",-apple-system,BlinkMacSystemFont,sans-serif; line-height:1.55}
+.mono{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+h1,h2,h3{font-family:"Hahmlet",serif; margin:0; line-height:1.25; text-wrap:balance}
+button{font-family:inherit; cursor:pointer}
+input{font-family:inherit; font-size:16px}
+.app{max-width:440px; margin:0 auto; padding:16px 16px 96px; min-height:100vh}
+.lbl{font-size:10px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3); font-weight:600}
+.pill{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600;
+  padding:4px 10px; border-radius:999px; white-space:nowrap; text-transform:none; letter-spacing:0}
+.p-safe{background:var(--moss-tint); color:var(--moss)}
+.p-warn{background:var(--amber-tint); color:var(--amber)}
+.p-dang{background:var(--clay-tint); color:var(--clay)}
+.p-brand{background:var(--brand-tint); color:var(--brand-deep)}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:15px; box-shadow:var(--shadow); margin-bottom:12px}
+.note{font-size:11.5px; color:var(--ink-3); line-height:1.6; margin:12px 0 0}
+
+.big{width:100%; border:none; border-radius:18px; padding:19px 0; font-family:"Hahmlet",serif; font-weight:700;
+  font-size:20px; color:#FFF6EC; background:linear-gradient(150deg,var(--brand),var(--brand-deep));
+  box-shadow:var(--shadow); transition:transform .1s}
+.big:active{transform:scale(.975)}
+.big:focus-visible{outline:3px solid var(--ink); outline-offset:3px}
+.big[disabled]{opacity:.4; box-shadow:none}
+.big.ghost{background:var(--panel); color:var(--ink); border:1px solid var(--line); font-size:16px; padding:14px 0; box-shadow:none}
+
+/* ── 온보딩 ── */
+#onb{display:none; max-width:440px; margin:0 auto; padding:0 16px; min-height:100vh}
+#onb.on{display:block}
+.step{display:none; padding:26px 0 40px; min-height:100vh; flex-direction:column}
+.step.on{display:flex}
+.dots{display:flex; gap:6px; padding:14px 0 26px}
+.dots i{height:3px; flex:1; border-radius:9px; background:var(--line)}
+.dots i.on{background:var(--brand)}
+.step h2{font-size:26px; font-weight:900; letter-spacing:-.01em}
+.step .lead{color:var(--ink-2); font-size:14.5px; margin:9px 0 24px; max-width:34ch}
+.grow{flex:1}
+.hero{display:grid; place-items:center; flex:1; text-align:center}
+.hero .logo{font-size:74px; line-height:1}
+.hero h1{font-size:46px; font-weight:900; letter-spacing:-.02em; margin-top:10px}
+.hero p{color:var(--ink-2); font-size:15px; max-width:24ch; margin:8px auto 0}
+.sso{display:grid; gap:9px}
+.sso button{border:1px solid var(--line); border-radius:14px; padding:15px 16px; font-size:15px; font-weight:600;
+  display:flex; align-items:center; gap:11px; background:var(--panel); color:var(--ink); width:100%}
+.sso button .i{font-size:18px; width:22px; text-align:center}
+.sso button.kakao{background:#FEE500; border-color:#FEE500; color:#191600}
+.sso button.naver{background:#03C75A; border-color:#03C75A; color:#fff}
+.sso button.apple{background:#141414; border-color:#141414; color:#fff}
+.field{margin-bottom:15px}
+.field label{display:block; font-size:12.5px; font-weight:600; color:var(--ink-2); margin-bottom:6px}
+.field input{width:100%; padding:13px 14px; border-radius:13px; border:1px solid var(--line); background:var(--panel); color:var(--ink)}
+.field input:focus{outline:2px solid var(--brand)}
+.field .hint{font-size:11.5px; color:var(--ink-3); margin-top:6px; line-height:1.5}
+.field .hint b{color:var(--brand-deep)}
+.avapick{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px}
+.avapick button{width:50px;height:50px;border-radius:15px;border:1px solid var(--line);background:var(--panel);font-size:24px}
+.avapick button[aria-pressed="true"]{border-color:var(--brand); background:var(--brand-tint)}
+.chk{display:flex; align-items:flex-start; gap:11px; background:var(--panel-2); border:1px solid var(--line);
+  border-radius:13px; padding:13px 14px; width:100%; text-align:left; color:var(--ink)}
+.chk .bx{width:21px;height:21px;border-radius:7px;border:2px solid var(--ink-3);flex:0 0 auto;margin-top:1px;
+  display:grid;place-items:center;font-size:12px;color:transparent}
+.chk[aria-pressed="true"]{border-color:var(--brand); background:var(--brand-tint)}
+.chk[aria-pressed="true"] .bx{background:var(--brand); border-color:var(--brand); color:#FFF6EC}
+.chk .t b{display:block; font-size:14px}
+.chk .t span{font-size:11.5px; color:var(--ink-3); line-height:1.5}
+.permrow{display:flex; gap:12px; padding:14px 0; border-bottom:1px solid var(--line)}
+.permrow .e{font-size:23px; flex:0 0 auto}
+.permrow .t b{display:block; font-size:14.5px}
+.permrow .t span{font-size:12.5px; color:var(--ink-3); line-height:1.5}
+
+/* ── 헤더 ── */
+.bar{display:flex; align-items:center; justify-content:space-between; padding:6px 2px 14px}
+.bar h1{font-size:22px; font-weight:900; letter-spacing:-.01em}
+.bar .sub{font-size:11px; color:var(--ink-3); font-family:"IBM Plex Mono",monospace}
+
+/* ── 신호등 ── */
+.light{border-radius:20px; padding:20px 18px; margin-bottom:12px; text-align:center}
+.light.safe{background:var(--moss-tint)} .light.warn{background:var(--amber-tint)}
+.light.dang{background:var(--clay-tint)} .light.none{background:var(--panel-2)}
+.light .dot{font-size:40px; line-height:1}
+.light .h{font-family:"Hahmlet",serif; font-weight:900; font-size:25px; margin-top:8px; letter-spacing:-.01em}
+.light .why{font-size:13.5px; margin-top:8px; line-height:1.55; font-family:"IBM Plex Mono",monospace}
+.light .when{font-size:13px; margin-top:11px; padding-top:11px; border-top:1px solid currentColor; opacity:.75}
+.light .when + .when{margin-top:6px; padding-top:0; border-top:none}
+.light.safe,.light.safe *{color:var(--moss)} .light.warn,.light.warn *{color:var(--amber)}
+.light.dang,.light.dang *{color:var(--clay)} .light.none,.light.none *{color:var(--ink-2)}
+.light .when b{opacity:1}
+
+details.sig{border-radius:14px; padding:0; margin-bottom:12px; background:var(--clay-tint); border:1px solid transparent}
+details.sig summary{padding:13px 15px; font-size:13.5px; font-weight:600; color:var(--clay); cursor:pointer; list-style:none}
+details.sig summary::-webkit-details-marker{display:none}
+details.sig summary::after{content:" ▾"; opacity:.6}
+details.sig[open] summary::after{content:" ▴"}
+details.sig ol{margin:0; padding:0 16px 14px 34px; color:var(--clay); font-size:12.5px; line-height:1.7}
+details.sig .last{padding:0 16px 14px; font-size:11.5px; color:var(--clay); opacity:.85; line-height:1.5}
+
+/* ── 산책중 ── */
+.walkbar{display:flex; align-items:center; justify-content:space-between; padding:4px 2px 10px}
+.walkbar .t{font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:600; color:var(--ink-2)}
+.walkbar button{background:none; border:1px solid var(--line); border-radius:999px; padding:7px 15px;
+  font-size:13px; color:var(--ink-2); font-weight:500}
+.ring{position:relative; width:230px; height:230px; margin:14px auto 4px; max-width:78vw}
+.ring svg{transform:rotate(-90deg); display:block; width:100%; height:auto}
+.ring .ctr{position:absolute; inset:0; display:grid; place-content:center; text-align:center}
+.ring .ctr .n{font-family:"IBM Plex Mono",monospace; font-size:60px; font-weight:600; line-height:1}
+.ring .ctr .u{font-size:10px; color:var(--ink-3); letter-spacing:.14em; margin-top:5px}
+.gmsg{text-align:center; font-size:15px; color:var(--ink-2); margin:6px 0 10px; min-height:23px}
+.gwarn{text-align:center; font-size:12.5px; color:var(--amber); line-height:1.5; min-height:19px; margin-bottom:12px}
+.two{display:grid; grid-template-columns:1fr 1fr; gap:11px}
+.two .big{font-size:26px; padding:30px 0}
+.two .big.poop{background:linear-gradient(150deg,#6F6256,#463D34)}
+
+.row{display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:none}
+.row .ic{width:31px;height:31px;border-radius:10px;display:grid;place-items:center;font-size:14px;flex:0 0 auto;background:var(--brand-tint)}
+.row .ic.g{background:var(--panel-2)}
+.row .tx{flex:1; min-width:0}
+.row .tx .a{font-size:13.5px; font-weight:500}
+.row .tx .b{font-size:11px; color:var(--ink-3)}
+.row .rt{font-size:11px; color:var(--ink-3); font-family:"IBM Plex Mono",monospace; text-align:right; flex:0 0 auto}
+.empty{text-align:center; color:var(--ink-3); font-size:13px; padding:20px 0}
+.stat3{display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin-bottom:12px}
+.stat3 .s{background:var(--panel); border:1px solid var(--line); border-radius:13px; padding:11px 6px; text-align:center}
+.stat3 .s .v{font-family:"IBM Plex Mono",monospace; font-size:19px; font-weight:600}
+.stat3 .s .k{font-size:10px; color:var(--ink-3); margin-top:2px}
+.mini{height:76px; border-radius:12px; border:1px solid var(--line); background:var(--panel-2); overflow:hidden; margin-bottom:10px}
+
+/* ── 시트 ── */
+.sheet{position:fixed; inset:0; background:rgba(20,17,13,.5); display:none; align-items:flex-end; justify-content:center; z-index:50}
+.sheet.on{display:flex}
+.sheet .in{background:var(--panel); width:100%; max-width:440px; border-radius:22px 22px 0 0;
+  padding:16px 16px calc(18px + env(safe-area-inset-bottom)); max-height:90vh; overflow-y:auto}
+.grab{width:38px;height:4px;border-radius:9px;background:var(--line);margin:0 auto 14px}
+.firm3{display:grid; grid-template-columns:repeat(3,1fr); gap:9px}
+.firm3 button{border:1px solid var(--line); background:var(--panel-2); border-radius:14px; padding:16px 0 13px; color:var(--ink)}
+.firm3 button .e{font-size:26px; display:block; line-height:1}
+.firm3 button .l{font-size:12px; margin-top:6px; display:block; font-weight:500}
+.firm3 button[aria-pressed="true"]{background:var(--brand); border-color:var(--brand); color:#FFF6EC}
+.odd{margin-top:11px}
+.warnbox{background:var(--clay-tint); color:var(--clay); border-radius:12px; padding:12px; font-size:12.5px; line-height:1.55; margin-top:11px; display:none}
+.warnbox.on{display:block}
+
+.tabs{position:fixed; bottom:0; left:0; right:0; background:var(--panel); border-top:1px solid var(--line);
+  display:none; z-index:20; padding-bottom:env(safe-area-inset-bottom)}
+.tabs.on{display:flex}
+.tabs button{flex:1; background:none; border:none; padding:9px 0 11px; color:var(--ink-3); font-size:10.5px}
+.tabs button i{display:block; font-size:18px; font-style:normal; margin-bottom:1px}
+.tabs button.on{color:var(--brand); font-weight:600}
+.view{display:none} .view.on{display:block}
+.sub-view{display:none} .sub-view.on{display:block}
+.bars{display:flex; align-items:flex-end; gap:4px; height:56px}
+.bars .b{flex:1; border-radius:3px 3px 0 0; min-height:4px}
+.rcard{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:15px;
+  box-shadow:var(--shadow); margin-bottom:11px; width:100%; text-align:left; color:var(--ink); display:block}
+.rcard.main{border-color:var(--brand)}
+.rtop{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:9px}
+.rtop .n{font-family:"Hahmlet",serif; font-weight:700; font-size:16px}
+.pcard{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:15px; box-shadow:var(--shadow); margin-bottom:11px}
+.pcard .ptop{display:flex; justify-content:space-between; align-items:center; margin-bottom:9px}
+.pcard .pn{font-family:"Hahmlet",serif; font-weight:700; font-size:16px; margin-bottom:5px}
+.pcard .pm{font-size:12.5px; color:var(--ink-2); line-height:1.6}
+.pcard .pact{display:flex; gap:8px; margin-top:12px}
+.pcard .pact button{flex:1; border:1px solid var(--line); background:var(--panel-2); border-radius:11px;
+  padding:11px 0; font-size:13px; color:var(--ink-2)}
+.row.tap{cursor:pointer}
+.row.tap:active{opacity:.6}
+.dsec{margin-top:16px}
+.dsec .lbl{margin-bottom:5px}
+.picks{display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:4px}
+.picks button{flex:0 0 auto; border:1px solid var(--line); background:var(--panel-2); border-radius:13px;
+  padding:11px 14px; color:var(--ink-2); text-align:left; line-height:1.4}
+.picks button b{display:block; font-size:13px; color:var(--ink)}
+.picks button span{font-size:11px; font-family:"IBM Plex Mono",monospace}
+.picks button[aria-pressed="true"]{border-color:var(--brand); background:var(--brand-tint)}
+.picks button[aria-pressed="true"] b{color:var(--brand-deep)}
+.canvas{height:200px; border-radius:14px; border:1px solid var(--line); background:var(--panel-2);
+  overflow:hidden; margin:12px 0 4px}
+.canvas svg{width:100%; height:100%}
+.trim{background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:13px 15px; margin-top:9px}
+.trim label{display:flex; justify-content:space-between; font-size:12.5px; font-weight:600; color:var(--ink-2); margin-bottom:5px}
+.trim input[type=range]{width:100%; accent-color:var(--brand)}
+.estat{margin-top:11px; background:var(--panel-2); border:1px solid var(--line); border-radius:13px;
+  padding:12px 14px; font-size:12.5px; color:var(--ink-2); line-height:1.75; font-family:"IBM Plex Mono",monospace}
+.estat b{color:var(--brand-deep)}
+.cities{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+.cities button{border:1px solid var(--line); background:var(--panel-2); border-radius:12px; padding:13px 0;
+  font-size:13.5px; color:var(--ink)}
+.pick{background:var(--panel); border:1px solid var(--brand); border-radius:18px; padding:16px; margin-bottom:12px; box-shadow:var(--shadow)}
+.pick .k{font-size:10px; letter-spacing:.11em; text-transform:uppercase; color:var(--brand); font-weight:600}
+.pick .n{font-family:"Hahmlet",serif; font-weight:700; font-size:19px; margin-top:6px; display:flex;
+  justify-content:space-between; align-items:baseline; gap:10px}
+.pick .n span{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-3); font-weight:400}
+.pick .why{font-size:13.5px; color:var(--ink-2); margin-top:7px; line-height:1.55}
+.pick .meta{font-size:11.5px; color:var(--ink-3); margin-top:8px; font-family:"IBM Plex Mono",monospace; line-height:1.7}
+.pick .go{width:100%; margin-top:13px; border:none; border-radius:14px; padding:15px 0; font-family:"Hahmlet",serif;
+  font-weight:700; font-size:17px; color:#FFF6EC; background:linear-gradient(150deg,var(--brand),var(--brand-deep))}
+.pick .go:active{transform:scale(.98)}
+.pick.warn{border-color:var(--amber)} .pick.warn .k{color:var(--amber)}
+#v-walk.on{display:flex; flex-direction:column; min-height:calc(100dvh - 32px)}
+#v-walk .two{margin-top:auto; padding-bottom:6px}
+#main{display:none} #main.on{display:block}
+.toast{position:fixed; left:50%; bottom:96px; transform:translateX(-50%) translateY(14px); background:var(--ink); color:var(--ground);
+  padding:11px 20px; border-radius:999px; font-size:13.5px; font-weight:500; opacity:0; pointer-events:none; transition:.25s; z-index:60}
+.toast.on{opacity:1; transform:translateX(-50%) translateY(0)}
+.src{font-size:10.5px; color:var(--ink-3); line-height:1.6}
+details.calib{background:var(--panel); border:1px solid var(--line); border-radius:16px; margin-top:14px}
+details.calib summary{padding:14px 15px; font-size:13px; font-weight:600; color:var(--ink-2); cursor:pointer; list-style:none}
+details.calib summary::-webkit-details-marker{display:none}
+details.calib summary::after{content:" ▾"; opacity:.5}
+details.calib[open] summary::after{content:" ▴"}
+.calib .body{padding:0 15px 15px}
+.calib .now{background:var(--panel-2); border-radius:12px; padding:11px 13px; font-family:"IBM Plex Mono",monospace;
+  font-size:12px; color:var(--ink-2); line-height:1.7; margin-bottom:11px}
+.calib .now b{color:var(--brand-deep); font-size:15px}
+.seg2{display:flex; gap:7px; margin-bottom:9px}
+.seg2 button{flex:1; border:1px solid var(--line); background:var(--panel-2); border-radius:11px; padding:10px 0;
+  font-size:12.5px; color:var(--ink-2)}
+.seg2 button[aria-pressed="true"]{border-color:var(--brand); background:var(--brand-tint); color:var(--brand-deep); font-weight:600}
+.calib .inrow{display:flex; gap:9px; align-items:stretch; margin-top:4px}
+.calib .inrow input{flex:1; padding:12px 14px; border-radius:12px; border:1px solid var(--line);
+  background:var(--panel-2); color:var(--ink); font-family:"IBM Plex Mono",monospace}
+.calib .inrow button{flex:0 0 auto; padding:0 22px; border:none; border-radius:12px; background:var(--brand);
+  color:#FFF6EC; font-weight:700; font-size:14px}
+.calib .fit{margin-top:13px; padding-top:13px; border-top:1px solid var(--line); font-size:12.5px; color:var(--ink-2); line-height:1.7}
+.calib .fit b{font-family:"IBM Plex Mono",monospace; color:var(--brand-deep); font-size:15px}
+.calib .mini2{display:flex; gap:7px; margin-top:10px}
+.calib .mini2 button{flex:1; border:1px solid var(--line); background:var(--panel-2); border-radius:11px;
+  padding:10px 0; font-size:12.5px; color:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<!-- ══════════ 온보딩 ══════════ -->
+<div id="onb">
+  <div class="step on" id="st0">
+    <div class="hero"><div>
+      <div class="logo">🐕</div>
+      <h1>꾹꾹꾹</h1>
+      <p>나가기 전에<br>바닥이 몇 도인지 본다</p>
+    </div></div>
+    <button class="big" data-go="1">시작하기</button>
+    <p class="src" style="text-align:center;padding-top:10px">계속하면 이용약관과 개인정보 처리방침에 동의하게 됩니다</p>
+  </div>
+
+  <div class="step" id="st1">
+    <div class="dots"><i class="on"></i><i></i><i></i><i></i></div>
+    <h2>어떻게 시작할까요</h2>
+    <p class="lead">기록은 계정에 저장돼요. 기기를 바꿔도 그대로.</p>
+    <div class="sso">
+      <button class="kakao" data-sso="카카오"><span class="i">💬</span>카카오로 시작하기</button>
+      <button class="naver" data-sso="네이버"><span class="i">N</span>네이버로 시작하기</button>
+      <button class="apple" data-sso="Apple"><span class="i"></span>Apple로 계속하기</button>
+      <button data-sso="Google"><span class="i">G</span>Google로 계속하기</button>
+    </div>
+    <div class="grow"></div>
+    <p class="note">데모라 실제 로그인은 하지 않습니다.</p>
+  </div>
+
+  <div class="step" id="st2">
+    <div class="dots"><i class="on"></i><i class="on"></i><i></i><i></i></div>
+    <h2>누구랑 걷나요</h2>
+    <p class="lead">체중과 코 길이로 위험 기준이 달라져요. 딱 두 개만 묻습니다.</p>
+    <div class="avapick" id="avapick">
+      <button aria-pressed="true">🐕</button><button aria-pressed="false">🐩</button>
+      <button aria-pressed="false">🦮</button><button aria-pressed="false">🐕‍🦺</button>
+      <button aria-pressed="false">🐶</button><button aria-pressed="false">🌭</button>
+    </div>
+    <div class="field"><label for="f-name">이름</label>
+      <input id="f-name" placeholder="혜준이" autocomplete="off"></div>
+    <div class="field"><label for="f-weight">체중 (kg)</label>
+      <input id="f-weight" type="number" inputmode="decimal" step="0.1" placeholder="13.4">
+      <div class="hint" id="sizehint">10kg 미만 소형 · 10~25kg 중형 · 25kg 초과 대형</div></div>
+    <button class="chk" id="f-brachy" aria-pressed="false">
+      <span class="bx">✓</span>
+      <span class="t"><b>코가 납작한 편이에요</b>
+      <span>퍼그·불독·시추·페키니즈 등. 열사병 위험이 2.1배 높아 기준을 한 단계 올립니다.</span></span>
+    </button>
+    <button class="big" id="dogNext" disabled style="margin-top:18px">다음</button>
+    <div style="height:24px"></div>
+  </div>
+
+  <div class="step" id="st3">
+    <div class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+    <h2>왜 바닥 온도를<br>보게 하냐면</h2>
+    <p class="lead">영국에서 개 열사병 원인을 조사했더니, 차 안이 아니라 <b>산책이 74%</b>였어요.</p>
+    <div class="card" style="margin-bottom:11px">
+      <div style="font-family:Hahmlet,serif;font-weight:700;font-size:16px;margin-bottom:6px">초기에 알아채면 98%가 산다</div>
+      <div style="font-size:13px;color:var(--ink-2);line-height:1.6">헐떡임·처짐 단계에서 병원에 가면 생존율 98%.
+      비틀거림·경련까지 가면 43%로 떨어집니다.</div>
+      <div class="src" style="margin-top:9px">VetCompass, 영국 왕립수의대 · Scientific Reports 2021</div>
+    </div>
+    <div class="grow"></div>
+    <button class="big" data-go="4">알겠어요</button>
+    <div style="height:24px"></div>
+  </div>
+
+  <div class="step" id="st4">
+    <div class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+    <h2>위치 하나만<br>허락해 주세요</h2>
+    <p class="lead">거부해도 기록은 됩니다. 다만 바닥 온도는 계산할 수 없어요.</p>
+    <div class="permrow"><span class="e">📍</span><div class="t"><b>위치</b>
+      <span>지금 있는 자리의 기온·일사량을 받아 바닥 온도를 계산합니다. 원본 위치는 서버에 저장하지 않아요.</span></div></div>
+    <div class="grow"></div>
+    <button class="big" id="askperm">위치 허용하고 시작</button>
+    <button class="big ghost" id="skipperm" style="margin-top:9px">나중에</button>
+    <div style="height:24px"></div>
+  </div>
+</div>
+
+<!-- ══════════ 메인 ══════════ -->
+<div id="main">
+<div class="app">
+
+  <!-- 홈 -->
+  <div class="view on" id="v-home">
+    <div class="bar"><h1 id="hdr">꾹꾹꾹</h1><span class="sub" id="today"></span></div>
+    <div class="light none" id="light">
+      <div class="dot" id="l-dot">⏳</div>
+      <div class="h" id="l-h">확인 중</div>
+      <div class="why" id="l-why">위치와 날씨를 받아오고 있어요</div>
+      <div class="when" id="l-side" style="display:none"></div>
+      <div class="when" id="l-when" style="display:none"></div>
+    </div>
+
+    <details class="sig" id="sig">
+      <summary>더울 때 이 신호가 보이면 즉시 멈추세요</summary>
+      <ol>
+        <li>격렬한 헐떡임, 숨 쉬기 힘들어함</li>
+        <li>처지거나 걷기 싫어함</li>
+        <li>토하거나 설사, 침을 심하게 흘림</li>
+        <li>비틀거림, 주저앉음</li>
+        <li>경련, 반응 없음 → <b>바로 병원</b></li>
+      </ol>
+      <div class="last">1~2번에서 병원에 가면 98%가 삽니다. 4~5번까지 가면 43%.<br>VetCompass · Scientific Reports 2021</div>
+    </details>
+
+    <div id="pickcard"></div>
+    <button class="big" id="start">🐾 산책 시작</button>
+    <p class="note" id="homenote"></p>
+  </div>
+
+  <!-- 산책중 -->
+  <div class="view" id="v-walk">
+    <div class="walkbar">
+      <span class="t" id="w-time">0:00</span>
+      <button id="stop">끝내기</button>
+    </div>
+    <div class="ring">
+      <svg viewBox="0 0 230 230" aria-label="꾹게이지">
+        <circle cx="115" cy="115" r="98" fill="none" stroke="var(--panel-2)" stroke-width="19"></circle>
+        <circle cx="115" cy="115" r="98" fill="none" stroke="var(--brand)" stroke-width="19" stroke-linecap="round"
+                stroke-dasharray="615.8" stroke-dashoffset="615.8" id="gring"></circle>
+      </svg>
+      <div class="ctr"><div class="n" id="gnum">0</div><div class="u">꾹게이지</div></div>
+    </div>
+    <div class="gmsg" id="gmsg">이제 막 나왔네요</div>
+    <div class="gwarn" id="gwarn"></div>
+    <div class="two">
+      <button class="big" id="b-pee">💧 꾹</button>
+      <button class="big poop" id="b-poop">💩</button>
+    </div>
+  </div>
+
+  <!-- 파티꾹 -->
+  <div class="view" id="v-party">
+    <div class="bar"><h1>파티꾹</h1><span class="sub">같이 걷기</span></div>
+    <button class="big" id="p-new">＋ 파티꾹 만들기</button>
+    <div id="mine" style="margin-top:14px"></div>
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin:20px 2px 9px">
+      <span class="lbl">이 근처</span>
+      <span class="pill p-warn">서버 연결 전 · 예시</span>
+    </div>
+    <div id="nearby"></div>
+    <div class="card" style="background:var(--amber-tint);border-color:transparent">
+      <div style="font-size:12.5px;color:var(--amber);line-height:1.6">
+        <b>처음 만날 땐</b><br>
+        · 밝은 시간, 사람 있는 공개된 곳에서<br>
+        · 접종이 1년 넘으면 참가할 수 없어요<br>
+        · 맹견으로 지정된 견종은 입마개가 법적 의무입니다
+      </div>
+    </div>
+    <p class="src">지금은 내가 만든 파티만 이 기기에 저장됩니다. 실제 매칭은 서버가 붙어야 돌아가요.</p>
+  </div>
+
+  <!-- 기록 -->
+  <div class="view" id="v-log">
+    <div class="bar"><h1>기록</h1><span class="sub" id="logsub"></span></div>
+
+    <div class="seg2" id="logtab" style="margin-bottom:13px">
+      <button data-v="route" aria-pressed="true">꾹꾹로</button>
+      <button data-v="walk" aria-pressed="false">산책</button>
+      <button data-v="poop" aria-pressed="false">💧 · 💩</button>
+    </div>
+
+    <div class="sub-view on" id="lv-route">
+      <button class="big" id="r-new" style="margin-bottom:13px">＋ 기록에서 꾹꾹로 만들기</button>
+      <div id="routelist"></div>
+      <p class="src">걸은 기록을 불러와 앞뒤를 잘라내고 이름을 붙이면 꾹꾹로가 됩니다.<br>
+      <b>기본</b>으로 지정한 코스의 방위로 홈의 그늘·추천 시간을 계산해요.</p>
+    </div>
+
+    <div class="sub-view" id="lv-walk">
+      <div class="card" style="padding:6px 15px">
+        <div id="walklist"><div class="empty">아직 기록이 없어요</div></div>
+      </div>
+      <p class="src">산책을 누르면 그날 꾹·💩을 하나씩 볼 수 있어요.</p>
+    </div>
+
+    <div class="sub-view" id="lv-poop">
+      <div class="stat3">
+        <div class="s"><div class="v" id="m-poop">0</div><div class="k">이번 달 💩</div></div>
+        <div class="s"><div class="v" id="m-firm">–</div><div class="k">굳기</div></div>
+        <div class="s"><div class="v" id="m-coll">–</div><div class="k">수거율</div></div>
+      </div>
+      <div class="card">
+        <div class="lbl" style="margin-bottom:9px">굳기 추이 · 최근 14회</div>
+        <div class="bars" id="firmbars"></div>
+        <div id="firmnote" class="src" style="margin-top:9px"></div>
+      </div>
+      <div class="card" style="padding:6px 15px">
+        <div class="lbl" style="margin:9px 0 3px">💧 꾹자리 — 반복해서 오줌 싸는 곳</div>
+        <div id="spotlist"><div class="empty">꾹을 기록하면 자리가 생겨요</div></div>
+      </div>
+    </div>
+    <button class="big ghost" id="export">기록 복사</button>
+    <button class="big ghost" id="reset" style="margin-top:9px">처음부터 다시</button>
+    <p class="src" style="margin-top:14px" id="method"></p>
+
+    <details class="calib" id="calib">
+      <summary>🌡 실측 보정 — 적외선 온도계로 계수 맞추기</summary>
+      <div class="body">
+        <div class="now" id="c-now">위치·날씨를 먼저 받아야 해요</div>
+        <div class="seg2" id="c-surf">
+          <button data-v="asphalt" aria-pressed="true">아스팔트</button>
+          <button data-v="block" aria-pressed="false">보도블록</button>
+          <button data-v="soil" aria-pressed="false">흙·잔디</button>
+        </div>
+        <div class="seg2" id="c-sun">
+          <button data-v="sun" aria-pressed="true">양지</button>
+          <button data-v="shade" aria-pressed="false">그늘</button>
+        </div>
+        <div class="inrow">
+          <input id="c-val" type="number" inputmode="decimal" step="0.1" placeholder="잰 온도 ℃" aria-label="실측 노면 온도">
+          <button id="c-add">기록</button>
+        </div>
+        <div class="fit" id="c-fit">아직 기록이 없어요. 같은 코스에서 <b>시간대를 바꿔가며 8~15번</b> 재면 계수가 잡힙니다.</div>
+        <div class="mini2">
+          <button id="c-apply">보정값 적용</button>
+          <button id="c-csv">CSV 복사</button>
+          <button id="c-clear">전부 지우기</button>
+        </div>
+        <p class="src" style="margin-top:11px">양지·아스팔트 기록만 계수 계산에 씁니다. 그늘·보도블록·흙은 참고용으로 따로 모아요.<br>
+        온도계는 노면에서 5~10cm 띄우고, 같은 지점을 3번 재서 중간값을 넣으세요.</p>
+      </div>
+    </details>
+  </div>
+</div>
+</div>
+
+<!-- 💩 시트 -->
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="똥 기록">
+  <div class="in">
+    <div class="grab"></div>
+    <h3 style="font-size:19px;margin-bottom:14px">💩 어땠어요?</h3>
+    <div class="firm3" id="firm">
+      <button data-v="4" aria-pressed="false"><span class="e">🪨</span><span class="l">단단</span></button>
+      <button data-v="3" aria-pressed="true"><span class="e">🟤</span><span class="l">보통</span></button>
+      <button data-v="2" aria-pressed="false"><span class="e">🌫</span><span class="l">묽음</span></button>
+    </div>
+    <button class="chk odd" id="odd" aria-pressed="false">
+      <span class="bx">✓</span>
+      <span class="t"><b>색이 이상해요</b><span>검거나 붉은 기가 돌아요</span></span>
+    </button>
+    <div class="warnbox" id="bloodwarn">검거나 붉은 변은 소화기 출혈 신호일 수 있어요. <b>사진을 찍어 병원에 보여주세요.</b> 이 앱은 진단하지 않습니다.</div>
+    <button class="big" id="savepoop" style="margin-top:14px">저장</button>
+    <button class="big ghost" id="cancelpoop" style="margin-top:8px">취소</button>
+  </div>
+</div>
+
+<!-- 산책 상세 -->
+<div class="sheet" id="wsheet" role="dialog" aria-modal="true" aria-label="산책 상세">
+  <div class="in">
+    <div class="grab"></div>
+    <div id="w-head"></div>
+    <div id="w-body"></div>
+    <button class="big ghost" id="w-del" style="margin-top:14px;color:var(--clay)">이 산책 지우기</button>
+    <button class="big ghost" id="w-close" style="margin-top:8px">닫기</button>
+  </div>
+</div>
+
+<!-- 동네 직접 고르기 -->
+<div class="sheet" id="csheet" role="dialog" aria-modal="true" aria-label="동네 고르기">
+  <div class="in">
+    <div class="grab"></div>
+    <h3 style="font-size:19px;margin-bottom:6px">동네 직접 고르기</h3>
+    <p class="src" style="margin-bottom:13px">GPS가 안 될 때 쓰는 대안이에요. 기온·일사량·바닥온도는 이 좌표로 계산합니다. 날씨는 5km 격자라 같은 시 안에서는 차이가 거의 없어요.<br>
+    <b>경로와 꾹자리는 여전히 기록되지 않습니다.</b></p>
+    <div class="cities" id="cities"></div>
+    <div class="field" style="margin-top:14px"><label for="c-xy">또는 좌표 직접 입력</label>
+      <input id="c-xy" placeholder="37.5533, 127.0410" autocomplete="off">
+      <div class="hint">가장 정확해요 — 지도 앱에서 지금 자리를 길게 눌러 좌표를 복사해 붙여넣으세요</div></div>
+    <button class="big" id="c-xy-go">이 좌표 쓰기</button>
+    <button class="big ghost" id="c-close" style="margin-top:8px">닫기</button>
+  </div>
+</div>
+
+<!-- 꾹꾹로 만들기 (편집기) -->
+<div class="sheet" id="esheet" role="dialog" aria-modal="true" aria-label="꾹꾹로 만들기">
+  <div class="in">
+    <div class="grab"></div>
+    <h3 style="font-size:19px;margin-bottom:12px">꾹꾹로 만들기</h3>
+
+    <div class="lbl" style="margin-bottom:7px">어느 산책에서</div>
+    <div id="e-picks" class="picks"></div>
+
+    <div id="e-edit" style="display:none">
+      <div class="canvas"><svg id="e-map" viewBox="0 0 420 200" preserveAspectRatio="xMidYMid meet"></svg></div>
+
+      <div class="trim">
+        <label for="e-a">시작 자르기 <span class="mono" id="e-alab">0%</span></label>
+        <input type="range" id="e-a" min="0" max="45" value="0" step="1">
+        <label for="e-b" style="margin-top:10px">끝 자르기 <span class="mono" id="e-blab">0%</span></label>
+        <input type="range" id="e-b" min="0" max="45" value="0" step="1">
+      </div>
+
+      <button class="chk" id="e-clean" aria-pressed="true" style="margin-top:11px">
+        <span class="bx">✓</span>
+        <span class="t"><b>튄 점 정리</b><span>GPS가 순간적으로 크게 튄 점을 빼요</span></span>
+      </button>
+
+      <div class="estat" id="e-stat"></div>
+
+      <div class="field" style="margin-top:13px"><label for="e-name">이름</label>
+        <input id="e-name" placeholder="짧은 밤코스" autocomplete="off"></div>
+      <button class="chk" id="e-main" aria-pressed="false">
+        <span class="bx">✓</span>
+        <span class="t"><b>기본 코스로 쓰기</b><span>홈의 그늘·추천 시간을 이 길로 계산해요</span></span>
+      </button>
+      <button class="big" id="e-save" style="margin-top:14px">이 길로 만들기</button>
+    </div>
+
+    <button class="big ghost" id="e-close" style="margin-top:9px">닫기</button>
+  </div>
+</div>
+
+<!-- 꾹꾹로 편집 -->
+<div class="sheet" id="rsheet" role="dialog" aria-modal="true" aria-label="꾹꾹로 편집">
+  <div class="in">
+    <div class="grab"></div>
+    <h3 style="font-size:19px;margin-bottom:14px">꾹꾹로 이름</h3>
+    <div class="field"><input id="r-name" placeholder="짧은 밤코스" autocomplete="off"></div>
+    <button class="chk" id="r-main" aria-pressed="false">
+      <span class="bx">✓</span>
+      <span class="t"><b>기본 코스로 쓰기</b><span>홈의 그늘·추천 시간을 이 길 방위로 계산해요</span></span>
+    </button>
+    <button class="big" id="r-save" style="margin-top:14px">저장</button>
+    <button class="big ghost" id="r-del" style="margin-top:8px;color:var(--clay)">이 꾹꾹로 지우기</button>
+    <button class="big ghost" id="r-close" style="margin-top:8px">닫기</button>
+  </div>
+</div>
+
+<!-- 파티 만들기 -->
+<div class="sheet" id="psheet" role="dialog" aria-modal="true" aria-label="파티꾹 만들기">
+  <div class="in">
+    <div class="grab"></div>
+    <h3 style="font-size:19px;margin-bottom:14px">파티꾹 만들기</h3>
+    <div class="seg2" id="p-kind">
+      <button data-v="flash" aria-pressed="true">⚡ 번개</button>
+      <button data-v="regular" aria-pressed="false">🔁 정기</button>
+    </div>
+    <div class="field" style="margin-top:13px"><label for="p-when">언제</label>
+      <input id="p-when" placeholder="오늘 21:30 / 매주 화·목 22시" autocomplete="off"></div>
+    <div class="field"><label for="p-where">어디서 만나요</label>
+      <input id="p-where" placeholder="서울숲 정문 앞" autocomplete="off"></div>
+    <div class="field"><label>같이 걸을 크기</label>
+      <div class="seg2" id="p-size">
+        <button data-v="small" aria-pressed="false">소형</button>
+        <button data-v="medium" aria-pressed="true">중형</button>
+        <button data-v="large" aria-pressed="false">대형</button>
+      </div>
+      <div class="hint">여러 개 고를 수 있어요</div></div>
+    <div class="field"><label for="p-max">최대 몇 마리</label>
+      <input id="p-max" type="number" inputmode="numeric" value="4" min="2" max="12"></div>
+    <button class="big" id="p-save">만들기</button>
+    <button class="big ghost" id="p-close" style="margin-top:8px">취소</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<nav class="tabs" id="tabs">
+  <button class="on" data-v="home"><i>🏠</i>홈</button>
+  <button data-v="log"><i>📖</i>기록</button>
+  <button data-v="party"><i>👥</i>파티꾹</button>
+</nav>
+
+<script>
+(function(){
+"use strict";
+var KEY="kkuk.v3";
+function $(i){return document.getElementById(i);}
+function load(){try{var r=localStorage.getItem(KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true;}catch(e){return false;}}
+var S=load()||{ver:3,user:null,dog:null,walks:[],spots:[],routes:[],live:null};
+["walks","spots","routes"].forEach(function(k){if(!S[k])S[k]=[];});
+
+function pad(n){return(n<10?"0":"")+n;}
+function ms2t(ms){var s=Math.floor(ms/1000);return Math.floor(s/60)+":"+pad(s%60);}
+function toast(m){var t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(t._x);
+  t._x=setTimeout(function(){t.classList.remove("on");},2000);}
+function press(box,cb,toggle){box.addEventListener("click",function(e){
+  var b=e.target.closest("button");if(!b)return;
+  if(toggle){b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");}
+  else{Array.prototype.forEach.call(box.querySelectorAll("button"),function(x){x.setAttribute("aria-pressed","false");});
+    b.setAttribute("aria-pressed","true");}
+  if(cb)cb(b);});}
+function picked(box){ return Array.prototype.filter.call(box.querySelectorAll("button"),function(b){
+  return b.getAttribute("aria-pressed")==="true"; }); }
+
+/* ══ 태양 위치 (NOAA 근사) ══ */
+function solar(lat,lng,d){
+  var jd=d.getTime()/86400000+2440587.5,n=jd-2451545.0;
+  var L=(280.460+0.9856474*n)%360,g=(357.528+0.9856003*n)%360*Math.PI/180;
+  var lam=(L+1.915*Math.sin(g)+0.020*Math.sin(2*g))*Math.PI/180,eps=(23.439-0.0000004*n)*Math.PI/180;
+  var ra=Math.atan2(Math.cos(eps)*Math.sin(lam),Math.cos(lam)),dec=Math.asin(Math.sin(eps)*Math.sin(lam));
+  var gmst=(18.697374558+24.06570982441908*n)%24,lst=((gmst*15+lng)%360)*Math.PI/180;
+  var H=lst-ra,la=lat*Math.PI/180;
+  var alt=Math.asin(Math.sin(la)*Math.sin(dec)+Math.cos(la)*Math.cos(dec)*Math.cos(H));
+  var az=Math.atan2(-Math.sin(H),Math.tan(dec)*Math.cos(la)-Math.sin(la)*Math.cos(H));
+  return {alt:alt*180/Math.PI,az:((az*180/Math.PI)%360+360)%360};
+}
+/* ══ 그늘 ══ */
+var CANYON={h:15,w:9};
+function shadeGeneric(alt){
+  if(alt<=0)return 1;
+  var X=CANYON.w*Math.tan(alt*Math.PI/180)/CANYON.h;
+  return X>=1?0:1-(2/Math.PI)*Math.asin(X);
+}
+function bearing(a,b){var p=Math.PI/180,y=Math.sin((b[1]-a[1])*p)*Math.cos(b[0]*p);
+  var x=Math.cos(a[0]*p)*Math.sin(b[0]*p)-Math.sin(a[0]*p)*Math.cos(b[0]*p)*Math.cos((b[1]-a[1])*p);
+  return((Math.atan2(y,x)*180/Math.PI)%360+360)%360;}
+function shadeRoute(segs,alt,az){
+  if(alt<=0)return 1;
+  var tot=0,sh=0;
+  for(var i=0;i<segs.length;i++){var s=segs[i],rel=((az-s.b)%360+360)%360,cr=Math.abs(Math.sin(rel*Math.PI/180));
+    tot+=s.d; if(cr<0.05)continue;
+    if(CANYON.h/Math.tan(alt*Math.PI/180)*cr>=CANYON.w)sh+=s.d;}
+  return tot?sh/tot:shadeGeneric(alt);
+}
+function segsOf(pts){
+  var out=[],acc=0,start=0;
+  for(var i=1;i<pts.length;i++){
+    if(pts[i][2]===1){ acc=0; start=i; continue; }   // 끊긴 구간은 방위를 믿을 수 없다
+    var b=bearing(pts[i-1],pts[i]);
+    acc+=dist({lat:pts[i-1][0],lng:pts[i-1][1]},{lat:pts[i][0],lng:pts[i][1]});
+    var nb=i<pts.length-1?bearing(pts[i],pts[i+1]):b;
+    var turn=Math.abs(((nb-b+540)%360)-180);
+    if(turn>25||acc>250||i===pts.length-1){out.push({b:bearing(pts[start],pts[i]),d:acc});acc=0;start=i;}
+  }
+  return out.filter(function(s){return s.d>15;});
+}
+
+/* ══ 노면 온도 ══════════════════════════════════════
+   상승폭 = K × 일사량 × (1−그늘) × 0.92 / (1 + 0.2×풍속)
+   K=0.031 — 서울 실측 보정: 2023-08-03 14:25 기온 33.3~33.6℃일 때
+   아스팔트 노면 45.3~49.1℃ (기온 대비 최대 +15.5℃)
+   출처: 나성준 외, 한국환경과학회지 33(1):75-85, 2024
+   최대 오프셋으로 맞춰 보수적으로(높게) 추정한다.        */
+var K_ROAD=0.031;   // 실측 보정 후 S.K로 덮어씀
+function roadTemp(air,sw,wind,shade,soil0){
+  var day=sw>5;
+  var t=day? air+K_ROAD*sw*(1-shade)*0.92/(1+0.2*(wind||1.5)) : air-1.5;
+  if(typeof soil0==="number"&&!isNaN(soil0)){
+    // soil_temperature_0cm은 햇빛 받는 지표 기준이라 그늘에 그대로 못 쓴다.
+    // 낮에는 그늘 비율만큼 기온 쪽으로 당겨서 하한을 잡는다.
+    var floor=day ? air+(soil0+1.5-air)*(1-shade) : soil0+1.5;
+    t=Math.max(t,floor);
+  }
+  return Math.round(t*10)/10;
+}
+function sizeClass(kg){return kg<10?"small":(kg<=25?"medium":"large");}
+/* 발바닥 임계 — Moritz & Henriques 접촉시간 곡선(사람 피부) 기반.
+   44℃ 6시간 / 50℃ 15분 / 55℃ 30초.
+   개 육구 표피는 사람 발바닥보다 약 3.3배 두껍지만(1800μm vs 550μm)
+   열저항을 정량화한 연구가 없어 사람 기준을 그대로 쓰되 체급으로만 보정한다. */
+function pawTh(){
+  var c=S.dog?sizeClass(S.dog.kg):"medium";
+  return c==="small"?{warn:48,dang:54}:c==="large"?{warn:44,dang:50}:{warn:46,dang:52};
+}
+function pawGrade(t){var th=pawTh();return t<th.warn?0:(t<th.dang?1:2);}
+/* 열사병 — 미국 기상청 Heat Index 카테고리를 빌려온 것(개 검증 아님).
+   체중 50kg 초과 3.42배 / 단두종 2.10배 → 한 단계 올린다.
+   출처: O'Neill et al., Scientific Reports 2020 (VetCompass) */
+function heatGrade(air){
+  var g=air<27?0:(air<32?1:2);
+  var d=S.dog;
+  if(d&&(d.brachy||d.kg>=50))g=Math.min(2,g+1);
+  return g;
+}
+var COMPASS=["북","북동","동","남동","남","남서","서","북서"];
+function shadeSide(az){ // 그림자가 지는 방향 = 해의 반대편
+  return COMPASS[Math.round((((az+180)%360)/45))%8];
+}
+var LIGHT=[
+  {dot:"✅",h:"지금 나가도 좋아요"},
+  {dot:"⚠️",h:"짧게, 그늘로"},
+  {dot:"🔥",h:"지금은 나가지 마세요"}
+];
+
+/* ══ 날씨 (Open-Meteo · 무료 · 키 불필요 · CORS 허용) ══ */
+var WX=null,WXLIVE=false,loc=null;
+function wxURL(lat,lng){
+  return "https://api.open-meteo.com/v1/forecast?latitude="+lat.toFixed(3)+"&longitude="+lng.toFixed(3)+
+    "&current=temperature_2m,wind_speed_10m,shortwave_radiation"+
+    "&hourly=temperature_2m,shortwave_radiation,soil_temperature_0cm,wind_speed_10m"+
+    "&timezone=auto&forecast_days=2";
+}
+function fallbackWx(){
+  // 위치가 없으면 태양 고도를 못 구한다. 한국 중앙(36.5N,127.8E)을 기본으로 써서
+  // "낮인데 밤으로 계산해 안전하다고 말하는" 사고를 막는다.
+  var LA=loc?loc.lat:36.5, LN=loc?loc.lng:127.8;
+  var d=new Date(),base=[1,3,9,16,21,25,28,29,24,18,10,3][d.getMonth()],h=[];
+  for(var i=0;i<48;i++){
+    var dt=new Date(d.getFullYear(),d.getMonth(),d.getDate()+(i>=24?1:0),i%24);
+    var alt=solar(LA,LN,dt).alt;
+    h.push({air:Math.round((base+Math.cos((i%24-14.5)/24*2*Math.PI)*5.5)*10)/10,
+      sw:alt>0?Math.round(800*Math.sin(alt*Math.PI/180)):0,wind:1.5,soil:null});
+  }
+  return {hours:h,now:h[d.getHours()]};
+}
+function normWx(j){
+  var H=j.hourly,h=[];
+  for(var i=0;i<H.time.length&&i<48;i++)h.push({
+    air:H.temperature_2m[i], sw:H.shortwave_radiation?H.shortwave_radiation[i]:0,
+    soil:H.soil_temperature_0cm?H.soil_temperature_0cm[i]:null,
+    wind:H.wind_speed_10m?H.wind_speed_10m[i]/3.6:1.5});
+  var c=j.current||{},nh=new Date().getHours();
+  var now={air:c.temperature_2m,sw:c.shortwave_radiation,
+    wind:c.wind_speed_10m!=null?c.wind_speed_10m/3.6:1.5,soil:(h[nh]||{}).soil};
+  if(now.air==null&&h[nh])now=h[nh];
+  return {hours:h,now:now};
+}
+function loadWeather(){
+  if(!loc){WX=fallbackWx();WXLIVE=false;renderHome();return;}
+  var ctl=window.AbortController?new AbortController():null;
+  var to=setTimeout(function(){if(ctl)ctl.abort();},8000);
+  (window.fetch?fetch(wxURL(loc.lat,loc.lng),ctl?{signal:ctl.signal}:{}):Promise.reject())
+    .then(function(r){clearTimeout(to);if(!r.ok)throw 0;return r.json();})
+    .then(function(j){WX=normWx(j);WXLIVE=true;renderHome();})
+    .catch(function(){WX=fallbackWx();WXLIVE=false;renderHome();});
+}
+
+/* ══ 홈 ══ */
+function mainRoute(){
+  var r=null;
+  if(S.mainRoute!=null)r=S.routes.filter(function(x){return x.id===S.mainRoute;})[0];
+  return r||S.routes[0]||null;
+}
+function mySegs(){var r=mainRoute();return(r&&r.segs&&r.segs.length)?r.segs:null;}
+function shadeAt(d){
+  if(!loc)return 0.45;
+  var s=solar(loc.lat,loc.lng,d),sg=mySegs();
+  return sg?shadeRoute(sg,s.alt,s.az):shadeGeneric(s.alt);
+}
+function gradeAt(d,hourIdx){
+  var w=(WX.hours[hourIdx]||WX.now);
+  if(w.air==null)return null;
+  var sh=shadeAt(d);
+  var sun=Math.round(roadTemp(w.air,w.sw||0,w.wind,0,w.soil));
+  var shd=Math.round(roadTemp(w.air,w.sw||0,w.wind,1,w.soil));
+  var mine=Math.round(roadTemp(w.air,w.sw||0,w.wind,sh,w.soil));
+  return {air:w.air,sun:sun,shade:shd,mine:mine,sh:sh,
+    g:Math.max(pawGrade(mine),heatGrade(w.air)),
+    gSun:pawGrade(sun),gShade:pawGrade(shd),gHeat:heatGrade(w.air)};
+}
+/* ══ 꾹꾹로 추천 ══════════════════════════════════════
+   내가 저장한 코스끼리만 비교한다. 새 길을 만들어 주지 않는다 (그게 「그늘로」 영역).
+   점수 = 안전 × (그늘 + 시원함 + 💩 성공률 + 꾹자리 밀도)
+   뒤의 둘은 우리 배변 데이터에서만 나오는 값이다. */
+function spotsOn(r){
+  if(!r||!r.pts||!S.spots.length)return 0;
+  var n=0;
+  for(var i=0;i<S.spots.length;i++){
+    var sp=S.spots[i];
+    for(var j=0;j<r.pts.length;j+=2){
+      if(dist({lat:r.pts[j][0],lng:r.pts[j][1]},sp)<=25){n++;break;}
+    }
+  }
+  return n;
+}
+function distToRoute(r){
+  // 지금 있는 자리에서 코스 출발점까지. 여행 가서 만든 코스가 집에서 추천되면 안 된다.
+  if(!loc||!r||!r.pts||!r.pts.length)return null;
+  return dist(loc,{lat:r.pts[0][0],lng:r.pts[0][1]});
+}
+function farLabel(m){
+  if(m==null)return "";
+  return m<100?"바로 여기":(m<1000?Math.round(m/10)*10+"m":(m/1000).toFixed(1)+"km");
+}
+function poopRate(r){
+  var ws=S.walks.filter(function(w){return w.route===r.id;});
+  if(ws.length<3)return null;                       // 3회는 걸어봐야 말이 된다
+  return ws.filter(function(w){return (w.poops||[]).length>0;}).length/ws.length;
+}
+function scoreRoute(r,d,hour){
+  if(!r.segs||!r.segs.length||!WX||!loc)return null;
+  var sol=solar(loc.lat,loc.lng,d), sh=shadeRoute(r.segs,sol.alt,sol.az);
+  var w=WX.hours[hour]||WX.now;
+  if(w.air==null)return null;
+  var t=Math.round(roadTemp(w.air,w.sw||0,w.wind,sh,w.soil));
+  var g=Math.max(pawGrade(t),heatGrade(w.air));
+  if(g===2)return {r:r,g:g,t:t,sh:sh,far:distToRoute(r),score:0,alt:sol.alt};
+  var far=distToRoute(r);
+  if(far!=null&&far>3000)return null;   // 3km 넘게 떨어진 길은 지금 갈 수 없다
+  var pr=poopRate(r), sp=spotsOn(r), km=Math.max(0.2,r.dist/1000);
+  var sc = sh*40                       // 그늘
+         + Math.max(0,45-t)*1.4        // 시원함
+         + (pr!=null?pr*25:8)          // 💩 성공률 (모르면 중립)
+         + Math.min(20,sp/km*7);       // 꾹자리 밀도 (km당)
+  if(far!=null)sc*=Math.max(0.25,1-Math.max(0,far-300)/2700);  // 300m 넘으면 멀수록 감점
+  if(g===1)sc*=0.55;
+  return {r:r,g:g,t:t,sh:sh,pr:pr,sp:sp,km:km,far:far,score:sc,alt:sol.alt};
+}
+function whyPicked(x,all){
+  var others=all.filter(function(y){return y.r.id!==x.r.id;});
+  function best(f){return others.every(function(y){return f(x)>=f(y);});}
+  if(x.pr!=null&&x.pr>=0.75&&best(function(y){return y.pr==null?0:y.pr;}))
+    return "이 길에서 💩이 제일 잘 나와요";
+  if(x.sh>=0.5&&best(function(y){return y.sh;}))return "지금 그늘이 제일 많아요";
+  if(best(function(y){return y.sp/y.km;})&&x.sp>=3)return "꾹자리가 촘촘한 길이에요";
+  if(best(function(y){return -y.t;}))return "지금 바닥이 제일 시원해요";
+  return "지금은 이 길이 제일 나아요";
+}
+function setStartBtn(hasPick){
+  var b=$("start");
+  b.className=hasPick?"big ghost":"big";
+  b.textContent=hasPick?"다른 길로 그냥 시작":"🐾 산책 시작";
+}
+function renderPick(){
+  var el=$("pickcard");
+  if(!S.routes.length||!WX||!loc){el.innerHTML="";setStartBtn(false);return;}
+  var d=new Date(),hour=d.getHours();
+  var all=S.routes.map(function(r){return scoreRoute(r,d,hour);}).filter(Boolean);
+  if(!all.length){
+    if(S.routes.length){
+      el.innerHTML='<div class="pick warn"><div class="k">오늘의 꾹꾹로</div>'+
+        '<div class="why" style="margin-top:8px">지금 자리에서 3km 안에 저장된 꾹꾹로가 없어요.<br>여기서 걷고 새로 만들면 됩니다.</div></div>';
+    } else el.innerHTML="";
+    setStartBtn(false);return;
+  }
+  all.sort(function(a,b){return b.score-a.score;});
+  var x=all[0];
+  if(x.score<=0){                                   // 전부 위험
+    el.innerHTML='<div class="pick warn"><div class="k">오늘의 꾹꾹로</div>'+
+      '<div class="why" style="margin-top:8px">지금은 어느 길도 안전하지 않아요. 위 시각을 기다리세요.</div></div>';
+    setStartBtn(false);
+    return;
+  }
+  el.innerHTML='<div class="pick'+(x.g===1?' warn':'')+'">'+
+    '<div class="k">오늘의 꾹꾹로</div>'+
+    '<div class="n">'+esc(x.r.name)+'<span>'+(x.far!=null?'📍 '+farLabel(x.far)+' · ':'')+x.km.toFixed(2)+'km</span></div>'+
+    '<div class="why">'+whyPicked(x,all)+'</div>'+
+    '<div class="meta">'+(x.alt<3?"해 없음":"그늘 "+Math.round(x.sh*100)+"%")+' · 노면 '+x.t+'℃'+
+      (x.pr!=null?' · 💩 성공률 '+Math.round(x.pr*100)+'%':'')+
+      (x.sp?' · 꾹자리 '+x.sp+'곳':'')+
+      (all.length>1?'<br>내 꾹꾹로 '+all.length+'개 중에서 골랐어요':'')+
+    '</div>'+
+    '<button class="go" data-goid="'+x.r.id+'">이 길로 산책 시작</button></div>';
+  setStartBtn(true);
+}
+$("pickcard").addEventListener("click",function(e){
+  var b=e.target.closest("[data-goid]");if(!b)return;
+  startWalk(+b.dataset.goid);
+});
+
+function renderHome(){
+  if(!WX)return;
+  var el=$("light");
+  // 위치가 없으면 바닥 온도를 계산할 수 없다. 숫자도 안전 판정도 내지 않는다.
+  if(!loc){
+    el.className="light none";
+    $("l-dot").textContent="📍";
+    $("l-h").textContent="위치를 켜주세요";
+    $("l-why").textContent="지금 있는 자리를 알아야 바닥 온도를 계산할 수 있어요";
+    $("l-side").style.display="none";
+    $("l-when").style.display="";
+    $("l-when").innerHTML='<b id="fixloc" style="cursor:pointer;text-decoration:underline">위치 허용하기</b>'+
+      ' · <b id="manloc" style="cursor:pointer;text-decoration:underline">동네 직접 고르기</b>'+
+      '<br><b id="diag" style="cursor:pointer;text-decoration:underline;font-size:11.5px;opacity:.8">왜 안 되는지 보기</b>';
+    var fx=$("fixloc");
+    if(fx)fx.addEventListener("click",function(){
+      getLoc(function(p){if(p){loc=p;delete S.manual;save();loadWeather();}
+        else toast("위치를 켤 수 없어요 · 동네를 직접 골라보세요");});});
+    var mn=$("manloc");
+    if(mn)mn.addEventListener("click",openCity);
+    var dg=$("diag");
+    if(dg)dg.addEventListener("click",function(){
+      this.outerHTML='<span style="font-size:11.5px;opacity:.85;display:block;margin-top:6px;line-height:1.6">'+
+        diagText()+'</span>';
+    });
+    $("sig").style.display="";
+    $("pickcard").innerHTML="";setStartBtn(false);
+    $("homenote").innerHTML="위치 없이도 꾹·💩 기록은 됩니다. 나가기 전에 <b>손등을 바닥에 5초</b> 대보세요.";
+    return;
+  }
+  var d=new Date(),now=d.getHours(),c=gradeAt(d,now);
+  if(!c){return;}
+  // 그늘로 걸었을 때의 종합 등급. 이게 1 이하로 내려갈 때만 "그늘로만" 문구를 쓴다.
+  var gInShade=Math.max(c.gShade,c.gHeat);
+  var shadeSaves=(c.g>0 && c.gShade<c.gSun && gInShade<=1);
+  var shown=shadeSaves?Math.max(1,gInShade):c.g;
+  el.className="light "+["safe","warn","dang"][shown];
+  $("l-dot").textContent=LIGHT[shown].dot;
+  $("l-h").textContent=shadeSaves?"그늘로만 걸으세요":LIGHT[c.g].h;
+  $("l-why").textContent="양지 "+c.sun+"℃ · 그늘 "+c.shade+"℃ · 기온 "+Math.round(c.air)+"℃";
+
+  var when=$("l-when"),safeFrom=null,safeTm=false,best=null,bestTm=false,bs=-1;
+  for(var i=now+1;i<now+24;i++){                 // 자정을 넘겨 24시간 앞까지 본다
+    var tm=i>=24, hh=i%24;
+    var dt=new Date(d.getFullYear(),d.getMonth(),d.getDate()+(tm?1:0),hh);
+    var x=gradeAt(dt,i<WX.hours.length?i:hh);
+    if(!x)continue;
+    if(safeFrom===null&&x.g===0){safeFrom=hh;safeTm=tm;}
+    var sc=x.g===2?0:(100-x.mine)*(x.g===1?0.5:1)*((hh<5||hh>22)?0.6:1);
+    if(sc>bs){bs=sc;best=hh;bestTm=tm;}
+  }
+  if(c.g>0&&safeFrom!=null){when.style.display="";
+    when.innerHTML=(safeTm?"내일 ":"")+"<b>"+safeFrom+"시</b>부터 괜찮아져요";}
+  else if(c.g===0&&best!=null&&bs>0){when.style.display="";
+    when.innerHTML="더 좋은 시간은 "+(bestTm?"내일 ":"")+"<b>"+best+"시</b>예요";}
+  else when.style.display="none";
+
+  var sun=loc?solar(loc.lat,loc.lng,d):{alt:-1,az:0};
+  var side=$("l-side");
+  if(sun.alt>5&&(c.sun-c.shade)>=5){
+    side.style.display="";
+    side.innerHTML="해가 "+COMPASS[Math.round((sun.az/45))%8]+"쪽에 있어요 · <b>길 "+shadeSide(sun.az)+"쪽</b>에 붙어 걸으세요";
+  } else side.style.display="none";
+  $("sig").style.display=c.g>0?"":"none";
+  renderPick();
+  $("homenote").innerHTML=(S.manual
+      ? "📍 <b>"+(S.manual.label||"직접 넣은 좌표")+"</b> 기준이에요 (GPS 아님) · 경로·꾹자리는 기록되지 않아요 · "+
+        "<b id=\"chgloc\" style=\"cursor:pointer;text-decoration:underline\">동네 바꾸기</b> · "+
+        "<b id=\"regps\" style=\"cursor:pointer;text-decoration:underline\">GPS 다시</b><br>"
+      : "")+
+    (WXLIVE
+    ? "기온·일사량 자동 연동 (Open-Meteo). "
+    : "날씨 서버에 연결 못 해 계절·시간으로 <b>추정</b>했어요. ")+
+    "바닥 온도는 <b>추정값</b>이에요 — 나가기 전 손등을 바닥에 5초 대보세요.";
+  var cg=$("chgloc"); if(cg)cg.addEventListener("click",openCity);
+  var rg=$("regps");  if(rg)rg.addEventListener("click",function(){
+    toast("위치 확인 중…");
+    getLoc(function(p){
+      if(p){loc=p;delete S.manual;save();loadWeather();toast("GPS로 바꿨어요");}
+      else toast("아직 위치를 못 받아요");
+    });
+  });
+}
+
+/* ══ 위치 ══ */
+function dist(a,b){var R=6371000,p=Math.PI/180;
+  var dl=(b.lat-a.lat)*p,dg=(b.lng-a.lng)*p,la=a.lat*p,lb=b.lat*p;
+  var x=Math.sin(dl/2)*Math.sin(dl/2)+Math.cos(la)*Math.cos(lb)*Math.sin(dg/2)*Math.sin(dg/2);
+  return 2*R*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
+var LOCERR=null;   // 왜 위치를 못 받았는지
+function diagText(){
+  var inIframe=false; try{inIframe=(window.self!==window.top);}catch(e){inIframe=true;}
+  var parts=[];
+  parts.push(inIframe?"이 앱이 다른 페이지 안에 들어가 있어요(iframe)":"단독 페이지");
+  parts.push(window.isSecureContext?"보안 연결 OK":"보안 연결 아님");
+  if(!navigator.geolocation)parts.push("이 브라우저에 위치 기능 없음");
+  if(LOCERR)parts.push(LOCERR);
+  if(inIframe)parts.push("→ 이 경우 아이폰 설정을 켜도 위치가 전달되지 않습니다");
+  return parts.join(" · ");
+}
+function getLoc(cb){
+  // 브라우저가 성공도 실패도 응답하지 않는 경우가 있다(권한 프롬프트가 안 뜨는 iframe 등).
+  // 그대로 두면 온보딩에서 영영 멈춘다. 우리 쪽 시계로도 끊는다.
+  if(!navigator.geolocation){cb(null);return;}
+  var done=false;
+  var to=setTimeout(function(){ if(!done){done=true;LOCERR="응답 없음(브라우저가 아무 답도 안 함)";cb(null);} },7000);
+  try{
+    navigator.geolocation.getCurrentPosition(
+      function(p){ if(done)return; done=true; clearTimeout(to);
+        cb({lat:p.coords.latitude,lng:p.coords.longitude}); },
+      function(e){ if(done)return; done=true; clearTimeout(to);
+        LOCERR = e&&e.code===1 ? "권한 거부됨(code 1)"
+               : e&&e.code===2 ? "위치를 못 잡음(code 2)"
+               : e&&e.code===3 ? "시간 초과(code 3)" : "알 수 없는 오류";
+        cb(null); },
+      {enableHighAccuracy:false,timeout:6000,maximumAge:600000});
+  }catch(e){ if(!done){done=true;clearTimeout(to);cb(null);} }
+}
+
+/* ══ 온보딩 ══ */
+function step(n){document.querySelectorAll(".step").forEach(function(s){s.classList.remove("on");});
+  $("st"+n).classList.add("on");window.scrollTo(0,0);}
+document.querySelectorAll("[data-go]").forEach(function(b){b.addEventListener("click",function(){step(+b.dataset.go);});});
+document.querySelectorAll("[data-sso]").forEach(function(b){b.addEventListener("click",function(){
+  S.user={via:b.dataset.sso,at:Date.now()};save();step(2);});});
+var avaSel="🐕";
+press($("avapick"),function(b){avaSel=b.textContent;});
+$("f-brachy").addEventListener("click",function(){
+  this.setAttribute("aria-pressed",this.getAttribute("aria-pressed")==="true"?"false":"true");checkDog();});
+function checkDog(){
+  var kg=parseFloat($("f-weight").value);
+  $("dogNext").disabled=!($("f-name").value.trim()&&kg>0);
+  if(kg>0){
+    var c=sizeClass(kg),nm={small:"소형견",medium:"중형견",large:"대형견"}[c];
+    var th=c==="small"?{w:48,d:54}:c==="large"?{w:44,d:50}:{w:46,d:52};
+    var br=$("f-brachy").getAttribute("aria-pressed")==="true";
+    $("sizehint").innerHTML="<b>"+nm+"</b> · 바닥 "+th.w+"℃부터 주의, "+th.d+"℃부터 위험"+
+      ((br||kg>=50)?"<br>열사병 기준을 한 단계 올렸어요":"");
+  }
+}
+$("f-name").addEventListener("input",checkDog);
+$("f-weight").addEventListener("input",checkDog);
+$("dogNext").addEventListener("click",function(){
+  S.dog={ava:avaSel,name:$("f-name").value.trim(),kg:parseFloat($("f-weight").value),
+    brachy:$("f-brachy").getAttribute("aria-pressed")==="true"};
+  save();step(3);});
+$("askperm").addEventListener("click",function(){
+  var btn=this; btn.disabled=true; btn.textContent="위치 확인 중…";
+  getLoc(function(p){
+    loc=p; btn.disabled=false; btn.textContent="위치 허용하고 시작";
+    enterMain(); loadWeather();
+    if(!p)toast("위치를 못 받았어요 · 동네를 직접 고를 수 있어요");
+  });
+});
+$("skipperm").addEventListener("click",function(){enterMain();loadWeather();});
+
+/* ══ 진입 ══ */
+function enterMain(){
+  $("onb").classList.remove("on");$("main").classList.add("on");$("tabs").classList.add("on");
+  var d=new Date();
+  $("today").textContent=(d.getMonth()+1)+"월 "+d.getDate()+"일 "+"일월화수목금토"[d.getDay()];
+  $("hdr").textContent=S.dog?S.dog.ava+" "+S.dog.name:"꾹꾹꾹";
+  renderLog();renderParty();
+  if(!WX){WX=fallbackWx();WXLIVE=false;renderHome();}   // 위치를 기다리는 동안 화면을 비워두지 않는다
+  if(S.live&&S.live.start)begin(S.live);
+}
+function boot(){
+  if(typeof S.K==="number"&&S.K>0&&S.K<0.12)K_ROAD=S.K;
+  if(S.manual&&S.manual.lat!=null)loc={lat:S.manual.lat,lng:S.manual.lng};
+  if(S.user&&S.dog){enterMain();getLoc(function(p){loc=p;loadWeather();});}
+  else $("onb").classList.add("on");
+}
+
+/* ══ 산책 ══ */
+var W=null,watchId=null,lastFix=null,timer=null;
+function gauge(w){
+  return (w.poops.length?30:0)+Math.min(25,w.kkuks.length*5)+
+    Math.min(20,Math.round(w.sniff/1000/300*20))+
+    Math.min(15,Math.round(w.dist/2000*15))+(w.newSpot?10:0);
+}
+function gmsgOf(t){var n=S.dog?S.dog.name:"우리 아이";
+  return t>=90?n+" 완전 만족 😌":t>=70?"거의 다 됐어요":t>=40?n+" 아직 안 끝났대요 🐾":t>=10?"이제 시작이에요":"이제 막 나왔네요";}
+function tick(){
+  if(!W)return;
+  var wn=$("gwarn");
+  if(!navigator.geolocation) wn.textContent="이 기기는 GPS가 없어요 · 꾹·💩 기록은 됩니다";
+  else if(!lastFix) wn.textContent="GPS 잡는 중…";
+  else{
+    var gp=(Date.now()-lastFix.t)/1000;
+    wn.textContent = gp>60
+      ? "다른 앱 보는 중엔 경로가 안 그려져요 · 꾹·💩은 그대로 기록돼요"
+      : (W.gaps?"끊긴 구간 "+W.gaps+"곳 — 그 사이 경로는 비어 있어요":"");
+  }
+  var g=gauge(W);
+  $("gnum").textContent=g;
+  $("gring").setAttribute("stroke-dashoffset",(615.8*(1-g/100)).toFixed(1));
+  $("gmsg").textContent=gmsgOf(g);
+  $("w-time").textContent=ms2t(Date.now()-W.start);
+}
+function startGPS(){
+  if(!navigator.geolocation)return;
+  watchId=navigator.geolocation.watchPosition(function(p){
+    var f={lat:p.coords.latitude,lng:p.coords.longitude,t:Date.now(),acc:p.coords.accuracy};
+    if(f.acc>60)return;
+    if(!loc||S.manual){loc=f;if(S.manual){delete S.manual;save();}loadWeather();}
+    var gapFlag=false;
+    if(lastFix){
+      var dd=dist(lastFix,f),dt=(f.t-lastFix.t)/1000;
+      if(dt>45){
+        // 다른 앱을 보는 동안 끊긴 구간. 직선으로 이어붙이면 거리가 부풀거나
+        // 차를 타면 엉망이 된다. 걷는 속도(2.0m/s) 이하일 때만 인정한다.
+        gapFlag=true; W.gaps=(W.gaps||0)+1;
+        if(dd/dt<=2.0)W.dist+=dd;
+      }
+      else if(dd>2.5)W.dist+=dd;
+      else W.sniff+=Math.min(dt,20)*1000;
+    }
+    lastFix=f;
+    W.pts.push(gapFlag?[+f.lat.toFixed(6),+f.lng.toFixed(6),1]:[+f.lat.toFixed(6),+f.lng.toFixed(6)]);
+    tick();S.live=W;save();
+  },function(){},{enableHighAccuracy:true,maximumAge:3000,timeout:20000});
+}
+/* iOS Safari는 화면이 꺼지거나 앱이 뒤로 가면 GPS를 끊는다.
+   화면 잠금을 붙잡아 두고, 돌아왔을 때 다시 잡는다. 그래도 끊기면 솔직히 말한다. */
+var wake=null;
+function holdScreen(){
+  if(!navigator.wakeLock||!navigator.wakeLock.request)return;
+  navigator.wakeLock.request("screen").then(function(s){wake=s;}).catch(function(){});
+}
+document.addEventListener("visibilitychange",function(){
+  if(document.visibilityState==="visible"&&W){
+    holdScreen();
+    if(watchId==null)startGPS();     // iOS는 뒤로 가면 watch를 죽인다. 돌아오면 다시 건다
+    tick();
+  }
+});
+function begin(w){
+  W=w;tab("walk");startGPS();tick();
+  clearInterval(timer);timer=setInterval(tick,1000);
+  holdScreen();
+}
+function startWalk(routeId){
+  begin({start:Date.now(),dist:0,sniff:0,pts:[],poops:[],kkuks:[],newSpot:false,
+         route:(routeId!=null?routeId:null)});
+  S.live=W;save();
+  if(routeId!=null){
+    var r=S.routes.filter(function(x){return x.id===routeId;})[0];
+    if(r)toast("「"+r.name+"」로 시작했어요");
+  }
+}
+$("start").addEventListener("click",function(){startWalk(null);});
+$("stop").addEventListener("click",function(){
+  if(!W)return;
+  clearInterval(timer);
+  if(watchId!=null){navigator.geolocation.clearWatch(watchId);watchId=null;}
+  var g=gauge(W);W.end=Date.now();W.gauge=g;
+  // 꾹꾹로는 자동으로 만들지 않는다. 기록에서 불러와 직접 다듬어 만든다.
+  S.walks.unshift(W);
+  S.walks=S.walks.slice(0,100);
+  S.walks.forEach(function(w,i){ if(i>=30) delete w.pts; });   // 최근 30개만 좌표를 들고 있는다
+  S.live=null;
+  var ok=save();
+  var hadPts=(W.pts||[]).length>4;
+  W=null;lastFix=null;
+  tab("home");renderLog();renderHome();
+  toast(ok?("꾹게이지 "+g+(hadPts?" · 기록 → 꾹꾹로에서 코스로 만들 수 있어요":" · 기록했어요"))
+          :"저장 공간이 꽉 찼어요 · 기록을 복사해 두세요");
+});
+function routeName(){
+  var h=new Date().getHours();
+  var base=(h<7?"새벽":h<11?"아침":h<17?"낮":h<21?"저녁":"밤")+"코스";
+  var used={};S.routes.forEach(function(r){used[r.name]=1;});
+  if(!used[base])return base;
+  for(var i=2;i<50;i++)if(!used[base+" "+i])return base+" "+i;
+  return base;
+}
+
+/* ══ 꾹 ══ */
+function withFreshFix(cb){
+  // 다른 앱을 보다 돌아와 버튼을 누르면 lastFix가 낡아 있다. 그 자리에서 한 번 더 잡는다.
+  if(lastFix&&(Date.now()-lastFix.t)<30000){cb(lastFix);return;}
+  if(!navigator.geolocation){cb(lastFix);return;}
+  var done=false;
+  var to=setTimeout(function(){if(!done){done=true;cb(lastFix);}},4000);
+  navigator.geolocation.getCurrentPosition(function(pp){
+    if(done)return;done=true;clearTimeout(to);
+    var f={lat:pp.coords.latitude,lng:pp.coords.longitude,t:Date.now(),acc:pp.coords.accuracy};
+    if(f.acc<=80)lastFix=f;
+    cb(lastFix);
+  },function(){if(!done){done=true;clearTimeout(to);cb(lastFix);}},
+   {enableHighAccuracy:true,timeout:4000,maximumAge:10000});
+}
+$("b-pee").addEventListener("click",function(){
+  if(!W)return;
+  withFreshFix(recordPee);
+});
+function recordPee(p){
+  var msg="꾹 기록";
+  if(p){var f=null;
+    for(var i=0;i<S.spots.length;i++)if(dist(S.spots[i],p)<=8){f=S.spots[i];break;}
+    if(f){f.n++;f.last=Date.now();
+      f.lat=(f.lat*(f.n-1)+p.lat)/f.n;f.lng=(f.lng*(f.n-1)+p.lng)/f.n;
+      msg="단골 꾹자리 "+f.n+"번째";}
+    else{S.spots.push({lat:p.lat,lng:p.lng,n:1,first:Date.now(),last:Date.now()});
+      W.newSpot=true;msg="새 꾹자리 🐾";}}
+  W.kkuks.push({t:Date.now(),lat:p?p.lat:null,lng:p?p.lng:null});
+  S.live=W;save();tick();toast(msg);
+}
+
+/* ══ 💩 ══ */
+var pf=3,podd=false;
+$("b-poop").addEventListener("click",function(){
+  if(!W)return;
+  pf=3; podd=false;                                  // 매번 초기화
+  Array.prototype.forEach.call($("firm").querySelectorAll("button"),function(b){
+    b.setAttribute("aria-pressed", b.dataset.v==="3"?"true":"false"); });
+  $("odd").setAttribute("aria-pressed","false");
+  $("bloodwarn").classList.remove("on");
+  $("sheet").classList.add("on");
+});
+$("cancelpoop").addEventListener("click",function(){$("sheet").classList.remove("on");});
+$("sheet").addEventListener("click",function(e){if(e.target===this)this.classList.remove("on");});
+press($("firm"),function(b){pf=+b.dataset.v;});
+$("odd").addEventListener("click",function(){
+  podd=this.getAttribute("aria-pressed")!=="true";
+  this.setAttribute("aria-pressed",podd?"true":"false");
+  $("bloodwarn").classList.toggle("on",podd);});
+$("savepoop").addEventListener("click",function(){
+  if(!W)return;
+  var tt=Date.now(),ff=pf,oo=podd;
+  $("sheet").classList.remove("on");
+  withFreshFix(function(p){
+    W.poops.push({t:tt,f:ff,odd:oo,col:true,lat:p?p.lat:null,lng:p?p.lng:null});
+    S.live=W;save();tick();
+    toast(oo?"기록했어요 · 병원에 보여주세요":"💩 기록했어요");
+  });
+});
+
+/* ══ 기록 ══ */
+function pathSVG(pts,H){
+  if(!pts||pts.length<2)return"";
+  var la=pts.map(function(p){return p[0];}),lo=pts.map(function(p){return p[1];});
+  var mila=Math.min.apply(null,la),mala=Math.max.apply(null,la);
+  var milo=Math.min.apply(null,lo),malo=Math.max.apply(null,lo);
+  var rla=Math.max(mala-mila,1e-5),rlo=Math.max(malo-milo,1e-5),W2=420,pd=11;
+  var sc=Math.min((W2-pd*2)/rlo,(H-pd*2)/rla),ox=(W2-rlo*sc)/2,oy=(H-rla*sc)/2;
+  var P=pts.map(function(p){return[(p[1]-milo)*sc+ox,H-((p[0]-mila)*sc+oy)];});
+  return '<svg viewBox="0 0 '+W2+' '+H+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%">'+
+    '<path d="'+P.map(function(p,i){return((i===0||pts[i][2]===1)?"M":"L")+p[0].toFixed(1)+" "+p[1].toFixed(1);}).join(" ")+
+    '" fill="none" stroke="var(--brand)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+/* ── 코스별 최적 시각 ── */
+function routeBest(r){
+  if(!r||!r.segs||!r.segs.length||!WX||!loc)return null;
+  var d=new Date(),best=null,bs=-1,bsh=0,balt=0;
+  for(var h=0;h<24;h++){
+    var dt=new Date(d.getFullYear(),d.getMonth(),d.getDate(),h),sol=solar(loc.lat,loc.lng,dt);
+    var sh=shadeRoute(r.segs,sol.alt,sol.az),w=WX.hours[h]||WX.now;
+    if(w.air==null)continue;
+    var t=roadTemp(w.air,w.sw||0,w.wind,sh,w.soil);
+    var g=Math.max(pawGrade(Math.round(t)),heatGrade(w.air));
+    var sc=g===2?0:(100-t)*(g===1?0.5:1)*((h<5||h>22)?0.6:1);
+    if(sc>bs){bs=sc;best=h;bsh=sh;balt=sol.alt;}
+  }
+  return best==null?null:{h:best,sh:bsh,alt:balt};
+}
+
+/* ── 꾹꾹로 목록 ── */
+function renderRoutes(){
+  var el=$("routelist"),mr=mainRoute();
+  if(!S.routes.length){
+    el.innerHTML='<div class="card"><div class="empty">아직 꾹꾹로가 없어요<br>위 버튼으로 걸었던 기록에서 만들어 보세요</div></div>';
+    return;
+  }
+  el.innerHTML=S.routes.map(function(r){
+    var b=routeBest(r),isMain=mr&&mr.id===r.id;
+    return '<button class="rcard'+(isMain?' main':'')+'" data-rid="'+r.id+'">'+
+      '<div class="rtop"><span class="n">'+esc(r.name)+'</span>'+
+      (isMain?'<span class="pill p-brand">기본</span>':'<span class="mono" style="font-size:12px;color:var(--ink-3)">'+(r.dist/1000).toFixed(2)+'km</span>')+
+      '</div><div class="mini" style="height:76px;margin-bottom:10px">'+pathSVG(r.pts,76)+'</div>'+
+      (b?'<div style="font-size:13.5px;color:var(--ink-2)">이 길은 <b>'+b.h+'시</b>가 가장 시원해요 · '+
+        (b.alt<3?'해 없음':'그늘 '+Math.round(b.sh*100)+'%')+'</div>':
+        '<div style="font-size:13px;color:var(--ink-3)">날씨를 받으면 시원한 시각이 나와요</div>')+
+      '<div class="src" style="margin-top:7px">'+(r.dist/1000).toFixed(2)+'km · '+r.segs.length+'구간'+
+        (function(){var pr=poopRate(r),sp=spotsOn(r),fa=distToRoute(r);
+          return (fa!=null?' · 📍 '+farLabel(fa):'')+
+                 (pr!=null?' · 💩 '+Math.round(pr*100)+'%':'')+(sp?' · 꾹자리 '+sp+'곳':'');})()+
+        ' · 눌러서 이름 바꾸기</div>'+
+      '</button>';
+  }).join("");
+}
+function esc(x){return String(x).replace(/[&<>"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];});}
+
+/* ── 산책 목록 ── */
+function renderWalks(){
+  var wl=$("walklist");
+  wl.innerHTML=!S.walks.length?'<div class="empty">아직 기록이 없어요</div>':
+    S.walks.slice(0,30).map(function(w){var t=new Date(w.start);
+      return '<div class="row tap" data-wid="'+w.start+'"><div class="ic">🐾</div><div class="tx">'+
+        '<div class="a">꾹게이지 '+(w.gauge||0)+' · '+(w.dist/1000).toFixed(2)+'km</div>'+
+        '<div class="b">💧 '+(w.kkuks||[]).length+' · 💩 '+(w.poops||[]).length+' · '+ms2t(w.sniff||0)+' 킁킁</div></div>'+
+        '<div class="rt">'+(t.getMonth()+1)+'/'+t.getDate()+'<br>'+pad(t.getHours())+':'+pad(t.getMinutes())+'</div></div>';
+    }).join("");
+}
+
+/* ── 💧·💩 ── */
+var FIRM={2:{e:'🌫',n:'묽음',c:'var(--amber)'},3:{e:'🟤',n:'보통',c:'var(--moss)'},4:{e:'🪨',n:'단단',c:'var(--moss)'}};
+function allPoops(){
+  var a=[];S.walks.forEach(function(w){(w.poops||[]).forEach(function(p){a.push(p);});});
+  return a.sort(function(x,y){return y.t-x.t;});
+}
+function renderPoop(){
+  var d=new Date(),m=d.getMonth(),y=d.getFullYear();
+  var all=allPoops(),month=all.filter(function(p){var t=new Date(p.t);return t.getMonth()===m&&t.getFullYear()===y;});
+  $("m-poop").textContent=month.length;
+  $("m-firm").textContent=month.length?(month.reduce(function(a,b){return a+b.f;},0)/month.length).toFixed(1):"–";
+  $("m-coll").textContent=month.length?Math.round(month.filter(function(p){return p.col;}).length/month.length*100)+"%":"–";
+
+  var last=all.slice(0,14).reverse(),bars=$("firmbars");
+  bars.innerHTML=last.length?last.map(function(p){
+    var f=FIRM[p.f]||FIRM[3];
+    return '<div class="b" style="height:'+(p.f/5*100)+'%;background:'+(p.odd?'var(--clay)':f.c)+'" title="'+f.n+'"></div>';
+  }).join(""):'<div class="empty" style="width:100%">아직 없어요</div>';
+
+  // 묽은 변 연속 확인
+  var run=0;for(var i=0;i<all.length;i++){if(all[i].f<=2)run++;else break;}
+  var odd=all.slice(0,5).filter(function(p){return p.odd;}).length;
+  var note="";
+  if(run>=3)note='<span style="color:var(--clay)">묽은 변이 '+run+'회 연속이에요. 병원에 한번 보여주세요.</span>';
+  else if(odd)note='<span style="color:var(--clay)">최근 5회 중 '+odd+'번 색이 이상했어요.</span>';
+  else if(all.length)note='최근 '+Math.min(14,all.length)+'회 · 평균 굳기 '+
+    (all.slice(0,14).reduce(function(a,b){return a+b.f;},0)/Math.min(14,all.length)).toFixed(1);
+  $("firmnote").innerHTML=note;
+
+  var sl=$("spotlist");
+  sl.innerHTML=!S.spots.length?'<div class="empty">꾹을 기록하면 자리가 생겨요</div>':
+    S.spots.slice().sort(function(a,b){return b.n-a.n;}).slice(0,8).map(function(x,i){
+      return '<div class="row"><div class="ic g">💧</div><div class="tx">'+
+        '<div class="a">꾹자리 '+(i+1)+(x.n>=5?' · 단골':'')+'</div>'+
+        '<div class="b">'+x.lat.toFixed(4)+', '+x.lng.toFixed(4)+'</div></div><div class="rt">'+x.n+'회</div></div>';
+    }).join("");
+}
+
+function renderLog(){
+  $("logsub").textContent=(new Date().getMonth()+1)+"월";
+  renderRoutes();renderWalks();renderPoop();
+  var th=pawTh();
+  $("method").innerHTML="바닥 온도는 기온·일사량·그늘로 <b>추정</b>한 값이고 측정값이 아닙니다. "+
+    "추정식은 서울 실측(나성준 외, 한국환경과학회지 2024)에 맞춰 보정했습니다.<br>"+
+    "발바닥 기준 "+th.warn+"℃ 주의 / "+th.dang+"℃ 위험 — Moritz &amp; Henriques 접촉시간 곡선(사람 피부) 기반. "+
+    "열사병 기준은 미국 기상청 Heat Index를 빌려온 것으로 개 대상 검증값이 아닙니다.";
+}
+
+/* ── 기록 탭 안의 세 칸 ── */
+press($("logtab"),function(b){
+  document.querySelectorAll(".sub-view").forEach(function(x){x.classList.remove("on");});
+  $("lv-"+b.dataset.v).classList.add("on");
+  window.scrollTo(0,0);
+});
+
+/* ── 산책 상세 시트 ── */
+$("walklist").addEventListener("click",function(e){
+  var r=e.target.closest("[data-wid]");if(!r)return;
+  openWalk(+r.dataset.wid);
+});
+var curWalk=null;
+function openWalk(id){
+  var w=S.walks.filter(function(x){return x.start===id;})[0];
+  if(!w)return;
+  curWalk=id;
+  var t=new Date(w.start),mins=Math.round(((w.end||w.start)-w.start)/60000);
+  $("w-head").innerHTML='<h3 style="font-size:19px">'+(t.getMonth()+1)+'월 '+t.getDate()+'일 '+
+    pad(t.getHours())+':'+pad(t.getMinutes())+'</h3>'+
+    '<div style="font-size:12.5px;color:var(--ink-3);margin-top:4px">꾹게이지 '+(w.gauge||0)+
+    ' · '+(w.dist/1000).toFixed(2)+'km · '+mins+'분 · 킁킁 '+ms2t(w.sniff||0)+'</div>';
+  var body="";
+  var ks=w.kkuks||[],ps=w.poops||[];
+  body+='<div class="dsec"><div class="lbl">💧 꾹 '+ks.length+'회</div>';
+  body+=ks.length?ks.map(function(k,i){
+    var tt=new Date(k.t);
+    return '<div class="row"><div class="ic g">💧</div><div class="tx"><div class="a">'+(i+1)+'번째</div>'+
+      '<div class="b">'+(k.lat!=null?k.lat.toFixed(4)+', '+k.lng.toFixed(4):'위치 없음')+'</div></div>'+
+      '<div class="rt">'+pad(tt.getHours())+':'+pad(tt.getMinutes())+'</div></div>';
+  }).join(""):'<div class="empty">이날은 없었어요</div>';
+  body+='</div>';
+  body+='<div class="dsec"><div class="lbl">💩 '+ps.length+'회</div>';
+  body+=ps.length?ps.map(function(x){
+    var tt=new Date(x.t),f=FIRM[x.f]||FIRM[3];
+    return '<div class="row"><div class="ic">'+f.e+'</div><div class="tx"><div class="a">'+f.n+
+      (x.odd?' · <span style="color:var(--clay)">색 이상</span>':'')+'</div>'+
+      '<div class="b">'+(x.col?'수거 완료':'수거 안 함')+'</div></div>'+
+      '<div class="rt">'+pad(tt.getHours())+':'+pad(tt.getMinutes())+'</div></div>';
+  }).join(""):'<div class="empty">이날은 없었어요</div>';
+  body+='</div>';
+  $("w-body").innerHTML=body;
+  $("wsheet").classList.add("on");
+}
+$("w-close").addEventListener("click",function(){$("wsheet").classList.remove("on");});
+$("wsheet").addEventListener("click",function(e){if(e.target===this)this.classList.remove("on");});
+$("w-del").addEventListener("click",function(){
+  if(curWalk==null)return;
+  if(!confirm("이 산책 기록을 지울까요?"))return;
+  S.walks=S.walks.filter(function(x){return x.start!==curWalk;});save();
+  $("wsheet").classList.remove("on");renderLog();toast("지웠어요");
+});
+
+/* ══ 동네 직접 고르기 — GPS가 막힌 기기의 대안 ══════════════════
+   아티팩트가 iframe 안이거나 Safari 위치가 꺼져 있으면 좌표를 못 받는다.
+   그때 기온·일사량·바닥온도만이라도 계산할 수 있게 한다. 경로·꾹자리는 여전히 불가. */
+var CITY=[
+  ["부천",37.5035,126.7660],["원미구",37.4979,126.7830],["중동",37.5045,126.7630],
+  ["상동",37.5040,126.7530],["소사구",37.4820,126.7950],["오정구",37.5330,126.7960],
+  ["인천",37.4563,126.7052],["부평",37.5074,126.7218],["계양",37.5375,126.7376],
+  ["김포",37.6152,126.7156],["광명",37.4786,126.8646],["시흥",37.3800,126.8029],
+  ["안양",37.3943,126.9568],["서울",37.5665,126.9780],["성남",37.4200,127.1265],
+  ["수원",37.2636,127.0286],["고양",37.6584,126.8320],["의정부",37.7381,127.0337],
+  ["대전",36.3504,127.3845],["대구",35.8714,128.6014],["부산",35.1796,129.0756],
+  ["광주",35.1595,126.8526],["울산",35.5384,129.3114],["제주",33.4996,126.5312]
+];
+function applyManual(lat,lng,label){
+  loc={lat:lat,lng:lng};
+  S.manual={lat:lat,lng:lng,label:label||null};save();
+  $("csheet").classList.remove("on");
+  loadWeather();
+  toast((label||"좌표")+" 기준으로 볼게요");
+}
+function openCity(){
+  $("cities").innerHTML=CITY.map(function(c){
+    return '<button data-lat="'+c[1]+'" data-lng="'+c[2]+'">'+c[0]+'</button>';}).join("");
+  $("c-xy").value="";
+  $("csheet").classList.add("on");
+}
+$("cities").addEventListener("click",function(e){
+  var b=e.target.closest("button");if(!b)return;
+  applyManual(+b.dataset.lat,+b.dataset.lng,b.textContent);
+});
+$("c-xy-go").addEventListener("click",function(){
+  var m=($("c-xy").value||"").match(/(-?\d+(?:\.\d+)?)\s*[, ]\s*(-?\d+(?:\.\d+)?)/);
+  if(!m){toast("37.5533, 127.0410 처럼 넣어주세요");return;}
+  var la=+m[1],ln=+m[2];
+  if(la<-90||la>90||ln<-180||ln>180){toast("좌표 범위를 벗어났어요");return;}
+  applyManual(la,ln,null);
+});
+$("c-close").addEventListener("click",function(){$("csheet").classList.remove("on");});
+$("csheet").addEventListener("click",function(e){if(e.target===this)this.classList.remove("on");});
+
+/* ══ 꾹꾹로 만들기 — 기록을 불러와 다듬는다 ══════════════════ */
+var E={walk:null,pts:null,a:0,b:0,clean:true};
+
+function despike(pts){
+  // 앞뒤 점에서 동시에 멀리 떨어진 점 = GPS가 튄 것. 빼도 경로가 끊기지 않는다.
+  if(pts.length<5)return pts.slice();
+  var out=[pts[0]];
+  for(var i=1;i<pts.length-1;i++){
+    var pv=out[out.length-1],nx=pts[i+1],cu=pts[i];
+    var d1=dist({lat:pv[0],lng:pv[1]},{lat:cu[0],lng:cu[1]});
+    var d2=dist({lat:cu[0],lng:cu[1]},{lat:nx[0],lng:nx[1]});
+    var d3=dist({lat:pv[0],lng:pv[1]},{lat:nx[0],lng:nx[1]});
+    if(d1+d2 > d3*3 && d1>25 && d2>25) continue;     // 삼각부등식이 크게 깨지면 이상치
+    out.push(cu);
+  }
+  out.push(pts[pts.length-1]);
+  return out;
+}
+function ePts(){
+  if(!E.pts)return [];
+  var src=E.clean?despike(E.pts):E.pts;
+  var n=src.length;
+  var i0=Math.floor(n*E.a/100), i1=n-Math.floor(n*E.b/100);
+  if(i1-i0<4){ i1=Math.min(n,i0+4); }
+  return src.slice(i0,i1);
+}
+function pathLen(pts){
+  var d=0;
+  for(var i=1;i<pts.length;i++){
+    if(pts[i][2]===1)continue;                 // 끊긴 구간은 실제로 걸은 길이 아니다
+    d+=dist({lat:pts[i-1][0],lng:pts[i-1][1]},{lat:pts[i][0],lng:pts[i][1]});
+  }
+  return d;
+}
+function drawEditor(){
+  var full=E.clean?despike(E.pts):E.pts, keep=ePts();
+  var svg=$("e-map");
+  if(!full||full.length<2){svg.innerHTML="";return;}
+  var la=full.map(function(p){return p[0];}),lo=full.map(function(p){return p[1];});
+  var mila=Math.min.apply(null,la),mala=Math.max.apply(null,la);
+  var milo=Math.min.apply(null,lo),malo=Math.max.apply(null,lo);
+  var rla=Math.max(mala-mila,1e-5),rlo=Math.max(malo-milo,1e-5),W2=420,H2=200,pd=18;
+  var sc=Math.min((W2-pd*2)/rlo,(H2-pd*2)/rla),ox=(W2-rlo*sc)/2,oy=(H2-rla*sc)/2;
+  function xy(p){return [(p[1]-milo)*sc+ox, H2-((p[0]-mila)*sc+oy)];}
+  function d(arr){return arr.map(function(p,i){var q=xy(p);
+    return ((i===0||p[2]===1)?"M":"L")+q[0].toFixed(1)+" "+q[1].toFixed(1);}).join(" ");}
+  var k0=xy(keep[0]),k1=xy(keep[keep.length-1]);
+  svg.innerHTML=
+    '<path d="'+d(full)+'" fill="none" stroke="var(--line)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>'+
+    '<path d="'+d(keep)+'" fill="none" stroke="var(--brand)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>'+
+    '<circle cx="'+k0[0].toFixed(1)+'" cy="'+k0[1].toFixed(1)+'" r="7" fill="var(--moss)"/>'+
+    '<circle cx="'+k1[0].toFixed(1)+'" cy="'+k1[1].toFixed(1)+'" r="7" fill="var(--clay)"/>';
+
+  var segs=segsOf(keep),km=pathLen(keep)/1000;
+  var b=routeBest({segs:segs});
+  var brk=keep.filter(function(p){return p[2]===1;}).length;
+  $("e-stat").innerHTML="남는 길 <b>"+km.toFixed(2)+"km</b> · 점 "+keep.length+"개 · 구간 "+segs.length+"개"+
+    (brk?" · <span style=\"color:var(--amber)\">끊김 "+brk+"곳</span>":"")+
+    (b?"<br>이 길은 <b>"+b.h+"시</b>가 가장 시원해요 · "+(b.alt<3?"해 없음":"그늘 "+Math.round(b.sh*100)+"%"):
+        "<br>날씨를 받으면 시원한 시각이 나와요")+
+    "<br><span style=\"color:var(--ink-3)\">🟢 출발 · 🔴 도착 — 집 앞은 잘라내는 게 좋아요</span>";
+  $("e-alab").textContent=E.a+"%"; $("e-blab").textContent=E.b+"%";
+}
+function openEditor(){
+  var cands=S.walks.filter(function(w){return (w.pts||[]).length>4;}).slice(0,12);
+  var box=$("e-picks");
+  if(!cands.length){
+    box.innerHTML='<div class="empty" style="width:100%">좌표가 남은 산책이 없어요<br>산책을 한 번 하고 오세요</div>';
+    $("e-edit").style.display="none";
+  } else {
+    box.innerHTML=cands.map(function(w,i){
+      var t=new Date(w.start);
+      return '<button data-eid="'+w.start+'" aria-pressed="'+(i===0?"true":"false")+'">'+
+        '<b>'+(t.getMonth()+1)+'/'+t.getDate()+' '+pad(t.getHours())+':'+pad(t.getMinutes())+'</b>'+
+        '<span>'+(w.dist/1000).toFixed(2)+'km · '+w.pts.length+'점</span></button>';
+    }).join("");
+    pickWalk(cands[0].start);
+  }
+  $("esheet").classList.add("on");
+}
+function pickWalk(id){
+  var w=S.walks.filter(function(x){return x.start===id;})[0];
+  if(!w||!w.pts)return;
+  E.walk=id; E.pts=w.pts; E.a=0; E.b=0;
+  $("e-a").value=0; $("e-b").value=0;
+  var t=new Date(w.start);
+  $("e-name").value=(t.getHours()<7?"새벽":t.getHours()<11?"아침":t.getHours()<17?"낮":t.getHours()<21?"저녁":"밤")+"코스";
+  $("e-edit").style.display="";
+  drawEditor();
+}
+$("r-new").addEventListener("click",openEditor);
+$("e-picks").addEventListener("click",function(e){
+  var b=e.target.closest("[data-eid]");if(!b)return;
+  Array.prototype.forEach.call(this.querySelectorAll("button"),function(x){x.setAttribute("aria-pressed","false");});
+  b.setAttribute("aria-pressed","true");
+  pickWalk(+b.dataset.eid);
+});
+$("e-a").addEventListener("input",function(){E.a=+this.value;drawEditor();});
+$("e-b").addEventListener("input",function(){E.b=+this.value;drawEditor();});
+$("e-clean").addEventListener("click",function(){
+  E.clean=this.getAttribute("aria-pressed")!=="true";
+  this.setAttribute("aria-pressed",E.clean?"true":"false");
+  drawEditor();
+});
+$("e-main").addEventListener("click",function(){
+  this.setAttribute("aria-pressed",this.getAttribute("aria-pressed")==="true"?"false":"true");});
+$("e-close").addEventListener("click",function(){$("esheet").classList.remove("on");});
+$("esheet").addEventListener("click",function(e){if(e.target===this)this.classList.remove("on");});
+$("e-save").addEventListener("click",function(){
+  var keep=ePts();
+  if(keep.length<4){toast("너무 많이 잘랐어요");return;}
+  var nm=($("e-name").value.trim()||routeName()).slice(0,20);
+  var used={};S.routes.forEach(function(r){used[r.name]=1;});
+  if(used[nm]){for(var i=2;i<50;i++)if(!used[nm+" "+i]){nm=nm+" "+i;break;}}
+  var id=Date.now();
+  S.routes.unshift({id:id,name:nm,pts:keep,segs:segsOf(keep),dist:pathLen(keep),from:E.walk});
+  S.routes=S.routes.slice(0,12);
+  if($("e-main").getAttribute("aria-pressed")==="true")S.mainRoute=id;
+  if(!save()){toast("저장 공간이 꽉 찼어요");return;}
+  $("esheet").classList.remove("on");
+  $("e-main").setAttribute("aria-pressed","false");
+  renderLog();renderHome();
+  toast("꾹꾹로 「"+nm+"」 만들었어요");
+});
+
+/* ── 꾹꾹로 편집 시트 ── */
+var curRoute=null;
+$("routelist").addEventListener("click",function(e){
+  var b=e.target.closest("[data-rid]");if(!b)return;
+  var id=+b.dataset.rid,r=S.routes.filter(function(x){return x.id===id;})[0];
+  if(!r)return;
+  curRoute=id;
+  $("r-name").value=r.name;
+  var mr=mainRoute();
+  $("r-main").setAttribute("aria-pressed",(mr&&mr.id===id)?"true":"false");
+  $("rsheet").classList.add("on");
+});
+$("r-main").addEventListener("click",function(){
+  this.setAttribute("aria-pressed",this.getAttribute("aria-pressed")==="true"?"false":"true");});
+$("r-close").addEventListener("click",function(){$("rsheet").classList.remove("on");});
+$("rsheet").addEventListener("click",function(e){if(e.target===this)this.classList.remove("on");});
+$("r-save").addEventListener("click",function(){
+  if(curRoute==null)return;
+  var r=S.routes.filter(function(x){return x.id===curRoute;})[0];if(!r)return;
+  var nm=$("r-name").value.trim();
+  if(nm)r.name=nm.slice(0,20);
+  if($("r-main").getAttribute("aria-pressed")==="true")S.mainRoute=curRoute;
+  else if(S.mainRoute===curRoute)delete S.mainRoute;
+  save();$("rsheet").classList.remove("on");renderLog();renderHome();toast("저장했어요");
+});
+$("r-del").addEventListener("click",function(){
+  if(curRoute==null)return;
+  if(!confirm("이 꾹꾹로를 지울까요?"))return;
+  S.routes=S.routes.filter(function(x){return x.id!==curRoute;});
+  if(S.mainRoute===curRoute)delete S.mainRoute;
+  save();$("rsheet").classList.remove("on");renderLog();renderHome();toast("지웠어요");
+});
+
+/* ══ 파티꾹 ══════════════════════════════════════
+   실제 매칭은 서버가 있어야 한다. 지금은 내가 만든 파티만 이 기기에 저장하고,
+   근처 파티는 화면 확인용 예시라고 라벨을 붙여 보여준다. */
+if(!S.parties)S.parties=[];
+var pKind="flash";
+press($("p-kind"),function(b){pKind=b.dataset.v;});
+press($("p-size"),null,true);
+var SIZE_KO={small:"소형",medium:"중형",large:"대형"};
+$("p-new").addEventListener("click",function(){
+  $("p-when").value="";$("p-where").value="";$("p-max").value=4;
+  $("psheet").classList.add("on");});
+$("p-close").addEventListener("click",function(){$("psheet").classList.remove("on");});
+$("psheet").addEventListener("click",function(e){if(e.target===this)this.classList.remove("on");});
+$("p-save").addEventListener("click",function(){
+  var when=$("p-when").value.trim(),where=$("p-where").value.trim();
+  if(!when||!where){toast("언제·어디서는 채워주세요");return;}
+  var sizes=picked($("p-size")).map(function(b){return b.dataset.v;});
+  if(!sizes.length){toast("크기를 하나는 골라주세요");return;}
+  S.parties.unshift({id:Date.now(),kind:pKind,when:when,where:where,sizes:sizes,
+    max:Math.max(2,Math.min(12,parseInt($("p-max").value,10)||4)),
+    route:(mainRoute()||{}).name||null,joined:1});
+  if(!save()){toast("저장 공간이 꽉 찼어요");return;}
+  $("psheet").classList.remove("on");renderParty();toast("파티꾹을 만들었어요");
+});
+var NEARBY=[
+  {kind:"flash",name:"서울숲 한 바퀴 같이 걸어요",when:"오늘 21:30",where:"서울숲 정문 앞",
+   sizes:["medium"],max:4,joined:2,who:"보리(14kg) · 콩이(16kg)"},
+  {kind:"regular",name:"왕십리 밤 산책팟",when:"매주 화·목 22:00",where:"왕십리역 4번 출구",
+   sizes:["medium","large"],max:5,joined:3,who:"4주째 · 멤버 3"}
+];
+function partyCard(p,mineFlag){
+  var kind=p.kind==="flash"?'<span class="pill p-dang">⚡ 번개</span>':'<span class="pill p-brand">🔁 정기</span>';
+  return '<div class="pcard"><div class="ptop">'+kind+
+    '<span style="font-size:11.5px;color:var(--ink-3)">'+esc(p.when)+' · '+p.joined+'/'+p.max+'</span></div>'+
+    '<div class="pn">'+esc(p.name||(p.route?p.route+" 같이 걸어요":"같이 걸어요"))+'</div>'+
+    '<div class="pm">📍 '+esc(p.where)+'<br>'+p.sizes.map(function(x){return SIZE_KO[x];}).join("·")+'견 · 목줄 2m'+
+    (p.who?'<br>'+esc(p.who):'')+'</div>'+
+    (mineFlag?'<div class="pact"><button data-pdel="'+p.id+'">지우기</button></div>'
+             :'<div class="pact"><button disabled style="opacity:.45">참가 신청 (서버 연결 후)</button></div>')+
+    '</div>';
+}
+function renderParty(){
+  $("mine").innerHTML=S.parties.length
+    ? '<div class="lbl" style="margin:0 2px 9px">내가 만든 파티</div>'+S.parties.map(function(p){return partyCard(p,true);}).join("")
+    : '<div class="card"><div class="empty">아직 만든 파티가 없어요</div></div>';
+  $("nearby").innerHTML=NEARBY.map(function(p){return partyCard(p,false);}).join("");
+}
+$("mine").addEventListener("click",function(e){
+  var b=e.target.closest("[data-pdel]");if(!b)return;
+  if(!confirm("이 파티꾹을 지울까요?"))return;
+  var id=+b.dataset.pdel;
+  S.parties=S.parties.filter(function(x){return x.id!==id;});save();renderParty();toast("지웠어요");
+});
+
+$("export").addEventListener("click",function(){
+  var t=JSON.stringify(S);
+  if(navigator.clipboard&&navigator.clipboard.writeText)
+    navigator.clipboard.writeText(t).then(function(){toast("복사했어요");},function(){toast("복사 실패");});
+  else toast("이 브라우저는 복사를 지원하지 않아요");});
+$("reset").addEventListener("click",function(){try{localStorage.removeItem(KEY);}catch(e){}location.reload();});
+
+/* ══ 탭 ══ */
+function tab(v){
+  document.querySelectorAll(".view").forEach(function(x){x.classList.remove("on");});
+  $("v-"+v).classList.add("on");
+  $("tabs").style.display=(v==="walk")?"none":"";
+  document.querySelectorAll("#tabs button").forEach(function(b){b.classList.toggle("on",b.dataset.v===v);});
+  window.scrollTo(0,0);
+}
+document.querySelectorAll("#tabs button").forEach(function(b){
+  b.addEventListener("click",function(){tab(b.dataset.v);
+    if(b.dataset.v==="log"){renderLog();if($("calib").open)renderCalib();}
+    else if(b.dataset.v==="party")renderParty();
+    else renderHome();});});
+boot();
+})();
+</script>
+
+</body>
+</html>
