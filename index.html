@@ -937,7 +937,8 @@ details.calib[open] summary::after{content:" ▴"}
   color:#FFF6EC; font-weight:700; font-size:14px}
 .calib .fit{margin-top:13px; padding-top:13px; border-top:1px solid var(--line); font-size:12.5px; color:var(--ink-2); line-height:1.7}
 .calib .fit b{font-family:"IBM Plex Mono",monospace; color:var(--brand-deep); font-size:15px}
-.calib .mini2{display:flex; gap:7px; margin-top:10px}
+.calib .mini2{display:flex; flex-wrap:wrap; gap:7px; margin-top:10px}
+.calib .mini2 button{min-width:calc(50% - 4px)}
 .calib .mini2 button{flex:1; border:1px solid var(--line); background:var(--panel-2); border-radius:11px;
   padding:10px 0; font-size:12.5px; color:var(--ink-2)}
 .tier2{margin-top:16px;border-top:1px dashed var(--line);padding-top:14px}
@@ -1197,6 +1198,7 @@ details.calib[open] summary::after{content:" ▴"}
         <div class="mini2">
           <button id="c-apply">보정값 적용</button>
           <button id="c-csv">CSV 복사</button>
+          <button id="c-undo">마지막 지우기</button>
           <button id="c-clear">전부 지우기</button>
         </div>
         <p class="src" style="margin-top:11px">양지·아스팔트 기록만 계수 계산에 씁니다. 그늘·보도블록·흙은 참고용으로 따로 모아요.<br>
@@ -2720,6 +2722,110 @@ $("mine").addEventListener("click",function(e){
   if(!confirm("이 파티꾹을 지울까요?"))return;
   var id=+b.dataset.pdel;
   S.parties=S.parties.filter(function(x){return x.id!==id;});save();renderParty();toast("지웠어요");
+});
+
+/* ══ 실측 보정 ══════════════════════════════════════════════════
+   K=0.031은 서울 실측 논문 한 편(나성준 외 2024)에서 뽑은 값이다.
+   부천 이면도로가 그 값과 같으리라는 보장이 없다. 적외선 온도계로 직접 재서
+   자기 동네 계수를 맞출 수 있게 한다. 이건 앱에서 유일하게 "측정"인 부분이다.
+
+   모델:  노면 = 기온 + K × 일사량 × (1−그늘) × 0.92 / (1 + 0.2×풍속)
+   x = 일사량 × (1−그늘) × 0.92 / (1 + 0.2×풍속),  y = 실측 − 기온
+   원점을 지나는 최소제곱  K = Σxy / Σx²
+
+   아스팔트만 계수 보정에 쓴다. 보도블록·흙은 열물성이 달라서 같은 K로 묶으면
+   둘 다 틀린다. 기록은 남기되 적합에서는 뺀다. */
+if(!S.cal)S.cal=[];
+var CSURF="asphalt",CSUN="sun";
+var SURFN={asphalt:"아스팔트",block:"보도블록",soil:"흙·잔디"};
+function calNow(){
+  if(!WX||!loc)return null;
+  var d=new Date(),w=WX.hours[d.getHours()]||WX.now;
+  if(w.air==null)return null;
+  return {air:w.air,sw:w.sw||0,wind:(typeof w.wind==="number"?w.wind:1.5),soil:w.soil,t:Date.now()};
+}
+function calX(r){ return r.sw*(1-(r.sun==="shade"?1:0))*0.92/(1+0.2*r.wind); }
+function calFit(){
+  /* 양지만 적합에 쓴다. 그늘 노면은 K가 아니라 지표온도 하한(soil_temperature_0cm)이
+     지배해서, 그늘 실측을 섞으면 K가 엉뚱하게 끌려간다. 그늘 기록은 참고로만 남긴다. */
+  var rs=S.cal.filter(function(r){return r.surf==="asphalt"&&r.sw>5&&r.sun==="sun";});
+  if(rs.length<3)return {n:rs.length,ready:false};
+  var sxy=0,sxx=0;
+  rs.forEach(function(r){var x=calX(r),y=r.meas-r.air;sxy+=x*y;sxx+=x*x;});
+  if(sxx<=0)return {n:rs.length,ready:false};
+  var k=sxy/sxx;
+  function mae(kk){var e=0;rs.forEach(function(r){e+=Math.abs(r.air+kk*calX(r)-r.meas);});return e/rs.length;}
+  return {n:rs.length,ready:true,k:k,mae:mae(k),maeNow:mae(K_ROAD)};
+}
+function renderCalib(){
+  var now=calNow();
+  $("c-now").innerHTML = now
+    ? "지금 기온 <b>"+now.air+"℃</b> · 일사량 <b>"+Math.round(now.sw)+"</b> W/m² · 바람 <b>"+now.wind.toFixed(1)+"</b> m/s"+
+      "<br>이 조건 추정 노면 — 양지 <b>"+roadTemp(now.air,now.sw,now.wind,0,now.soil)+"℃</b>"+
+      " · 그늘 <b>"+roadTemp(now.air,now.sw,now.wind,1,now.soil)+"℃</b>"
+    : "위치·날씨를 먼저 받아야 해요";
+  var f=calFit(), other=S.cal.length-f.n;
+  if(!S.cal.length){
+    $("c-fit").innerHTML="아직 기록이 없어요. 같은 코스에서 <b>시간대를 바꿔가며 8~15번</b> 재면 계수가 잡힙니다.";
+  } else if(!f.ready){
+    $("c-fit").innerHTML="아스팔트·양지·낮 기록 <b>"+f.n+"</b>개 · 최소 3개는 있어야 계수가 나와요"+
+      (other?"<br><span style=\"opacity:.7\">그 밖의 기록 "+other+"개는 적합에서 뺐어요 (아스팔트·양지·낮만 씁니다)</span>":"");
+  } else {
+    var better=f.mae<f.maeNow;
+    $("c-fit").innerHTML=
+      "아스팔트·양지·낮 기록 <b>"+f.n+"</b>개 → 내 동네 계수 <b>K = "+f.k.toFixed(4)+"</b>"+
+      "<br>평균 오차 — 새 계수 <b>"+f.mae.toFixed(1)+"℃</b> · 지금 쓰는 계수("+K_ROAD.toFixed(4)+") <b>"+f.maeNow.toFixed(1)+"℃</b>"+
+      "<br><span style=\"opacity:.8\">"+
+      (f.n<8 ? "8개는 넘겨야 믿을 만해요. 지금 적용하면 몇 번의 우연에 끌려갑니다."
+             : better ? "새 계수가 더 잘 맞아요. 적용해도 됩니다."
+                      : "새 계수가 더 낫지 않아요. 지금 값을 그대로 두세요.")+"</span>"+
+      (other?"<br><span style=\"opacity:.7\">그 밖의 기록 "+other+"개는 적합에서 뺐어요</span>":"");
+  }
+}
+press($("c-surf"),function(b){CSURF=b.dataset.v;});
+press($("c-sun"),function(b){CSUN=b.dataset.v;});
+$("calib").addEventListener("toggle",function(){ if(this.open)renderCalib(); });
+$("c-add").addEventListener("click",function(){
+  var v=parseFloat($("c-val").value);
+  if(!(v>-20&&v<95)){toast("잰 온도를 넣어주세요");return;}
+  var now=calNow();
+  if(!now){toast("위치·날씨를 먼저 받아야 해요");return;}
+  S.cal.push({t:now.t,air:now.air,sw:now.sw,wind:now.wind,surf:CSURF,sun:CSUN,meas:v});
+  S.cal=S.cal.slice(-200);
+  if(!save()){toast("저장 공간이 꽉 찼어요");return;}
+  $("c-val").value="";
+  renderCalib();
+  toast(SURFN[CSURF]+"·"+(CSUN==="sun"?"양지":"그늘")+" "+v+"℃ 기록 ("+S.cal.length+"개)");
+});
+$("c-apply").addEventListener("click",function(){
+  var f=calFit();
+  if(!f.ready){toast("아스팔트·양지·낮 기록이 3개는 있어야 해요");return;}
+  if(f.n<8&&!confirm("기록이 "+f.n+"개예요. 8개는 넘겨야 믿을 만합니다. 그래도 적용할까요?"))return;
+  if(!(f.k>0.005&&f.k<0.12)){toast("계수가 상식 밖이에요 ("+f.k.toFixed(4)+") · 재보세요");return;}
+  S.K=f.k;K_ROAD=f.k;save();
+  renderCalib();renderHome();
+  toast("K = "+f.k.toFixed(4)+" 적용했어요");
+});
+$("c-csv").addEventListener("click",function(){
+  if(!S.cal.length){toast("기록이 없어요");return;}
+  var head="time,air_C,sw_Wm2,wind_ms,surface,sun,measured_C,x,y";
+  var rows=S.cal.map(function(r){
+    return [new Date(r.t).toISOString(),r.air,Math.round(r.sw),r.wind.toFixed(1),
+      r.surf,r.sun,r.meas,calX(r).toFixed(2),(r.meas-r.air).toFixed(1)].join(",");});
+  var t=[head].concat(rows).join("\n");
+  if(navigator.clipboard&&navigator.clipboard.writeText)
+    navigator.clipboard.writeText(t).then(function(){toast("CSV "+S.cal.length+"줄 복사했어요");},
+                                          function(){toast("복사 실패");});
+  else toast("이 브라우저는 복사를 지원하지 않아요");
+});
+$("c-undo").addEventListener("click",function(){
+  if(!S.cal.length){toast("지울 게 없어요");return;}
+  S.cal.pop();save();renderCalib();toast("마지막 기록을 지웠어요");
+});
+$("c-clear").addEventListener("click",function(){
+  if(!S.cal.length){toast("지울 게 없어요");return;}
+  if(!confirm("실측 기록 "+S.cal.length+"개를 전부 지울까요? 적용한 계수는 그대로 남습니다."))return;
+  S.cal=[];save();renderCalib();toast("실측 기록을 비웠어요");
 });
 
 $("export").addEventListener("click",function(){
