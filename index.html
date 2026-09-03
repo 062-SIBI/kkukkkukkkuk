@@ -980,6 +980,7 @@ details.calib[open] summary::after{content:" ▴"}
 <body>
 
 
+
 <!-- ══════════ 온보딩 ══════════ -->
 <div id="onb">
   <div class="step on" id="st0">
@@ -1780,13 +1781,18 @@ $("pickcard").addEventListener("click",function(e){
    · 국내 개 바베시아 PCR 양성 5.2% (Suh 외 2017, Parasites & Vectors 10:146)
    판정이 아니라 계절 안내다. 겨울 카드와 같은 슬롯을 쓰고, 추우면 겨울이 이긴다. */
 function tickSeason(){
+  /* 5~9월 = 경보 (약충 5월 피크 → 성충 7월 피크 → 유충 8~9월 피크로 이어지는 구간).
+     4·10·11월 = 활동기 한 줄 안내. 12~3월 = 없음.
+     "풀밭 피해서 길 가운데로"는 CDC 공식 권고(walk in the center of trails)라 그대로 쓴다. */
   var m=new Date().getMonth()+1;
   if(m<4||m>11)return null;
-  var peak = (m===5)?"5월은 <b>약충</b>이 가장 많은 달이에요"
-           : (m===7)?"7월은 <b>성충</b>이 가장 많은 달이에요"
-           : (m===8||m===9)?"지금은 <b>유충 피크</b>예요 — 가을 채집 진드기의 86%가 유충입니다"
-           : "진드기 활동기예요 (4~11월)";
-  return peak;
+  var alert=(m>=5&&m<=9);
+  var peak=(m===5)?"5월은 <b>약충</b>이 가장 많은 달이에요"
+        :(m===6)?"약충 피크(5월)와 성충 피크(7월) 사이 — 여름 내내 활발해요"
+        :(m===7)?"7월은 <b>성충</b>이 가장 많은 달이에요"
+        :(m===8||m===9)?"지금은 <b>유충 피크</b>예요 — 가을 채집 진드기의 86%가 유충입니다"
+        :null;
+  return {alert:alert,peak:peak};
 }
 function renderWinter(c){
   var el=$("wintercard");
@@ -1794,19 +1800,26 @@ function renderWinter(c){
   if(!cold){
     var tk=tickSeason();
     if(!tk){ el.innerHTML=""; return; }
-    var nm=S.dog?S.dog.name:"우리 아이";
-    el.innerHTML='<div class="winter">'+
-      '<div class="k">진드기 철 안내 · 4~11월</div>'+
-      '<div class="h">풀숲 다녀오면 한 번 훑어주세요</div>'+
+    if(!tk.alert){
+      el.innerHTML='<div class="winter" style="padding:11px 15px">'+
+        '<div class="k">진드기 활동기 · 4~11월</div>'+
+        '<div style="font-size:13px;color:var(--ink-2);line-height:1.65;margin-top:4px">'+
+        '풀밭 말고 <b>길 가운데</b>로 · 다녀오면 귀 뒤·겨드랑이·발가락 사이를 훑어주세요</div>'+
+        '</div>';
+      return;
+    }
+    el.innerHTML='<div class="winter" style="border-color:var(--amber);background:var(--amber-tint)">'+
+      '<div class="k" style="color:var(--amber)">🕷 진드기 경보 · 5~9월 피크</div>'+
+      '<div class="h">풀밭으로 들어가지 마세요</div>'+
       '<ul>'+
-        '<li>'+tk+'</li>'+
-        '<li>진드기는 <b>풀밭</b>에 제일 많아요 (채집의 48%) · 산길은 12%</li>'+
-        '<li>다녀와서 귀 뒤 · 겨드랑이 · 발가락 사이를 확인하세요</li>'+
+        '<li>'+tk.peak+'</li>'+
+        '<li>진드기의 <b>절반이 풀밭</b>에서 잡혀요 (초지 48% · 산길 12%) — <b>길 가운데</b>로 걸으세요</li>'+
+        '<li>다녀와서 귀 뒤 · 겨드랑이 · 발가락 사이를 훑어주세요</li>'+
         '<li>붙어 있으면 손으로 떼지 말고 핀셋으로 머리 쪽을 잡아 빼거나 병원으로</li>'+
       '</ul>'+
-      '<div class="why">SFTS(중증열성혈소판감소증후군)는 4~11월에 몰리고 사람도 감염됩니다.'+
-      ' 국내 개 바베시아 감염률은 PCR 기준 5.2%였어요.<br>'+
-      '질병관리청 참진드기 감시(2023) · Suh 외 2017. 판정이 아니라 계절 안내입니다.</div>'+
+      '<div class="why">SFTS(사람도 감염)는 4~11월에 몰립니다. 국내 개 바베시아 감염률은 PCR 기준 5.2%.<br>'+
+      '질병관리청 참진드기 감시(2023) · Suh 외 2017 · "길 가운데로"는 CDC 권고.'+
+      ' 위험 점수가 아니라 계절 안내입니다.</div>'+
       '</div>';
     return;
   }
