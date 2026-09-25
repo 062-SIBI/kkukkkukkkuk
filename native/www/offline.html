@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>꾹꾹이</title>
+<style>
+  :root{--bg:#F4F2ED;--ink:#221E19;--ink2:#5B554C;--brand:#A9713F}
+  @media (prefers-color-scheme:dark){:root{--bg:#17150F;--ink:#F1EDE4;--ink2:#B4ACA0;--brand:#D9A06B}}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;text-align:center;padding:24px}
+  svg{width:72px;height:72px}
+  h1{font-size:22px;margin:14px 0 6px}
+  p{color:var(--ink2);font-size:14.5px;line-height:1.6;margin:0 0 22px}
+  button{border:0;border-radius:16px;background:var(--brand);color:#FFF6EC;font-size:17px;font-weight:700;padding:15px 34px}
+  button:active{transform:scale(.97)}
+</style>
+</head>
+<body>
+<div>
+  <svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="22" cy="58" rx="13" ry="16" transform="rotate(-22 22 58)" fill="#FF6B57"/><ellipse cx="50" cy="40" rx="13" ry="16" fill="#EFB02F"/><ellipse cx="78" cy="58" rx="13" ry="16" transform="rotate(22 78 58)" fill="#3B9DF5"/></svg>
+  <h1>인터넷이 끊겼어요</h1>
+  <p>꾹꾹이는 처음 열 때 인터넷이 필요해요.<br>연결되면 아래 버튼을 눌러 주세요.</p>
+  <button id="retry">다시 열기</button>
+</div>
+<script>
+  document.getElementById("retry").addEventListener("click",function(){
+    location.replace("https://062-sibi.github.io/kkukkkukkkuk/");
+  });
+</script>
+</body>
+</html>
