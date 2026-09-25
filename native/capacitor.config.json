@@ -1,0 +1,15 @@
+{
+  "appId": "app.padd.walk",
+  "appName": "꾹꾹이",
+  "webDir": "www",
+  "server": {
+    "url": "https://062-sibi.github.io/kkukkkukkkuk/",
+    "errorPath": "offline.html"
+  },
+  "android": {
+    "useLegacyBridge": true
+  },
+  "plugins": {
+    "LocalNotifications": { "smallIcon": "ic_tracking", "iconColor": "#EFB02F" }
+  }
+}
