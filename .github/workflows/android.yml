@@ -1,0 +1,91 @@
+# 꾹꾹이 안드로이드 APK 빌드
+# - native/ 폴더가 바뀌면 자동으로, 또는 Actions 탭에서 "Run workflow"로 수동 실행
+# - 결과 APK는 Releases에 올라가고, 받는 주소는 항상 같다:
+#   https://github.com/062-SIBI/kkukkkukkkuk/releases/latest/download/kkukkkuki.apk
+# - 서명 키는 저장소 비밀값 ANDROID_SIGNING("비밀번호|base64") 하나. 같은 키로 서명해야
+#   다음 버전을 지우지 않고 덮어 설치할 수 있다. 키 원본은 꾹꾹이_최종/08_배포 폴더에 백업.
+name: Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'native/**'
+      - '.github/workflows/android.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-apk
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: native/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: 앱 껍데기 만들기 (Capacitor)
+        working-directory: native
+        run: |
+          npm ci
+          npx cap add android
+          node scripts/patch-android.js
+          npx cap sync android
+
+      - name: APK 빌드 · 서명
+        working-directory: native/android
+        env:
+          SIGN: ${{ secrets.ANDROID_SIGNING }}
+        run: |
+          if [ -z "$SIGN" ]; then
+            echo "::error::저장소 Settings → Secrets and variables → Actions 에 ANDROID_SIGNING 비밀값을 먼저 넣어 주세요"
+            exit 1
+          fi
+          export KS_PASS="${SIGN%%|*}"
+          echo "::add-mask::$KS_PASS"
+          printf '%s' "${SIGN#*|}" | base64 -d > app/release.p12
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace
+          rm -f app/release.p12
+
+      - name: 파일 이름 붙이기
+        id: meta
+        run: |
+          cp native/android/app/build/outputs/apk/release/app-release.apk kkukkkuki.apk
+          echo "name=$(node -p "require('./native/app-version.json').name")" >> "$GITHUB_OUTPUT"
+          echo "code=$(node -p "require('./native/app-version.json').code")" >> "$GITHUB_OUTPUT"
+          ls -la kkukkkuki.apk
+
+      - name: 릴리스에 올리기
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-${{ steps.meta.outputs.name }}-b${{ github.run_number }}
+          name: 꾹꾹이 ${{ steps.meta.outputs.name }} (빌드 ${{ github.run_number }})
+          make_latest: true
+          files: kkukkkuki.apk
+          body: |
+            꾹꾹이 안드로이드 앱 · 버전 ${{ steps.meta.outputs.name }} (versionCode ${{ steps.meta.outputs.code }})
+            받기: https://github.com/062-SIBI/kkukkkukkkuk/releases/latest/download/kkukkkuki.apk
+            설치 안내: https://062-sibi.github.io/kkukkkukkkuk/download.html
+
+      - name: 요약
+        run: |
+          echo "### 꾹꾹이 APK 준비됨" >> "$GITHUB_STEP_SUMMARY"
+          echo "받기: https://github.com/062-SIBI/kkukkkukkkuk/releases/latest/download/kkukkkuki.apk" >> "$GITHUB_STEP_SUMMARY"
