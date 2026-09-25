@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>꾹꾹이 받기</title>
+<meta name="description" content="우리 개 기준으로 오늘 산책이 충분했는지. 산책이 끝나면 거리, 시간, 꾹게이지를 한 장으로.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="꾹꾹이 · 우리 개 산책, 오늘 충분했을까">
+<meta property="og:description" content="무료, 가입 없음, 기록은 내 폰에만. 안드로이드 앱과 아이폰 웹으로 써요.">
+<meta property="og:url" content="https://062-sibi.github.io/kkukkkukkkuk/download.html">
+<meta property="og:image" content="https://062-sibi.github.io/kkukkkukkkuk/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F4F2ED">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@800;900&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#F4F2ED; --panel:#FFFFFF; --line:#DDD7CC; --ink:#17100A; --ink-2:#5B554C; --ink-3:#8C857A;
+  --acc:#FF6B57; --btn:#17100A; --btn-ink:#FFFFFF; --shadow:0 18px 40px -18px rgba(34,24,10,.45);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#141210; --panel:#1E1B17; --line:#35302A; --ink:#F2EEE6; --ink-2:#BDB5A8; --ink-3:#8A8276;
+  --acc:#FF7D6B; --btn:#F2EEE6; --btn-ink:#17100A; --shadow:0 18px 40px -18px rgba(0,0,0,.8);
+}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans KR",-apple-system,"Apple SD Gothic Neo",sans-serif;
+  line-height:1.6;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:break-word}
+a{color:inherit}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+
+/* 앱 안 브라우저 안내 */
+.inapp{position:sticky;top:0;z-index:10;background:var(--ink);color:var(--bg);padding:12px 20px calc(12px);font-size:14px}
+.inapp[hidden]{display:none}
+.inapp .row{max-width:1040px;margin:0 auto;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.inapp b{font-weight:600}
+.inapp .acts{display:flex;gap:8px}
+.inapp button,.inapp a.b{border:0;border-radius:999px;padding:9px 14px;font:600 13px/1 inherit;background:var(--bg);color:var(--ink);text-decoration:none;white-space:nowrap}
+
+/* 첫 화면 */
+.hero{display:grid;grid-template-columns:1fr;gap:28px;padding:max(28px,env(safe-area-inset-top)) 0 24px}
+.mark{width:64px;height:64px;display:block;margin-left:-4px}
+h1{font-family:Hahmlet,serif;font-weight:900;font-size:clamp(44px,11vw,76px);letter-spacing:-.02em;line-height:1.05;margin:12px 0 10px}
+.sub{font-size:clamp(17px,4.4vw,20px);color:var(--ink-2);max-width:26ch;margin:0 0 24px;text-wrap:balance}
+.cta{display:flex;flex-direction:column;gap:10px;max-width:400px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;border-radius:16px;padding:16px 20px;
+  font-weight:700;font-size:17px;border:1px solid transparent;transition:transform .12s ease-out,background-color .15s ease}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--btn);color:var(--btn-ink);box-shadow:var(--shadow)}
+.btn.ghost{background:transparent;border-color:var(--line);color:var(--ink);font-weight:600;font-size:15px;padding:13px 18px}
+.btn small{font-weight:500;opacity:.7;font-size:13px}
+.fan{position:relative;height:clamp(300px,82vw,440px);max-width:520px;width:100%;margin:0 auto}
+.fan img{position:absolute;top:0;width:44%;aspect-ratio:9/16;height:auto;border-radius:14px;box-shadow:var(--shadow);background:#222}
+.fan .a{left:4%;top:8%;transform:rotate(-8deg)}
+.fan .b{left:28%;z-index:2}
+.fan .c{left:52%;top:8%;transform:rotate(8deg)}
+@media (min-width:880px){
+  .hero{grid-template-columns:1.05fr .95fr;align-items:center;padding:64px 0 40px}
+  .fan{height:470px}
+}
+
+section{padding:40px 0;border-top:1px solid var(--line)}
+h2{font-family:Hahmlet,serif;font-weight:800;font-size:26px;letter-spacing:-.01em;margin:0 0 6px}
+.lead{color:var(--ink-2);margin:0 0 20px;max-width:60ch}
+
+/* 설치 */
+.seg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px;margin-bottom:18px}
+.seg button{border:0;background:none;color:var(--ink-2);font:600 14px/1 inherit;padding:10px 18px;border-radius:999px;cursor:pointer;
+  transition:background-color .15s ease,color .15s ease}
+.seg button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.pane[hidden]{display:none}
+.pane .btn.primary{max-width:400px;margin-bottom:22px}
+ol.steps{list-style:none;counter-reset:s;margin:0;padding:0;max-width:640px}
+ol.steps li{counter-increment:s;position:relative;padding:0 0 18px 44px;color:var(--ink-2)}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+  background:var(--panel);border:1px solid var(--line);display:grid;place-items:center;font-weight:700;font-size:13px;color:var(--ink)}
+ol.steps li b{color:var(--ink);font-weight:600}
+.note{font-size:14px;color:var(--ink-3);max-width:60ch;margin:4px 0 0}
+
+/* 기능 */
+.what{margin:0;padding:0;max-width:640px}
+.what div{display:grid;grid-template-columns:104px 1fr;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+.what div:last-child{border-bottom:0}
+.what dt{font-weight:700}
+.what dd{margin:0;color:var(--ink-2)}
+
+/* 자주 묻는 것 */
+details{border-bottom:1px solid var(--line);max-width:680px}
+summary{cursor:pointer;list-style:none;padding:16px 28px 16px 0;font-weight:600;position:relative}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";position:absolute;right:4px;top:13px;font-size:20px;color:var(--ink-3);transition:transform .2s ease}
+details[open] summary::after{transform:rotate(45deg)}
+details p{margin:0 0 16px;color:var(--ink-2)}
+
+footer{padding:36px 0 calc(40px + env(safe-area-inset-bottom));border-top:1px solid var(--line);color:var(--ink-3);font-size:13px}
+footer .row{display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.qr{display:none;align-items:center;gap:14px}
+.qr svg{width:112px;height:112px;background:#fff;border-radius:10px;padding:6px}
+@media (min-width:880px) and (hover:hover){.qr{display:flex}}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;letter-spacing:.14em;color:var(--ink-2)}
+.brand svg{width:22px;height:22px}
+@media (hover:hover) and (pointer:fine){.btn.primary:hover{filter:brightness(1.12)}.btn.ghost:hover{background:var(--panel)}}
+</style>
+</head>
+<body>
+
+<div class="inapp" id="inapp" hidden>
+  <div class="row">
+    <span id="inapp-msg"><b>앱 안 브라우저에서 열렸어요.</b> 설치는 크롬이나 사파리에서 해 주세요.</span>
+    <span class="acts"><a class="b" id="inapp-open" href="#">크롬으로 열기</a><button id="inapp-copy">링크 복사</button></span>
+  </div>
+</div>
+
+<div class="wrap">
+  <header class="hero">
+    <div>
+      <svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="22" cy="58" rx="13" ry="16" transform="rotate(-22 22 58)" fill="#FF6B57"/><ellipse cx="50" cy="40" rx="13" ry="16" fill="#EFB02F"/><ellipse cx="78" cy="58" rx="13" ry="16" transform="rotate(22 78 58)" fill="#3B9DF5"/></svg>
+      <h1>꾹꾹이</h1>
+      <p class="sub">우리 개 기준으로 오늘 산책이 충분했는지. 끝나면 한 장으로 남겨요.</p>
+      <div class="cta">
+        <a class="btn primary" id="cta-main" href="#install">안드로이드 앱 받기</a>
+        <a class="btn ghost" id="cta-web" href="./?r=dl">설치 없이 웹에서 써 보기</a>
+      </div>
+    </div>
+    <div class="fan" aria-hidden="true">
+      <img class="a" src="img/card-route.jpg" alt="" loading="eager" width="540" height="960">
+      <img class="b" src="img/card-photo.jpg" alt="" loading="eager" width="540" height="960">
+      <img class="c" src="img/card-poster.jpg" alt="" loading="eager" width="540" height="960">
+    </div>
+  </header>
+</div>
+
+<section id="install">
+  <div class="wrap">
+    <h2>설치</h2>
+    <p class="lead">무료, 가입 없음, 기록은 내 폰에만 저장돼요.</p>
+    <div class="seg" role="tablist" aria-label="휴대폰 종류">
+      <button role="tab" id="t-and" aria-selected="true" aria-controls="p-and">안드로이드</button>
+      <button role="tab" id="t-ios" aria-selected="false" aria-controls="p-ios">아이폰</button>
+    </div>
+
+    <div class="pane" id="p-and" role="tabpanel" aria-labelledby="t-and">
+      <a class="btn primary" id="apk" href="https://github.com/062-SIBI/kkukkkukkkuk/releases/latest/download/kkukkkuki.apk">안드로이드 앱 받기 <small>APK</small></a>
+      <ol class="steps">
+        <li><b>위 버튼을 누르면</b> kkukkkuki.apk 파일이 받아져요. 크롬이 확인을 물으면 "다운로드"를 누르세요.</li>
+        <li><b>받은 파일을 열고 설치</b>를 누르세요. 처음이면 "이 출처 허용"을 켜라고 나와요. 켜고 뒤로 가면 설치가 이어져요.</li>
+        <li><b>Play 프로텍트 창이 뜨면</b> "검사 없이 설치" 또는 "무시하고 설치"를 누르세요. 아직 스토어 밖에서 나눠 주는 앱이라 뜨는 창이에요.</li>
+        <li><b>앱을 열고</b> 위치는 "앱 사용 중에만 허용", 알림은 "허용". 알림이 있어야 화면을 꺼도 경로가 이어져요.</li>
+        <li><b>갤럭시라면 한 번만:</b> 설정 → 애플리케이션 → 꾹꾹이 → 배터리 → "제한 없음". 산책 중에 앱이 잠들지 않게 해요.</li>
+      </ol>
+    </div>
+
+    <div class="pane" id="p-ios" role="tabpanel" aria-labelledby="t-ios" hidden>
+      <a class="btn primary" id="ios-open" href="./?r=ios">꾹꾹이 웹앱 열기</a>
+      <ol class="steps">
+        <li><b>사파리에서 여세요.</b> 카카오톡이나 당근 안에서 열었다면 링크를 복사해 사파리에 붙여 넣으세요.</li>
+        <li><b>공유 버튼 → "홈 화면에 추가"</b>를 누르면 앱처럼 아이콘이 생겨요.</li>
+        <li><b>산책할 땐 "🌙 주머니"</b>를 누르고 화면을 켠 채 주머니에 넣으세요. 아이폰 웹은 화면이 꺼지면 위치가 끊겨요. 검은 화면이라 배터리는 적게 들어요.</li>
+      </ol>
+      <p class="note">아이폰 앱은 준비 중이에요. 나오면 이 페이지에 올릴게요.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>이런 걸 해요</h2>
+    <dl class="what">
+      <div><dt>바닥 온도</dt><dd>나가기 전에 아스팔트가 몇 도쯤인지 알려 줘요. 서울 실측 연구로 맞춘 추정값이에요.</dd></div>
+      <div><dt>꾹게이지</dt><dd>우리 개가 평소 걷던 만큼을 100으로 두고 오늘 산책을 점수로 보여 줘요. 남의 개와 비교하지 않아요.</dd></div>
+      <div><dt>꾹카드</dt><dd>산책이 끝나면 거리, 시간, 꾹게이지를 한 장으로. 사진을 넣어도, 안 넣어도 예쁘게 나와요.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>자주 묻는 것</h2>
+    <details><summary>왜 플레이 스토어에 없어요?</summary>
+      <p>지금은 동네 분들과 먼저 써 보는 베타라서 파일로 직접 나눠요. 스토어 등록은 준비하고 있어요.</p></details>
+    <details><summary>안전한가요?</summary>
+      <p>광고도, 추적도 없어요. 산책 기록은 폰 안에만 저장돼요. 날씨와 동네 이름을 받을 때만 대략적인 위치(약 100m 단위)를 날씨·지도 서비스에 보내요.</p></details>
+    <details><summary>산책 중에 알림이 계속 떠 있어요</summary>
+      <p>안드로이드는 화면이 꺼진 동안 위치를 받으려면 알림을 띄워 둬야 해요. 끝내기를 누르면 사라져요.</p></details>
+    <details><summary>웹에서 쓰던 기록을 앱으로 옮기려면?</summary>
+      <p>웹에서 기록 탭 → "기록 내보내기"로 파일을 받고, 앱에서 기록 탭 → "기록 가져오기"로 그 파일을 고르세요.</p></details>
+    <details><summary>업데이트는 어떻게 해요?</summary>
+      <p>화면과 기능은 열 때마다 자동으로 최신이에요. 앱을 새로 받아야 할 때만 앱 첫 화면에 알림이 떠요.</p></details>
+    <details><summary>의견은 어디로 보내요?</summary>
+      <p>앱 기록 탭 맨 아래 "베타 기록 보내기"를 누르면 보낼 글이 만들어져요. 링크를 준 사람에게 카톡으로 보내 주세요. 위치나 경로는 들어가지 않아요.</p></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap row">
+    <span class="brand"><svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="22" cy="58" rx="13" ry="16" transform="rotate(-22 22 58)" fill="#FF6B57"/><ellipse cx="50" cy="40" rx="13" ry="16" fill="#EFB02F"/><ellipse cx="78" cy="58" rx="13" ry="16" transform="rotate(22 78 58)" fill="#3B9DF5"/></svg>PADD</span>
+    <span class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 148" class="qr"><path transform="scale(4)" stroke="#17100a" d="M2 2.5h7m2 0h1m2 0h1m1 0h1m1 0h2m1 0h2m2 0h1m2 0h7m-33 1h1m5 0h1m3 0h2m3 0h2m4 0h2m3 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m2 0h1m1 0h1m3 0h1m2 0h1m1 0h2m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m3 0h1m4 0h3m2 0h1m1 0h1m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m1 0h1m2 0h3m2 0h2m2 0h1m2 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m1 0h1m1 0h2m2 0h1m5 0h2m2 0h1m1 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-25 1h1m1 0h1m3 0h1m1 0h1m3 0h4m-24 1h1m1 0h5m2 0h3m1 0h2m2 0h1m1 0h1m2 0h2m2 0h5m-31 1h2m1 0h1m5 0h5m2 0h5m2 0h1m2 0h2m1 0h4m-33 1h7m3 0h1m2 0h5m4 0h1m3 0h1m1 0h1m1 0h2m-31 1h1m10 0h2m6 0h3m2 0h2m1 0h5m-33 1h2m2 0h4m1 0h1m1 0h1m2 0h1m2 0h1m4 0h3m2 0h3m2 0h1m-32 1h1m1 0h2m5 0h1m1 0h1m2 0h1m3 0h3m1 0h1m2 0h1m2 0h4m-32 1h6m2 0h2m1 0h2m1 0h1m1 0h2m6 0h2m2 0h3m-31 1h1m5 0h1m1 0h1m2 0h4m2 0h1m1 0h2m1 0h1m1 0h2m2 0h2m-30 1h1m3 0h3m1 0h1m3 0h1m1 0h1m1 0h2m1 0h1m1 0h1m1 0h1m2 0h2m3 0h1m-33 1h2m3 0h1m2 0h6m2 0h1m1 0h4m1 0h5m1 0h2m1 0h1m-33 1h4m2 0h4m3 0h1m1 0h4m1 0h2m2 0h5m1 0h2m-32 1h1m4 0h1m3 0h4m1 0h1m1 0h1m1 0h1m2 0h12m-33 1h2m4 0h1m1 0h2m1 0h2m4 0h4m1 0h1m2 0h1m2 0h2m2 0h1m-33 1h2m1 0h1m3 0h9m1 0h1m1 0h2m2 0h1m2 0h1m5 0h1m-33 1h1m4 0h2m2 0h3m2 0h2m1 0h1m3 0h1m6 0h2m1 0h1m-32 1h1m4 0h1m6 0h1m1 0h1m3 0h1m2 0h3m3 0h4m1 0h1m-33 1h1m3 0h4m2 0h1m1 0h4m1 0h1m1 0h1m3 0h6m3 0h1m-25 1h1m2 0h1m1 0h1m3 0h5m1 0h2m3 0h1m1 0h1m1 0h1m-33 1h7m5 0h5m3 0h5m1 0h1m1 0h1m1 0h2m-32 1h1m5 0h1m1 0h1m5 0h1m1 0h1m2 0h3m2 0h1m3 0h5m-33 1h1m1 0h3m1 0h1m1 0h1m1 0h2m1 0h1m2 0h2m6 0h6m2 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m3 0h1m2 0h2m1 0h2m7 0h1m2 0h2m-33 1h1m1 0h3m1 0h1m1 0h2m4 0h3m1 0h1m3 0h6m1 0h1m-30 1h1m5 0h1m3 0h2m1 0h1m1 0h1m3 0h3m3 0h1m2 0h3m-31 1h7m1 0h3m1 0h1m1 0h2m1 0h1m1 0h1m2 0h3m2 0h1m3 0h1"/></svg><span>폰 카메라로 찍으면<br>이 페이지가 열려요</span></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var ua=navigator.userAgent||"", url=location.href.split("#")[0];
+  var isAnd=/Android/i.test(ua), isIOS=/iPhone|iPad|iPod/i.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1);
+  var isKakao=/KAKAOTALK/i.test(ua);
+  var inApp=isKakao||/NAVER|Instagram|FBAN|FBAV|Line\/|DaumApps|DaangnApp|daangn|karrot|everytime|Whale\/.*inapp/i.test(ua)
+            ||(isAnd&&/;\s?wv\)/.test(ua))||(isIOS&&!/Safari\//.test(ua));
+  var ref=(new URLSearchParams(location.search).get("r")||"").replace(/[^a-z0-9_-]/gi,"").slice(0,12);
+  if(ref){["cta-web","ios-open"].forEach(function(id){var a=document.getElementById(id);a.href="./?r="+ref;});}
+
+  function tab(which){
+    var a=which==="ios";
+    document.getElementById("t-and").setAttribute("aria-selected",a?"false":"true");
+    document.getElementById("t-ios").setAttribute("aria-selected",a?"true":"false");
+    document.getElementById("p-and").hidden=a; document.getElementById("p-ios").hidden=!a;
+  }
+  document.getElementById("t-and").addEventListener("click",function(){tab("and");});
+  document.getElementById("t-ios").addEventListener("click",function(){tab("ios");});
+
+  var main=document.getElementById("cta-main");
+  if(isIOS){ tab("ios"); main.textContent="아이폰은 여기서 시작"; main.href="#install"; }
+  else if(isAnd){ main.href=document.getElementById("apk").href; }
+  else { main.textContent="안드로이드 앱 받기"; main.href="#install"; }
+
+  if(inApp){
+    var bar=document.getElementById("inapp"),open=document.getElementById("inapp-open"),msg=document.getElementById("inapp-msg");
+    bar.hidden=false;
+    if(isKakao){ open.href="kakaotalk://web/openExternal?url="+encodeURIComponent(url); open.textContent=isIOS?"사파리로 열기":"크롬으로 열기"; }
+    else if(isAnd){ open.href="intent://"+url.replace(/^https?:\/\//,"")+"#Intent;scheme=https;package=com.android.chrome;end"; }
+    else { open.hidden=true; msg.innerHTML="<b>앱 안 브라우저에서 열렸어요.</b> 오른쪽 아래 ⋯ → 사파리로 열기, 또는 링크를 복사해 사파리에 붙여 넣으세요."; }
+    // 앱 안 브라우저에선 설치 파일이 안 받아지는 경우가 많아 바로 받기 대신 안내부터
+    if(isAnd)main.href="#install";
+  }
+  document.getElementById("inapp-copy").addEventListener("click",function(){
+    var b=this;
+    function done(){b.textContent="복사했어요";setTimeout(function(){b.textContent="링크 복사";},1800);}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done,fallback);}else fallback();
+    function fallback(){var t=document.createElement("textarea");t.value=url;t.setAttribute("readonly","");t.style.position="fixed";t.style.opacity="0";
+      document.body.appendChild(t);t.select();try{document.execCommand("copy");done();}catch(e){prompt("이 주소를 복사하세요",url);}t.remove();}
+  });
+})();
+</script>
+</body>
+</html>

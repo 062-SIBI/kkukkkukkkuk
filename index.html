@@ -12,16 +12,8 @@
 <meta property="og:description" content="기온 33도면 아스팔트는 45~49도(서울 실측). 사람은 신발을 신고 개는 맨발입니다.">
 <meta property="og:type" content="website">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon.png">
-<title>꾹꾹이</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<title>꾹꾹이</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<title>꾹꾹이</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
 <title>꾹꾹이</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -851,6 +843,17 @@ details.sig ol{margin:0; padding:0 16px 14px 34px; color:var(--clay); font-size:
 details.sig .last{padding:0 16px 14px; font-size:11.5px; color:var(--clay); opacity:.85; line-height:1.5}
 
 /* ── 산책중 ── */
+
+/* 주머니 모드 — 화면을 켜 둔 채 검게. GPS가 안 끊기게 하는 유일한 방법(PWA) */
+#pocket{position:fixed;inset:0;background:#000;color:#fff;z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;-webkit-user-select:none;user-select:none;touch-action:none}
+#pocket.on{display:flex}
+#pocket .pt{font-family:"IBM Plex Mono",monospace;font-size:64px;font-weight:600;letter-spacing:-2px;color:#9a9a9a}
+#pocket .pk{font-size:22px;color:#6f6f6f;margin-top:2px}
+#pocket .pg{font-size:120px;font-weight:800;line-height:1;color:#DFFF3A;margin-top:14px}
+#pocket .pl{font-size:13px;color:#555;margin-top:6px;letter-spacing:.5px}
+#pocket .ph{position:absolute;bottom:38px;left:24px;right:24px;text-align:center;font-size:13px;line-height:1.6;color:#4a4a4a}
+#pocket .pbar{position:absolute;bottom:0;left:0;height:4px;background:#DFFF3A;width:0;transition:none}
+.walkbar .pk-btn{margin-right:8px}
 .walkbar{display:flex; align-items:center; justify-content:space-between; padding:4px 2px 10px}
 .walkbar .t{font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:600; color:var(--ink-2)}
 .walkbar button{background:none; border:1px solid var(--line); border-radius:999px; padding:7px 15px;
@@ -1006,7 +1009,80 @@ details.calib[open] summary::after{content:" ▴"}
 .winter ul{margin:9px 0 0 16px;font-size:13px;color:var(--ink-2);line-height:1.8}
 .winter .why{font-size:11.5px;color:var(--ink-3);line-height:1.65;margin-top:10px;
   border-top:1px solid var(--line);padding-top:9px}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ── 앱 껍데기·안전 영역 (안드로이드 앱은 화면 끝까지 그린다) ── */
+.app{padding-top:calc(16px + env(safe-area-inset-top,0px))}
+.step{padding-top:calc(26px + env(safe-area-inset-top,0px))}
+#v-walk.on{min-height:calc(100dvh - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
+.native #pocketbtn{display:none}
+.only-native{display:none!important}
+.native .only-native{display:flex!important}
+.hero .mark{width:88px;height:88px;display:block;margin:0 auto 4px}
+
+/* 알게 된 곳 (선택) */
+.srcq{margin-top:18px}
+.srcq .lbl2{font-size:12.5px;font-weight:600;color:var(--ink-2);margin-bottom:8px}
+.srcq .lbl2 span{font-weight:400;color:var(--ink-3);margin-left:4px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{border:1px solid var(--line);background:var(--panel);color:var(--ink-2);border-radius:999px;
+  padding:9px 14px;font-size:13px;transition:transform .12s ease-out}
+.chips button:active{transform:scale(.97)}
+.chips button[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-tint);color:var(--brand-deep);font-weight:600}
+
+/* 앱 업데이트 알림 */
+.apkbar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--ink);color:var(--ground);
+  border-radius:14px;padding:11px 14px;margin-bottom:10px;font-size:13px}
+.apkbar[hidden]{display:none}
+.apkbar a{color:#DFFF3A;font-weight:700;text-decoration:none;white-space:nowrap}
+
+/* ── 꾹카드 시트 ── */
+.sheet .in.kc2{padding-top:12px}
+.kc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.kc-head h3{font-size:19px}
+.seg{display:inline-flex;background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:2px}
+.seg button{border:0;background:none;color:var(--ink-3);font-size:12px;font-weight:600;padding:6px 12px;
+  border-radius:999px;min-width:42px;transition:background-color .15s ease,color .15s ease}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--ground)}
+.kc-rail{--kw:min(56vw,232px,28vh);position:relative;display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;
+  scroll-snap-type:x mandatory;padding:8px calc(50% - var(--kw)/2) 12px;margin:0 -16px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.kc-rail::-webkit-scrollbar{display:none}
+.kc-slide{flex:0 0 var(--kw);height:calc(var(--kw)*16/9);scroll-snap-align:center;border:0;padding:0;
+  border-radius:14px;overflow:hidden;background:var(--panel-2);
+  box-shadow:0 1px 2px rgba(34,30,25,.10),0 14px 30px -14px rgba(34,30,25,.55);
+  transform:scale(.9);opacity:.55;transition:transform .22s cubic-bezier(.23,1,.32,1),opacity .22s ease}
+.kc-slide.on{transform:none;opacity:1}
+.kc-slide canvas{display:block;width:100%;height:100%}
+.kc-ph{display:block;width:100%;height:100%;
+  background:linear-gradient(100deg,var(--panel-2) 30%,var(--line) 50%,var(--panel-2) 70%);background-size:300% 100%;
+  animation:kcsh 1.2s linear infinite}
+@keyframes kcsh{from{background-position:100% 0}to{background-position:-50% 0}}
+.kc-meta{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 14px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.kc-dots{display:flex;gap:6px}
+.kc-dots i{width:6px;height:6px;border-radius:50%;background:var(--line);cursor:pointer}
+.kc-dots i.on{background:var(--ink)}
+.kc-photo{display:flex;gap:8px;margin-bottom:12px}
+.kc-photo .big.ghost{flex:1;padding:12px 0;font-size:14px}
+.kc-photo #kc-drop{flex:0 0 auto;width:auto;padding:12px 16px}
+.kc-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.kc-row .k{flex:0 0 32px;font-size:12px;color:var(--ink-3);font-weight:600}
+.kc-sws{display:flex;gap:8px;flex-wrap:wrap}
+.sw{width:30px;height:30px;border-radius:50%;padding:0;border:1px solid rgba(0,0,0,.16);background:var(--c);position:relative;flex:none;
+  transition:transform .12s ease-out}
+.sw:active{transform:scale(.94)}
+.sw[aria-pressed="true"]{box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--ink)}
+.sw.none{background:var(--panel)}
+.sw.none::after{content:"";position:absolute;left:50%;top:18%;bottom:18%;width:2px;margin-left:-1px;background:var(--ink-3);
+  transform:rotate(45deg);border-radius:2px}
+.sw.auto{background:linear-gradient(135deg,#FFFFFF 0 50%,#16171A 50% 100%)}
+.sw.logo{background:#C9C3B8;display:grid;place-items:center}
+.sw.logo svg{width:20px;height:20px}
+#kc-share{margin-top:6px}
+.kc-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.linkbtn{background:none;border:0;color:var(--ink-2);font-size:12.5px;text-decoration:underline;text-underline-offset:3px;padding:8px 0}
+@media (prefers-reduced-motion:reduce){.kc-slide{transition:opacity .2s ease}.kc-ph{animation:none}}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
@@ -1017,9 +1093,9 @@ details.calib[open] summary::after{content:" ▴"}
 <div id="onb">
   <div class="step on" id="st0">
     <div class="hero"><div>
-      <div class="logo">🐕</div>
+      <svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="22" cy="58" rx="13" ry="16" transform="rotate(-22 22 58)" fill="#FF6B57"/><ellipse cx="50" cy="40" rx="13" ry="16" fill="#EFB02F"/><ellipse cx="78" cy="58" rx="13" ry="16" transform="rotate(22 78 58)" fill="#3B9DF5"/></svg>
       <h1>꾹꾹이</h1>
-      <p>나가기 전에<br>바닥이 몇 도인지 본다</p>
+      <p>우리 개 기준으로<br>오늘 산책이 충분했는지</p>
     </div></div>
     <button class="big" data-go="1">시작하기</button>
     <p class="src" style="text-align:center;padding-top:10px">계속하면 이용약관과 개인정보 처리방침에 동의하게 됩니다</p>
@@ -1035,6 +1111,12 @@ details.calib[open] summary::after{content:" ▴"}
       대신 <b>폰을 바꾸거나 브라우저 기록을 지우면 사라집니다.</b><br>
       기록 탭에서 <b>파일로 내보내</b> 두면 새 기기에서 그대로 가져올 수 있어요.<br>
       계정과 자동 백업은 나중에 붙일 예정입니다.</div>
+    </div>
+    <div class="srcq">
+      <div class="lbl2">어디서 알게 되셨어요? <span>안 골라도 돼요</span></div>
+      <div class="chips" id="srcpick">
+        <button aria-pressed="false" data-v="지인">지인 소개</button><button aria-pressed="false" data-v="당근">당근</button><button aria-pressed="false" data-v="꾹카드">꾹카드 보고</button><button aria-pressed="false" data-v="기타">기타</button>
+      </div>
     </div>
     <div class="grow"></div>
     <button class="big" data-sso="local">🐾 바로 시작하기</button>
@@ -1109,6 +1191,8 @@ details.calib[open] summary::after{content:" ▴"}
     <p class="lead">거부해도 기록은 됩니다. 다만 바닥 온도는 계산할 수 없어요.</p>
     <div class="permrow"><span class="e">📍</span><div class="t"><b>위치</b>
       <span>지금 있는 자리의 기온·일사량을 받아 바닥 온도를 계산합니다. 원본 위치는 서버에 저장하지 않아요.</span></div></div>
+    <div class="permrow only-native"><span class="e">🔔</span><div class="t"><b>알림</b>
+      <span>산책 중엔 알림줄에 "산책 기록 중"이 떠요. 그래야 화면을 꺼도 경로가 이어져요.</span></div></div>
     <div class="grow"></div>
     <button class="big" id="askperm">위치 허용하고 시작</button>
     <button class="big ghost" id="skipperm" style="margin-top:9px">나중에</button>
@@ -1123,6 +1207,7 @@ details.calib[open] summary::after{content:" ▴"}
   <!-- 홈 -->
   <div class="view on" id="v-home">
     <div class="bar"><h1 id="hdr">꾹꾹이</h1><span class="sub" id="today"></span></div>
+    <div class="apkbar" id="apkbar" hidden><span>앱 새 버전이 나왔어요</span><a id="apkget" href="https://github.com/062-SIBI/kkukkkukkkuk/releases/latest/download/kkukkkuki.apk">받기</a></div>
     <div class="light none" id="light">
       <div class="dot" id="l-dot">⏳</div>
       <div class="lt">
@@ -1161,7 +1246,7 @@ details.calib[open] summary::after{content:" ▴"}
   <div class="view" id="v-walk">
     <div class="walkbar">
       <span class="t" id="w-time">0:00</span>
-      <button id="stop">끝내기</button>
+      <span><button id="pocketbtn" class="pk-btn">🌙 주머니</button><button id="stop">끝내기</button></span>
     </div>
     <div class="ring">
       <svg viewBox="0 0 230 230" aria-label="꾹게이지">
@@ -1177,6 +1262,15 @@ details.calib[open] summary::after{content:" ▴"}
       <button class="big" id="b-pee">💧 꾹</button>
       <button class="big poop" id="b-poop">💩</button>
     </div>
+  </div>
+
+  <div id="pocket" aria-label="주머니 모드">
+    <div class="pt" id="pk-time">0:00</div>
+    <div class="pk" id="pk-dist">0.0 km</div>
+    <div class="pg" id="pk-g">–</div>
+    <div class="pl">꾹게이지 · 화면을 켜 둔 채 주머니에 넣으세요</div>
+    <div class="ph">나가려면 화면을 <b>1초 길게</b> 누르세요 · 전원 버튼을 누르면 GPS가 끊겨요</div>
+    <div class="pbar" id="pk-bar"></div>
   </div>
 
   <!-- 파티꾹 -->
@@ -1252,6 +1346,7 @@ details.calib[open] summary::after{content:" ▴"}
     <button class="big ghost" id="export">기록 내보내기 (파일로 저장)</button>
     <button class="big ghost" id="import" style="margin-top:9px">기록 가져오기</button>
     <input type="file" id="importfile" accept="application/json,.json" style="display:none">
+    <button class="big ghost" id="betarep" style="margin-top:9px">베타 기록 보내기</button>
     <p class="src" style="margin-top:9px">폰을 바꾸거나 브라우저 기록을 지우면 <b>산책 기록이 사라집니다.</b>
     가끔 내보내서 파일로 두세요. 지금은 서버가 없어서 이 기기에만 저장됩니다.</p>
     <button class="big ghost" id="reset" style="margin-top:13px;color:var(--clay)">처음부터 다시</button>
@@ -1341,32 +1436,28 @@ details.calib[open] summary::after{content:" ▴"}
   </div>
 </div>
 
-<!-- 꾹카드 — 자랑용 인증 카드 -->
+<!-- 꾹카드 — 산책 인증 카드. 옆으로 넘겨 고르고, 공유 1탭 -->
 <div class="sheet" id="kcsheet" role="dialog" aria-modal="true" aria-label="꾹카드">
-  <div class="in">
+  <div class="in kc2">
     <div class="grab"></div>
-    <h3 style="font-size:19px;margin-bottom:2px">꾹카드</h3>
-    <p class="src" style="margin-bottom:10px">오늘 산책을 한 장으로. 사진은 안 넣어도 돼요.</p>
-    <div style="display:flex;justify-content:center;margin-bottom:12px">
-      <img id="kc-img" alt="꾹카드 미리보기"
-       style="width:210px;max-width:60vw;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.25);background:#EFB02F">
+    <div class="kc-head">
+      <h3>꾹카드</h3>
+      <div class="seg" id="kc-lang" role="group" aria-label="카드 글자">
+        <button data-v="ko" aria-pressed="true">한</button><button data-v="en" aria-pressed="false">EN</button>
+      </div>
     </div>
-    <div style="display:flex;gap:8px;margin-bottom:10px">
-      <button class="big ghost" id="kc-cam" style="flex:1">📷 사진 찍기</button>
-      <button class="big ghost" id="kc-pic" style="flex:1">🖼 사진 넣기</button>
+    <div class="kc-rail" id="kc-rail" aria-label="카드 디자인"></div>
+    <div class="kc-meta"><span id="kc-fname">스트립</span><span class="kc-dots" id="kc-dots"></span></div>
+    <div class="kc-photo">
+      <button class="big ghost" id="kc-cam">📷 사진 찍기</button>
+      <button class="big ghost" id="kc-pic">🖼 사진 넣기</button>
+      <button class="big ghost" id="kc-drop" hidden aria-label="사진 빼기">빼기</button>
     </div>
-    <div id="kc-frames" style="display:flex;gap:6px;margin-bottom:10px"></div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-      <span class="src" style="flex:none">경로 색</span>
-      <div id="kc-colors" style="display:flex;gap:9px;flex:1"></div>
-      <button id="kc-lang" class="big ghost" style="flex:none;padding:6px 12px;font-size:12px;width:auto">EN</button>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-      <span class="src" style="flex:none">로고 색</span>
-      <div id="kc-logos" style="display:flex;gap:9px;flex:1"></div>
-    </div>
+    <div class="kc-row"><span class="k">경로</span><div class="kc-sws" id="kc-colors"></div></div>
+    <div class="kc-row"><span class="k">로고</span><div class="kc-sws" id="kc-logos"></div></div>
     <button class="big" id="kc-share">공유하기</button>
     <button class="big ghost" id="kc-close" style="margin-top:8px">닫기</button>
+    <div class="kc-foot"><button class="linkbtn" id="kc-old">이전 디자인</button><span class="src">동네 이름 © OpenStreetMap</span></div>
     <input type="file" id="kc-file" accept="image/*" style="display:none">
     <input type="file" id="kc-camf" accept="image/*" capture="environment" style="display:none">
   </div>
@@ -1521,6 +1612,11 @@ details.calib[open] summary::after{content:" ▴"}
   <button data-v="party"><i>👥</i>파티꾹</button>
 </nav>
 
+<!-- Capacitor 코어(MIT). 웹에선 아무 일도 안 하고, 안드로이드 앱 안에서만 네이티브 플러그인을 연결한다 -->
+<script>
+/*! Capacitor: https://capacitorjs.com/ - MIT License */
+var capacitorExports=function(e){"use strict";var t;e.ExceptionCode=void 0,(t=e.ExceptionCode||(e.ExceptionCode={})).Unimplemented="UNIMPLEMENTED",t.Unavailable="UNAVAILABLE";class n extends Error{constructor(e,t,n){super(e),this.message=e,this.code=t,this.data=n}}const s=t=>{const s=t.CapacitorCustomPlatform||null,r=t.Capacitor||{},i=r.Plugins=r.Plugins||{},a=()=>null!==s?s.name:(e=>{var t,n;return(null==e?void 0:e.androidBridge)?"android":(null===(n=null===(t=null==e?void 0:e.webkit)||void 0===t?void 0:t.messageHandlers)||void 0===n?void 0:n.bridge)?"ios":"web"})(t),o=e=>{var t;return null===(t=r.PluginHeaders)||void 0===t?void 0:t.find(t=>t.name===e)},c=new Map;return r.convertFileSrc||(r.convertFileSrc=e=>e),r.getPlatform=a,r.handleError=e=>t.console.error(e),r.isNativePlatform=()=>"web"!==a(),r.isPluginAvailable=e=>{const t=c.get(e);return!!(null==t?void 0:t.platforms.has(a()))||!!o(e)},r.registerPlugin=(t,l={})=>{const d=c.get(t);if(d)return console.warn(`Capacitor plugin "${t}" already registered. Cannot register plugins twice.`),d.proxy;const u=a(),p=o(t);let m;const h=i=>{let a;const o=(...o)=>{const c=(async()=>(!m&&u in l?m=m="function"==typeof l[u]?await l[u]():l[u]:null!==s&&!m&&"web"in l&&(m=m="function"==typeof l.web?await l.web():l.web),m))().then(s=>{const c=((s,i)=>{var a,o;if(!p){if(s)return null===(o=s[i])||void 0===o?void 0:o.bind(s);throw new n(`"${t}" plugin is not implemented on ${u}`,e.ExceptionCode.Unimplemented)}{const e=null==p?void 0:p.methods.find(e=>i===e.name);if(e)return"promise"===e.rtype?e=>r.nativePromise(t,i.toString(),e):(e,n)=>r.nativeCallback(t,i.toString(),e,n);if(s)return null===(a=s[i])||void 0===a?void 0:a.bind(s)}})(s,i);if(c){const e=c(...o);return a=null==e?void 0:e.remove,e}throw new n(`"${t}.${i}()" is not implemented on ${u}`,e.ExceptionCode.Unimplemented)});return"addListener"===i&&(c.remove=async()=>a()),c};return o.toString=()=>`${i.toString()}() { [capacitor code] }`,Object.defineProperty(o,"name",{value:i,writable:!1,configurable:!1}),o},w=h("addListener"),g=h("removeListener"),v=(e,t)=>{const n=w({eventName:e},t),s=async()=>{const s=await n;g({eventName:e,callbackId:s},t)},r=new Promise(e=>n.then(()=>e({remove:s})));return r.remove=async()=>{console.warn("Using addListener() without 'await' is deprecated."),await s()},r},y=new Proxy({},{get(e,t){switch(t){case"$$typeof":return;case"toJSON":return()=>({});case"addListener":return p?v:w;case"removeListener":return g;default:return h(t)}}});return i[t]=y,c.set(t,{name:t,proxy:y,platforms:new Set([...Object.keys(l),...p?[u]:[]])}),y},r.Exception=n,r.DEBUG=!!r.DEBUG,r.isLoggingEnabled=!!r.isLoggingEnabled,r},r=(e=>e.Capacitor=s(e))("undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:"undefined"!=typeof window?window:"undefined"!=typeof global?global:{}),i=r.registerPlugin;class a{constructor(){this.listeners={},this.retainedEventArguments={},this.windowListeners={}}addListener(e,t){let n=!1;this.listeners[e]||(this.listeners[e]=[],n=!0),this.listeners[e].push(t);const s=this.windowListeners[e];s&&!s.registered&&this.addWindowListener(s),n&&this.sendRetainedArgumentsForEvent(e);return Promise.resolve({remove:async()=>this.removeListener(e,t)})}async removeAllListeners(){this.listeners={};for(const e in this.windowListeners)this.removeWindowListener(this.windowListeners[e]);this.windowListeners={}}notifyListeners(e,t,n){const s=this.listeners[e];if(s)s.forEach(e=>e(t));else if(n){let n=this.retainedEventArguments[e];n||(n=[]),n.push(t),this.retainedEventArguments[e]=n}}hasListeners(e){var t;return!!(null===(t=this.listeners[e])||void 0===t?void 0:t.length)}registerWindowListener(e,t){this.windowListeners[t]={registered:!1,windowEventName:e,pluginEventName:t,handler:e=>{this.notifyListeners(t,e)}}}unimplemented(t="not implemented"){return new r.Exception(t,e.ExceptionCode.Unimplemented)}unavailable(t="not available"){return new r.Exception(t,e.ExceptionCode.Unavailable)}async removeListener(e,t){const n=this.listeners[e];if(!n)return;const s=n.indexOf(t);-1!==s&&this.listeners[e].splice(s,1),this.listeners[e].length||this.removeWindowListener(this.windowListeners[e])}addWindowListener(e){window.addEventListener(e.windowEventName,e.handler),e.registered=!0}removeWindowListener(e){e&&(window.removeEventListener(e.windowEventName,e.handler),e.registered=!1)}sendRetainedArgumentsForEvent(e){const t=this.retainedEventArguments[e];t&&(delete this.retainedEventArguments[e],t.forEach(t=>{this.notifyListeners(e,t)}))}}const o=i("WebView"),c=e=>encodeURIComponent(e).replace(/%(2[346B]|5E|60|7C)/g,decodeURIComponent).replace(/[()]/g,escape),l=e=>e.replace(/(%[\dA-F]{2})+/gi,decodeURIComponent);class d extends a{async getCookies(){const e=document.cookie,t={};return e.split(";").forEach(e=>{if(e.length<=0)return;let[n,s]=e.replace(/=/,"CAP_COOKIE").split("CAP_COOKIE");n=l(n).trim(),s=l(s).trim(),t[n]=s}),t}async setCookie(e){try{const t=c(e.key),n=c(e.value),s=e.expires?`; expires=${e.expires.replace("expires=","")}`:"",r=(e.path||"/").replace("path=",""),i=null!=e.url&&e.url.length>0?`domain=${e.url}`:"";document.cookie=`${t}=${n||""}${s}; path=${r}; ${i};`}catch(e){return Promise.reject(e)}}async deleteCookie(e){try{document.cookie=`${e.key}=; Max-Age=0`}catch(e){return Promise.reject(e)}}async clearCookies(){try{const e=document.cookie.split(";")||[];for(const t of e)document.cookie=t.replace(/^ +/,"").replace(/=.*/,`=;expires=${(new Date).toUTCString()};path=/`)}catch(e){return Promise.reject(e)}}async clearAllCookies(){try{await this.clearCookies()}catch(e){return Promise.reject(e)}}}const u=i("CapacitorCookies",{web:()=>new d}),p=(e,t={})=>{const n=Object.assign({method:e.method||"GET",headers:e.headers},t),s=((e={})=>{const t=Object.keys(e);return Object.keys(e).map(e=>e.toLocaleLowerCase()).reduce((n,s,r)=>(n[s]=e[t[r]],n),{})})(e.headers)["content-type"]||"";if("string"==typeof e.data)n.body=e.data;else if(s.includes("application/x-www-form-urlencoded")){const t=new URLSearchParams;for(const[n,s]of Object.entries(e.data||{}))t.set(n,s);n.body=t.toString()}else if(s.includes("multipart/form-data")||e.data instanceof FormData){const t=new FormData;if(e.data instanceof FormData)e.data.forEach((e,n)=>{t.append(n,e)});else for(const n of Object.keys(e.data))t.append(n,e.data[n]);n.body=t;const s=new Headers(n.headers);s.delete("content-type"),n.headers=s}else(s.includes("application/json")||"object"==typeof e.data)&&(n.body=JSON.stringify(e.data));return n};class m extends a{async request(e){const t=p(e,e.webFetchExtra),n=((e,t=!0)=>e?Object.entries(e).reduce((e,n)=>{const[s,r]=n;let i,a;return Array.isArray(r)?(a="",r.forEach(e=>{i=t?encodeURIComponent(e):e,a+=`${s}=${i}&`}),a.slice(0,-1)):(i=t?encodeURIComponent(r):r,a=`${s}=${i}`),`${e}&${a}`},"").substr(1):null)(e.params,e.shouldEncodeUrlParams),s=n?`${e.url}?${n}`:e.url,r=await fetch(s,t),i=r.headers.get("content-type")||"";let a,o,{responseType:c="text"}=r.ok?e:{};switch(i.includes("application/json")&&(c="json"),c){case"arraybuffer":case"blob":o=await r.blob(),a=await(async e=>new Promise((t,n)=>{const s=new FileReader;s.onload=()=>{const e=s.result;t(e.indexOf(",")>=0?e.split(",")[1]:e)},s.onerror=e=>n(e),s.readAsDataURL(e)}))(o);break;case"json":a=await r.json();break;default:a=await r.text()}const l={};return r.headers.forEach((e,t)=>{l[t]=e}),{data:a,headers:l,status:r.status,url:r.url}}async get(e){return this.request(Object.assign(Object.assign({},e),{method:"GET"}))}async post(e){return this.request(Object.assign(Object.assign({},e),{method:"POST"}))}async put(e){return this.request(Object.assign(Object.assign({},e),{method:"PUT"}))}async patch(e){return this.request(Object.assign(Object.assign({},e),{method:"PATCH"}))}async delete(e){return this.request(Object.assign(Object.assign({},e),{method:"DELETE"}))}}const h=i("CapacitorHttp",{web:()=>new m});var w,g;e.SystemBarsStyle=void 0,(w=e.SystemBarsStyle||(e.SystemBarsStyle={})).Dark="DARK",w.Light="LIGHT",w.Default="DEFAULT",e.SystemBarType=void 0,(g=e.SystemBarType||(e.SystemBarType={})).StatusBar="StatusBar",g.NavigationBar="NavigationBar";class v extends a{async setStyle(){this.unavailable("not available for web")}async setAnimation(){this.unavailable("not available for web")}async show(){this.unavailable("not available for web")}async hide(){this.unavailable("not available for web")}}const y=i("SystemBars",{web:()=>new v});return e.Capacitor=r,e.CapacitorCookies=u,e.CapacitorException=n,e.CapacitorHttp=h,e.SystemBars=y,e.WebPlugin=a,e.WebView=o,e.buildRequestInit=p,e.registerPlugin=i,Object.defineProperty(e,"__esModule",{value:!0}),e}({});
+</script>
 <script>
 (function(){
 "use strict";
@@ -1543,6 +1639,86 @@ function press(box,cb,toggle){box.addEventListener("click",function(e){
   if(cb)cb(b);});}
 function picked(box){ return Array.prototype.filter.call(box.querySelectorAll("button"),function(b){
   return b.getAttribute("aria-pressed")==="true"; }); }
+
+/* ══ 앱 껍데기(안드로이드) ══════════════════════════════════════════
+   같은 웹 코드가 GitHub Pages에서도, 안드로이드 앱 안에서도 돈다. 앱일 때만 켜지는 것:
+   ① 화면이 꺼져도 GPS — 포그라운드 서비스 + 알림줄 "산책 중" (PWA로는 불가능한 부분)
+   ② 뒤로 가기: 시트 닫기 → 산책 중이면 앱을 내리기만 (절대 종료 안 함)
+   ③ 공유·파일 저장은 네이티브 공유 시트 (WebView엔 navigator.share도 다운로드도 없다)
+   웹에서는 전부 꺼져 있고 예전과 똑같이 돈다. */
+var CAP=window.Capacitor||null;
+var NATIVE=!!(CAP&&typeof CAP.isNativePlatform==="function"&&CAP.isNativePlatform());
+var NP={};
+if(NATIVE&&CAP.registerPlugin){
+  ["BackgroundGeolocation","App","Share","Filesystem","LocalNotifications"].forEach(function(n){
+    try{NP[n]=CAP.registerPlugin(n);}catch(e){}});
+  document.documentElement.classList.add("native");
+}
+var APK_NEED=1;   // 이 웹 코드가 기대하는 최소 앱 버전(versionCode). 플러그인을 바꿔 APK를 새로 낼 때만 올린다
+var APK_URL="https://github.com/062-SIBI/kkukkkukkkuk/releases/latest/download/kkukkkuki.apk";
+function nativeInit(){
+  if(!NATIVE)return;
+  if(NP.App){
+    NP.App.addListener("backButton",function(){
+      var open=document.querySelector(".sheet.on");
+      if(open){var c=open.querySelector('[id$="close"],#cancelpoop');if(c)c.click();else open.classList.remove("on");return;}
+      if(W){NP.App.minimizeApp();return;}                       // 산책 중엔 닫지 않는다. 내리기만
+      if($("main").classList.contains("on")&&!$("v-home").classList.contains("on")){tab("home");renderHome();return;}
+      var st=document.querySelector(".step.on");
+      if($("onb").classList.contains("on")&&st&&st.id!=="st0"){step(Math.max(0,(+st.id.slice(2))-1));return;}
+      NP.App.minimizeApp();
+    });
+    NP.App.addListener("resume",function(){if(W)tick();});
+    NP.App.getInfo().then(function(i){
+      S.app={v:i.version,b:+i.build||0};
+      if((+i.build||0)<APK_NEED)$("apkbar").hidden=false;
+    }).catch(function(){});
+  }
+}
+/* 안드로이드 13+: 알림 권한이 없으면 "산책 중" 알림이 안 보인다(기록은 된다). 한 번만 묻는다 */
+function notifAsk(cb){
+  if(!NATIVE||!NP.LocalNotifications||S.notifAsked){if(cb)cb();return;}
+  S.notifAsked=1;save();
+  NP.LocalNotifications.requestPermissions().then(function(){if(cb)cb();},function(){if(cb)cb();});
+}
+
+/* ══ 베타 기록 ══════════════════════════════════════════════════
+   서버가 없으니 이 기기 안에서만 센다. 보낼 땐 사람이 "베타 기록 보내기"로 직접 보낸다.
+   세는 것: 산책당 탭 수(꾹·💩 기록 탭은 뺌), 꾹카드 열람·공유, 주머니 모드, 알게 된 곳. 위치는 안 센다. */
+function beta(k,n){S.beta=S.beta||{since:Date.now()};S.beta[k]=(S.beta[k]||0)+(n==null?1:n);}
+(function(){
+  try{var r=new URLSearchParams(location.search).get("r");
+    if(r&&!S.ref){S.ref=String(r).replace(/[^a-z0-9_-]/gi,"").slice(0,12);save();}}catch(e){}
+})();
+document.addEventListener("click",function(e){
+  if(!W)return;var b=e.target.closest("button");if(!b)return;
+  if(b.closest("#b-pee,#b-poop,#sheet"))return;
+  W.taps=(W.taps||1)+1;
+},true);
+function betaText(){
+  var B=S.beta||{},n=B.walks||0,d=new Date();
+  var fr=Object.keys(B).filter(function(k){return k.indexOf("f_")===0;}).sort(function(a,b){return B[b]-B[a];})
+    .slice(0,3).map(function(k){var id=k.slice(2),f=KCF2.filter(function(q){return q.id===id;})[0];
+      return (f?f.n:(id.indexOf("v1_")===0?"예전 "+KCF[+id.slice(3)]:id))+" "+B[k];}).join(", ");
+  var gs=S.walks.filter(function(w){return w.gauge!=null;}).slice(0,14).map(function(w){return w.gauge;});
+  return ["꾹꾹이 베타 기록 · "+d.getFullYear()+"."+(d.getMonth()+1)+"."+d.getDate(),
+    "쓰는 곳: "+(NATIVE?"안드로이드 앱"+(S.app?" v"+S.app.v:""):(/iPhone|iPad/.test(navigator.userAgent)?"아이폰 웹":"웹")),
+    "알게 된 곳: "+(S.src||"안 고름")+(S.ref?" ("+S.ref+")":""),
+    "산책 "+n+"회 · 산책당 탭 "+(n?((B.walkTaps||0)/n).toFixed(1):"-")+"회",
+    "주머니 모드 "+(B.pocket||0)+"회",
+    "꾹카드 열람 "+(B.cardOpen||0)+" · 공유 "+(B.cardShare||0)+" (사진 넣은 것 "+(B.cardPhoto||0)+")",
+    fr?"많이 쓴 카드: "+fr:"",
+    gs.length?"최근 꾹게이지 평균 "+Math.round(gs.reduce(function(a,b){return a+b;},0)/gs.length):"",
+    "(위치·경로는 들어가지 않아요)"].filter(Boolean).join("\n");
+}
+function betaSend(){
+  var t=betaText();
+  if(NATIVE&&NP.Share){NP.Share.share({title:"꾹꾹이 베타 기록",text:t,dialogTitle:"베타 기록 보내기"}).catch(function(){});return;}
+  if(navigator.share){navigator.share({text:t}).catch(function(){});return;}
+  if(navigator.clipboard&&navigator.clipboard.writeText)
+    navigator.clipboard.writeText(t).then(function(){toast("복사했어요 · 카톡에 붙여넣어 보내 주세요");},function(){toast("복사를 못 했어요");});
+  else toast("이 브라우저에선 보낼 수 없어요");
+}
 
 /* ══ 태양 위치 (NOAA 근사) ══ */
 function solar(lat,lng,d){
@@ -2064,6 +2240,7 @@ function getLoc(cb){
   try{
     navigator.geolocation.getCurrentPosition(
       function(p){ if(done)return; done=true; clearTimeout(to);
+        if(NATIVE&&!S.locOK){S.locOK=1;save();}
         cb({lat:p.coords.latitude,lng:p.coords.longitude}); },
       function(e){ if(done)return; done=true; clearTimeout(to);
         LOCERR = e&&e.code===1 ? "권한 거부됨(code 1)"
@@ -2124,8 +2301,10 @@ $("askperm").addEventListener("click",function(){
   var btn=this; btn.disabled=true; btn.textContent="위치 확인 중…";
   getLoc(function(p){
     loc=p; btn.disabled=false; btn.textContent="위치 허용하고 시작";
-    enterMain(); loadWeather();
-    if(!p)toast("위치를 못 받았어요 · 동네를 직접 고를 수 있어요");
+    notifAsk(function(){
+      enterMain(); loadWeather();
+      if(!p)toast("위치를 못 받았어요 · 동네를 직접 고를 수 있어요");
+    });
   });
 });
 $("skipperm").addEventListener("click",function(){enterMain();loadWeather();});
@@ -2148,6 +2327,9 @@ function enterMain(){
   }
 }
 function boot(){
+  nativeInit();
+  press($("srcpick"),function(b){S.src=b.dataset.v;save();});
+  $("betarep").addEventListener("click",betaSend);
   if(typeof S.K==="number"&&S.K>0&&S.K<0.12)K_ROAD=S.K;
   if(S.manual&&S.manual.lat!=null)loc={lat:S.manual.lat,lng:S.manual.lng};
   if(S.user&&S.dog){enterMain();getLoc(function(p){loc=p;loadWeather();});}
@@ -2229,13 +2411,16 @@ function gmsgOf(t){var n=S.dog?S.dog.name:"우리 아이";
 function tick(){
   if(!W)return;
   var wn=$("gwarn");
-  if(!navigator.geolocation) wn.textContent="이 기기는 GPS가 없어요 · 꾹·💩 기록은 됩니다";
+  if(gpsDenied==="perm") wn.textContent="위치 권한이 없어 경로를 못 그려요 · 꾹·💩 기록은 돼요";
+  else if(gpsDenied==="off") wn.textContent="휴대폰 위치(GPS)가 꺼져 있어요 · 켜면 바로 이어져요";
+  else if(!NATIVE&&!navigator.geolocation) wn.textContent="이 기기는 GPS가 없어요 · 꾹·💩 기록은 됩니다";
   else if(!lastFix) wn.textContent="GPS 잡는 중…";
   else{
     var gp=(Date.now()-lastFix.t)/1000;
     wn.textContent = gp>60
-      ? "다른 앱 보는 중엔 경로가 안 그려져요 · 꾹·💩은 그대로 기록돼요"
-      : (W.gaps?"끊긴 구간 "+W.gaps+"곳 — 그 사이 경로는 비어 있어요":"");
+      ? (NATIVE?"GPS 신호가 약해요 · 건물 사이에선 잠깐 끊길 수 있어요"
+               :"다른 앱 보는 중엔 경로가 안 그려져요 · 꾹·💩은 그대로 기록돼요")
+      : (W.gaps?"끊긴 구간 "+W.gaps+"곳 · 그 사이 경로는 비어 있어요":"");
   }
   var gd=gaugeDetail(W);
   if(!gd.ready){
@@ -2252,36 +2437,108 @@ function tick(){
     $("gmsg").textContent=gmsgOf(g)+(gd.bonusPoop?" · 💩 보너스":"")+(gd.bonusSpot?" · 새 꾹자리":"")+tail;
   }
   $("w-time").textContent=ms2t(Date.now()-W.start);
+  if(pkOn)pocketTick();
+}
+/* ── GPS 한 점 처리 (웹 watchPosition · 앱 백그라운드 둘 다 여기로) ──
+   거리: 기준점에서 5m 넘게 벗어났을 때만 더한다. 1초마다 오는 점끼리 재면 한 걸음(1m 남짓)이
+         전부 "멈춤"으로 읽혀 거리가 0에 가까워진다(예전 방식의 문제). 제자리 GPS 떨림도 여기서 걸러진다.
+   킁킁: 속도 값이 있으면 0.35m/s 미만일 때, 없으면 기준점에서 6초 넘게 못 벗어났을 때의 시간.
+   끊김: 45초 넘게 점이 없다가 오면 그 사이를 직선으로 잇지 않고 끊어 그린다(걷는 속도일 때만 거리 인정). */
+var gpsResume=false,gpsDenied="",lastSave=0;
+function gpsFix(f){
+  if(!W)return;
+  if(!(f.acc<=60))return;
+  gpsDenied="";if(NATIVE&&!S.locOK)S.locOK=1;
+  if(!loc||S.manual){loc={lat:f.lat,lng:f.lng};if(S.manual){delete S.manual;save();}loadWeather();}
+  var gapFlag=false,moved=false,anc=W.anc;
+  if(lastFix){
+    var dt=(f.t-lastFix.t)/1000;
+    if(dt<0)return;
+    if(dt>45){
+      var dg=dist(anc||lastFix,f);
+      gapFlag=true;moved=true;W.gaps=(W.gaps||0)+1;
+      if(dg/dt<=2.0)W.dist+=dg;
+    } else {
+      var da=dist(anc||lastFix,f);
+      if(da>=5){W.dist+=da;moved=true;}
+      var still=(f.spd!=null)?(f.spd<0.35):(!moved&&!!anc&&(f.t-anc.t)>6000);
+      if(still)W.sniff+=Math.min(dt,20)*1000;
+    }
+  }
+  else if(gpsResume){gapFlag=true;moved=true;W.gaps=(W.gaps||0)+1;}
+  else moved=true;
+  gpsResume=false;
+  lastFix=f;
+  if(moved){
+    W.anc={lat:f.lat,lng:f.lng,t:f.t};
+    W.pts.push(gapFlag?[+f.lat.toFixed(6),+f.lng.toFixed(6),1]:[+f.lat.toFixed(6),+f.lng.toFixed(6)]);
+  }
+  tick();S.live=W;
+  // 매 점마다 저장소 전체를 다시 쓰면 배터리를 먹는다. 10초에 한 번(끊김 직후는 바로)
+  if(gapFlag||f.t-lastSave>10000){lastSave=f.t;persistLive();}
 }
 function startGPS(){
+  if(NATIVE&&NP.BackgroundGeolocation){startBG(0);return;}
   if(!navigator.geolocation)return;
-  // 앱이 뒤로 갔다 오거나 강제종료에서 복구되면 lastFix가 비어 있다.
-  // 그 사이 이동을 직선으로 이어붙이면 안 되니 첫 fix를 끊김으로 찍는다.
-  var resuming = !lastFix && W && (W.pts||[]).length>0;
+  // 앱이 뒤로 갔다 오거나 강제종료에서 복구되면 lastFix가 비어 있다. 첫 점을 끊김으로 찍는다.
+  gpsResume = !lastFix && !!W && (W.pts||[]).length>0;
   watchId=navigator.geolocation.watchPosition(function(p){
-    var f={lat:p.coords.latitude,lng:p.coords.longitude,t:Date.now(),acc:p.coords.accuracy};
-    if(f.acc>60)return;
-    if(!loc||S.manual){loc=f;if(S.manual){delete S.manual;save();}loadWeather();}
-    var gapFlag=false;
-    if(lastFix){
-      var dd=dist(lastFix,f),dt=(f.t-lastFix.t)/1000;
-      if(dt>45){
-        // 다른 앱을 보는 동안 끊긴 구간. 직선으로 이어붙이면 거리가 부풀거나
-        // 차를 타면 엉망이 된다. 걷는 속도(2.0m/s) 이하일 때만 인정한다.
-        gapFlag=true; W.gaps=(W.gaps||0)+1;
-        if(dd/dt<=2.0)W.dist+=dd;
-      }
-      else if(dd>2.5)W.dist+=dd;
-      else W.sniff+=Math.min(dt,20)*1000;
-    }
-    else if(resuming){ gapFlag=true; W.gaps=(W.gaps||0)+1; resuming=false; }
-    lastFix=f;
-    W.pts.push(gapFlag?[+f.lat.toFixed(6),+f.lng.toFixed(6),1]:[+f.lat.toFixed(6),+f.lng.toFixed(6)]);
-    tick();S.live=W;persistLive();
-  },function(){},{enableHighAccuracy:true,maximumAge:3000,timeout:20000});
+    var sp=p.coords.speed;
+    gpsFix({lat:p.coords.latitude,lng:p.coords.longitude,t:Date.now(),acc:p.coords.accuracy,
+            spd:(sp==null||isNaN(sp)||sp<0)?null:sp});
+  },function(e){if(e&&e.code===1){gpsDenied="perm";tick();}},{enableHighAccuracy:true,maximumAge:3000,timeout:20000});
+}
+/* 앱: 포그라운드 서비스로 화면이 꺼져도 1초마다 위치가 온다. 알림줄에 "산책 기록 중"이 떠 있는 동안만. */
+var bgId=null,bgPending=false,bgAsked=false;
+/* 권한부터 받고 서비스를 건다. 권한 없이 먼저 걸면 안드로이드 14+에서 "포그라운드" 승격이 실패해
+   화면을 끈 뒤 몇 분 만에 위치가 끊긴다(플러그인이 권한을 받은 뒤 다시 승격하지 않음). */
+function bgPreflight(cb){
+  if(!navigator.geolocation){cb();return;}
+  var done=false;function fin(){if(!done){done=true;cb();}}
+  setTimeout(fin,30000);
+  try{navigator.geolocation.getCurrentPosition(function(){S.locOK=1;save();fin();},fin,
+    {maximumAge:600000,timeout:25000,enableHighAccuracy:false});}catch(e){fin();}
+}
+function startBG(tries){
+  if(bgId!=null||bgPending||!W)return;
+  bgPending=true;
+  if(!tries&&!S.locOK){bgPreflight(function(){bgPending=false;startBG(1);});return;}   // 한 번 허용된 뒤엔 바로 건다
+  gpsResume = !lastFix && (W.pts||[]).length>0;
+  NP.BackgroundGeolocation.addWatcher({
+    backgroundTitle:"꾹꾹이 · 산책 기록 중",
+    backgroundMessage:"화면을 꺼도 경로가 그려져요. 끝낼 땐 앱에서 끝내기를 누르세요.",
+    requestPermissions:true,stale:false,distanceFilter:0
+  },function(l,err){
+    if(err){bgFail(err,tries);return;}
+    if(!l||!W)return;
+    var t=+l.time,now=Date.now();if(!isFinite(t)||t>now+60000||t<now-6*3600e3)t=now;   // 밀려서 늦게 온 점도 제 시각으로
+    var sp=l.speed;
+    gpsFix({lat:l.latitude,lng:l.longitude,t:t,acc:l.accuracy,spd:(sp==null||isNaN(sp)||sp<0)?null:sp});
+  }).then(function(id){bgPending=false;bgId=id;if(!W)stopGPS();},function(){bgPending=false;});
+}
+function bgFail(err,tries){
+  var m=String((err&&err.message)||err||"");
+  if(/not running/i.test(m)){                       // 앱을 막 켰을 때: 서비스가 아직 안 붙었다
+    bgPending=false;bgId=null;
+    if(tries<7)setTimeout(function(){startBG(tries+1);},700);
+    return;
+  }
+  if(err&&err.code==="NOT_AUTHORIZED"){
+    gpsDenied=/disabled/i.test(m)?"off":"perm";tick();
+    if(gpsDenied==="perm"&&!bgAsked){bgAsked=true;
+      setTimeout(function(){
+        if(confirm("위치 권한이 없어서 경로를 못 그려요.\n설정에서 위치를 '앱 사용 중에만 허용'으로 바꿀까요?"))
+          NP.BackgroundGeolocation.openSettings().catch(function(){});
+      },300);}
+  }
+}
+function stopGPS(){
+  if(bgId!=null&&NP.BackgroundGeolocation){var id=bgId;bgId=null;
+    NP.BackgroundGeolocation.removeWatcher({id:id}).catch(function(){});}
+  if(watchId!=null){try{navigator.geolocation.clearWatch(watchId);}catch(e){}watchId=null;}
 }
 /* iOS Safari는 화면이 꺼지거나 앱이 뒤로 가면 GPS를 끊는다.
-   화면 잠금을 붙잡아 두고, 돌아왔을 때 다시 잡는다. 그래도 끊기면 솔직히 말한다. */
+   화면 잠금을 붙잡아 두고, 돌아왔을 때 다시 잡는다. 그래도 끊기면 솔직히 말한다. (웹만) */
 var wake=null;
 /* localStorage가 꽉 차면 save()는 false를 돌려준다. 그걸 버리면
    "기록했어요"라고 말해놓고 실제로는 아무것도 안 남는다. 한 번만 말한다. */
@@ -2293,42 +2550,78 @@ function persistLive(){
   return false;
 }
 function holdScreen(){
+  if(NATIVE)return;
   if(!navigator.wakeLock||!navigator.wakeLock.request)return;
-  navigator.wakeLock.request("screen").then(function(s){wake=s;}).catch(function(){});
+  navigator.wakeLock.request("screen").then(function(s){wake=s; s.addEventListener("release",function(){ if(W&&document.visibilityState==="visible")setTimeout(holdScreen,500); });}).catch(function(){});
 }
 document.addEventListener("visibilitychange",function(){
   if(document.visibilityState==="visible"&&W){
+    if(NATIVE){tick();return;}                     // 앱은 서비스가 계속 받고 있다. 다시 걸 필요 없음
     holdScreen();
     /* iOS는 뒤로 가면 watch 콜백을 죽이지만 watchId 값은 그대로 남는다.
-       그래서 "watchId==null이면 다시 건다"는 한 번도 참이 되지 않았고,
-       문자 한 번 확인하고 돌아오면 그 산책은 끝까지 경로가 안 그려졌다.
        살아 있든 죽었든 무조건 걷어내고 새로 건다. 죽은 id를 clear해도 안전하다. */
     if(watchId!=null){try{navigator.geolocation.clearWatch(watchId);}catch(e){}}
     watchId=null; startGPS();
     tick();
   }
+  else if(document.visibilityState==="hidden"&&W){lastSave=0;persistLive();}   // 내려갈 때 한 번 확실히 저장
 });
+
+/* ── 주머니 모드 ──
+   PWA는 화면이 꺼지면 GPS가 끊긴다. 막을 방법은 화면을 안 끄는 것뿐이다.
+   그래서 검은 화면에 숫자만 띄우고(OLED면 전력 거의 안 씀) 터치를 전부 먹는다.
+   나가는 건 1초 길게 누르기 하나. 실수로 눌리는 걸 막기 위해서다. */
+var pkHold=null, pkOn=false;
+function pocketOn(){
+  if(!W)return; pkOn=true; beta("pocket"); $("pocket").classList.add("on"); holdScreen(); pocketTick();
+  if(!(navigator.wakeLock&&navigator.wakeLock.request)) toast("이 폰은 화면 유지가 안 돼요 · 설정에서 자동 잠금을 '안 함'으로");
+  else if(!S.pkHint){S.pkHint=1;save();toast("화면을 켜 둔 채 주머니에 넣으세요 · 전원 버튼은 누르지 마세요");}
+}
+function pocketOff(){ pkOn=false; $("pocket").classList.remove("on"); $("pk-bar").style.width="0"; }
+function pocketTick(){
+  if(!pkOn||!W)return;
+  $("pk-time").textContent=ms2t(Date.now()-W.start);
+  $("pk-dist").textContent=(W.dist/1000).toFixed(2)+" km";
+  var gd=gaugeDetail(W); $("pk-g").textContent=gd.ready?gd.score:"–";
+}
+$("pocketbtn").addEventListener("click",pocketOn);
+(function(){
+  var el=$("pocket"), t0=0, raf=null;
+  function down(e){ e.preventDefault(); t0=Date.now();
+    (function step(){ if(!t0)return; var p=Math.min(1,(Date.now()-t0)/1000); $("pk-bar").style.width=(p*100)+"%";
+      if(p>=1){t0=0;pocketOff();return;} raf=requestAnimationFrame(step); })(); }
+  function up(e){ e.preventDefault(); t0=0; if(raf)cancelAnimationFrame(raf); $("pk-bar").style.width="0"; }
+  el.addEventListener("touchstart",down,{passive:false}); el.addEventListener("mousedown",down);
+  el.addEventListener("touchend",up,{passive:false}); el.addEventListener("touchcancel",up,{passive:false}); el.addEventListener("mouseup",up); el.addEventListener("mouseleave",up);
+  el.addEventListener("contextmenu",function(e){e.preventDefault();});
+})();
 function begin(w){
-  W=w;tab("walk");startGPS();tick();headListen();
+  W=w;lastSave=0;tab("walk");startGPS();tick();headListen();
   clearInterval(timer);timer=setInterval(tick,1000);
   holdScreen();
 }
 function startWalk(routeId){
-  begin({start:Date.now(),dist:0,sniff:0,pts:[],poops:[],kkuks:[],newSpot:false,
-         route:(routeId!=null?routeId:null)});
-  S.live=W;save();
-  if(routeId!=null){
-    var r=S.routes.filter(function(x){return x.id===routeId;})[0];
-    if(r)toast("「"+r.name+"」로 시작했어요");
-  }
+  if(W)return;
+  notifAsk(function(){                                // 앱 첫 산책만: 알림 권한(“산책 기록 중” 알림용)
+    if(W)return;
+    begin({start:Date.now(),dist:0,sniff:0,pts:[],poops:[],kkuks:[],newSpot:false,taps:1,
+           route:(routeId!=null?routeId:null)});
+    S.live=W;save();
+    if(routeId!=null){
+      var r=S.routes.filter(function(x){return x.id===routeId;})[0];
+      if(r)toast("「"+r.name+"」로 시작했어요");
+    }
+  });
 }
 $("start").addEventListener("click",function(){startWalk(null);});
 $("stop").addEventListener("click",function(){
-  if(!W)return;
+  if(!W)return; pocketOff();
   clearInterval(timer);
-  if(watchId!=null){navigator.geolocation.clearWatch(watchId);watchId=null;}
+  stopGPS();
   W.end=Date.now();
   var gd=gaugeDetail(W); var g=gd.ready?gd.score:null; W.gauge=g; W.slot=gd.slot;
+  beta("walks");beta("walkTaps",W.taps||1);if(NATIVE)beta("walksApp");
+  delete W.anc;
   // 꾹꾹로는 자동으로 만들지 않는다. 기록에서 불러와 직접 다듬어 만든다.
   S.walks.unshift(W);
   S.walks=S.walks.slice(0,100);
@@ -3311,30 +3604,22 @@ function shareCard(){
 
   cv.toBlob(function(b){
     if(!b){toast("이미지를 못 만들었어요");return;}
-    var f=new File([b],"꾹꾹이.png",{type:"image/png"});
     var txt=head+" · 양지 "+c.sun+"℃ / 그늘 "+c.shade+"℃ / 기온 "+Math.round(c.air)+"℃ (추정)";
-    if(navigator.canShare&&navigator.canShare({files:[f]})){
-      navigator.share({files:[f],text:txt}).catch(function(){});
-    } else {
-      var u=URL.createObjectURL(b),a=document.createElement("a");
-      a.href=u;a.download="꾹꾹이.png";a.click();
-      setTimeout(function(){URL.revokeObjectURL(u);},4000);
-      toast("이미지를 저장했어요");
-    }
+    saveShare(b,"kkukkkuki_floor.png",txt,"오늘 바닥 온도");
   },"image/png");
 }
 $("share").addEventListener("click",shareCard);
 
-/* ══ 꾹카드 — 오늘 산책을 자랑할 수 있게 ══════════════════════════════
-   러닝 앱 인증샷의 구조는 가져오되 비교 대상을 바꾼다. 남의 개가 아니라
-   어제의 우리 개다. 순위표가 아니라 자기 기준선이라, 낮게 나온 날도
-   올릴 수 있다. 그게 이 카드가 러닝 인증샷과 다른 전부다.
-   탭 수 원칙: 종료 → 카드가 뜸 → 공유 1탭. 사진은 선택이다. */
-var KC={w:null,img:null,frame:0,url:null};
-var KCF=["심플","스탯","빅넘버","미니멀","경로"];
-/* 로고 — 발바닥에서 큰 패드를 뺀 점 세 개. 개 털색이 다 다르니 색은 고를 수 있게. */
+/* ══ 꾹카드 — 산책 끝나고 한 장 ══════════════════════════════════════
+   인증하는 건 "오늘도 잘 걸렸다"는 사실 하나. 근거는 꾹게이지(우리 개 기준).
+   문장은 넣지 않는다. 거리·시간·꾹게이지, 경로 모양, 로고만.
+   탭 수 원칙: 끝내기 → 카드가 뜸 → 공유 1탭. 사진은 선택이다.
+   v2(새 디자인 5종)가 기본, v1(예전 5종)은 "이전 디자인"으로 남겨 둔다. */
+
+/* 로고 — 발바닥에서 큰 패드를 뺀 점 세 개. 개 털색이 다 다르니 색은 고를 수 있게.
+   mono: 단색 로고는 바탕과 같은 색이면 반대색으로 뒤집는다 */
 var KLC=[{n:"3색",c:["#FF6B57","#EFB02F","#3B9DF5"]},{n:"바우하우스",c:["#D94F3D","#F2B705","#2E5EAA"]},
-         {n:"검정",c:["#17100A","#17100A","#17100A"]},{n:"흰색",c:["#FFFFFF","#FFFFFF","#FFFFFF"]}];
+         {n:"검정",c:["#17100A","#17100A","#17100A"],mono:"black"},{n:"흰색",c:["#FFFFFF","#FFFFFF","#FFFFFF"],mono:"white"}];
 function kcPaw(x,cx,cy,sz,cols){  // sz = 100단위 박스 한 변
   var k=sz/100; x.save(); x.translate(cx,cy); x.scale(k,k);
   x.shadowColor="rgba(0,0,0,.28)"; x.shadowBlur=8/k;
@@ -3343,8 +3628,11 @@ function kcPaw(x,cx,cy,sz,cols){  // sz = 100단위 박스 한 변
   el(22,58,13,16,-22,cols[0]); el(50,40,13,16,0,cols[1]); el(78,58,13,16,22,cols[2]);
   x.restore();
 }
-/* 경로 색 — 나이키런 스티커처럼 배경에 맞춰 고른다.
-   "그림자"만 곱하기 합성이라 개 위에서 사라지고, 나머지는 사진 위에 그대로 올라간다. */
+
+/* ── v1 (이전 디자인) ──
+   예전 5종을 그대로 둔다. 고친 것: 경로 좌표를 배열로도 읽음(예전엔 경로가 안 그려졌다),
+   사진은 늘이지 않고 잘라서 채움, 미리보기 축소 배율에서도 밝기를 제자리에서 잰다. */
+var KCF=["심플","스탯","빅넘버","미니멀","경로"];
 var KCC=[
   {n:"그림자",c:"rgba(0,0,0,.20)",dot:"#8A6A20",mul:true},
   {n:"흰색",  c:"#FFFFFF",dot:"#FFFFFF"},
@@ -3353,71 +3641,25 @@ var KCC=[
   {n:"코랄",  c:"#FF6B57",dot:"#FF6B57"},
   {n:"없음",  c:null,dot:"none"}
 ];
-
-function kcStreak(){
-  var days={};
-  S.walks.forEach(function(w){var d=new Date(w.start);
-    days[d.getFullYear()+"."+d.getMonth()+"."+d.getDate()]=1;});
-  var n=0,t=new Date();
-  for(var i=0;i<400;i++){
-    var k=t.getFullYear()+"."+t.getMonth()+"."+t.getDate();
-    if(days[k])n++; else if(i>0)break;
-    t.setDate(t.getDate()-1);
-  }
-  return n;
-}
-function kcSay(g){
-  return g>=95?["오늘은","넉넉했어요"]:g>=80?["오늘은","충분했어요"]:
-         g>=60?["조금","짧았어요"]:["짧았지만","나갔어요"];
-}
-function kcSub(g,n){
-  return g>=80?n+"가 평소 걷던 만큼 걸었어요":
-         g>=60?"평소보다 조금 짧았어요. 괜찮아요":"다음 산책에서 채우면 돼요";
-}
-function kcFit(pts,bx,by,bw,bh){
-  var la=[],ln=[],i;
-  for(i=0;i<pts.length;i++){if(pts[i]&&pts[i].lat!=null){la.push(pts[i].lat);ln.push(pts[i].lng);}}
-  if(la.length<4)return null;
-  var mnA=Math.min.apply(null,la),mxA=Math.max.apply(null,la);
-  var mnO=Math.min.apply(null,ln),mxO=Math.max.apply(null,ln);
-  var kx=Math.cos((mnA+mxA)/2*Math.PI/180);
-  var w=Math.max(1e-7,(mxO-mnO)*kx), h=Math.max(1e-7,mxA-mnA);
-  var s=Math.min(bw/w,bh/h);
-  var ox=bx+(bw-w*s)/2, oy=by+(bh-h*s)/2;
-  var out=[];
-  for(i=0;i<pts.length;i++){ if(!pts[i]||pts[i].lat==null)continue;
-    out.push([ox+(pts[i].lng-mnO)*kx*s, oy+(mxA-pts[i].lat)*s]); }
-  return out;
-}
+var KCS=1;   // 지금 그리는 캔버스의 축소 배율. getImageData는 실제 픽셀이라 곱해서 읽는다
+function kcPx(v){return Math.round(v*KCS);}
+function kcFit(pts,bx,by,bw,bh){ return k2Fit(pts,bx,by,bw,bh); }
 function kcStroke(x,pl,col,wd){
   if(!pl||pl.length<2)return;
   x.save();x.strokeStyle=col;x.lineWidth=wd;x.lineJoin="round";x.lineCap="round";
   x.beginPath();x.moveTo(pl[0][0],pl[0][1]);
-  for(var i=1;i<pl.length;i++)x.lineTo(pl[i][0],pl[i][1]);
+  for(var i=1;i<pl.length;i++){ if(pl[i][2])x.moveTo(pl[i][0],pl[i][1]); else x.lineTo(pl[i][0],pl[i][1]); }
   x.stroke();x.restore();
 }
-function kcRing(x,cx,cy,r,lw,g,col,trk,numSize,label){
-  x.save();
-  x.lineWidth=lw;x.strokeStyle=trk;x.beginPath();x.arc(cx,cy,r,0,Math.PI*2);x.stroke();
-  x.strokeStyle=col;x.lineCap="round";x.beginPath();
-  x.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.max(0.02,g/100));x.stroke();
-  x.textAlign="center";x.fillStyle=col;
-  x.font="300 "+numSize+"px 'IBM Plex Sans KR',sans-serif";
-  x.fillText(String(g),cx,cy+numSize*0.30);
-  x.globalAlpha=.6;x.font="500 "+Math.round(numSize*0.20)+"px 'IBM Plex Sans KR',sans-serif";
-  x.fillText(label||"평소 대비",cx,cy+numSize*0.30+Math.round(numSize*0.33));
-  x.restore();
-}
 function kcLum(x,x0,y0,w,h){
-  try{var d=x.getImageData(x0,y0,w,h).data,t=0,n=0;
+  try{var d=x.getImageData(kcPx(x0),kcPx(y0),Math.max(1,kcPx(w)),Math.max(1,kcPx(h))).data,t=0,n=0;
     for(var i=0;i<d.length;i+=16){t+=0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2];n++;}
     return t/n/255;}catch(e){return 0.5;}
 }
-/* 사진 위에서 "가장 조용한" 자리 찾기 — 밝기 분산이 작은 띠. 개 얼굴을 피하는 근사치. */
+/* 사진 위에서 "가장 조용한" 자리 찾기 — 배경색에 가깝고 밝기 분산이 작은 띠 */
 function kcQuiet(x,cands){
-  // 네 귀퉁이 평균색 = 배경색이라고 본다. 배경색에 가깝고 분산이 작은 띠가 "조용한 자리".
   function stat(x0,y0,w,h){
-    var d=x.getImageData(x0,y0,w,h).data,n=0,r=0,g=0,b=0,q=0;
+    var d=x.getImageData(kcPx(x0),kcPx(y0),Math.max(1,kcPx(w)),Math.max(1,kcPx(h))).data,n=0,r=0,g=0,b=0,q=0;
     for(var i=0;i<d.length;i+=32){var l=0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2];r+=d[i];g+=d[i+1];b+=d[i+2];q+=l*l;n++;}
     r/=n;g/=n;b/=n;var m=0.2126*r+0.7152*g+0.0722*b;
     return {r:r,g:g,b:b,v:q/n-m*m};
@@ -3436,44 +3678,31 @@ function kcQuiet(x,cands){
   return best;
 }
 var KCL={ // 라벨 — 한/영
-  ko:{km:"KM",min:"MIN",pee:"꾹",sniff:"킁킁",poo:"똥",vs:"평소 대비",vsl:"평소 대비  ·  {n}의 최근 14회 기준",streak:"{n}일 연속",noRoute:"이 산책은 경로가 남지 않았어요"},
-  en:{km:"KM",min:"MIN",pee:"MARKS",sniff:"SNIFF",poo:"POOP",vs:"VS USUAL",vsl:"VS USUAL  ·  {n}'s last 14 walks = 100",streak:"{n}-DAY STREAK",noRoute:"No route for this walk"}
+  ko:{km:"KM",min:"MIN",pee:"꾹",sniff:"킁킁",poo:"똥",vs:"평소 대비",vsl:"평소 대비  ·  {n}의 최근 14회 기준"},
+  en:{km:"KM",min:"MIN",pee:"MARKS",sniff:"SNIFF",poo:"POOP",vs:"VS USUAL",vsl:"VS USUAL  ·  {n}'s last 14 walks = 100"}
 };
-function kcDraw(){
+function kcV1Draw(x,F){
   var w=KC.w; if(!w)return;
   var L=KCL[KC.lang||"ko"];
-  var CW=1080,CH=1920,cv=document.createElement("canvas");
-  cv.width=CW;cv.height=CH;var x=cv.getContext("2d");
+  var CW=1080,CH=1920;
   var name=(S.dog&&S.dog.name)||"우리 아이";
   var g=(w.gauge==null?(gaugeDetail(w).score||0):w.gauge);
   var d=new Date(w.start), mins=Math.round(((w.end||w.start)-w.start)/60000);
   var km=((w.dist||0)/1000).toFixed(1);
   var pee=(w.kkuks||[]).length, poo=(w.poops||[]).length;
-  var sn=ms2t(w.sniff||0), stk=kcStreak();
-  var rname=null; if(w.route!=null){var rr=S.routes.filter(function(q){return q.id===w.route;})[0]; if(rr)rname=rr.name;}
-  var slotKo=SLOTS[w.slot||slotOf(w.start)]||"", slotEn={아침:"AM",낮:"NOON",저녁:"PM"}[slotKo]||"";
+  var sn=ms2t(w.sniff||0);
+  var place=(KC.lang==="en")?(w.placeEn||""):(w.place||((S.manual&&S.manual.label)||""));
+  var slotKo=SLOTS[w.slot||slotOf(w.start)]||"", slotEn={"아침":"AM","낮":"NOON","저녁":"PM"}[slotKo]||"";
   var dstr=(KC.lang==="en")?((d.getMonth()+1)+"/"+d.getDate()+" "+slotEn):((d.getMonth()+1)+"."+d.getDate()+" "+slotKo);
-  var YEL="#EFB02F", DK="#17100A", CR="#F6E3BC";
-  var F=KC.frame, C=KCC[KC.color]||KCC[0];
+  var YEL="#EFB02F";
+  var C=KCC[KC.color1||0]||KCC[0], LG=KLC[KC.logo||0].c;
   function fnum(px){return "700 "+px+"px Oswald,'IBM Plex Sans KR',sans-serif";}
   function flab(px){return "500 "+px+"px 'IBM Plex Sans KR',sans-serif";}
   function isLatin(t){return !/[가-힣]/.test(t);}
-
   function bgPhoto(){
     x.fillStyle=YEL;x.fillRect(0,0,CW,CH);
     if(!KC.img)return false;
-    var im=KC.img, ph=Math.round(im.height*CW/im.width);
-    if(ph>CH){ x.drawImage(im,0,0,im.width,im.height,0,0,CW,CH); return true; }
-    x.drawImage(im,0,CH-ph,CW,ph);
-    try{
-      var row=x.getImageData(0,CH-ph+2,CW,1), top=CH-ph;
-      var tmp=document.createElement("canvas");tmp.width=CW;tmp.height=1;
-      tmp.getContext("2d").putImageData(row,0,0);
-      x.drawImage(tmp,0,0,CW,1,0,0,CW,top);
-      var gr=x.createLinearGradient(0,0,0,top);
-      gr.addColorStop(0,"rgba(255,255,255,.10)");gr.addColorStop(1,"rgba(255,255,255,0)");
-      x.fillStyle=gr;x.fillRect(0,0,CW,top);
-    }catch(e){}
+    k2Cover(x,KC.img,0,0,CW,CH,0.42);
     return true;
   }
   function inkFor(x0,y0,w0,h0){
@@ -3481,7 +3710,6 @@ function kcDraw(){
     return kcLum(x,x0,y0,w0,h0)>0.58?"#141008":"#FFFFFF";
   }
   function accentOf(ink){ return (C.c&&!C.mul)?C.c:ink; }
-  /* 경로: 사진에서 가장 조용한 띠에 놓는다. 후보는 위·중간·아래 세 띠. */
   function routeLine(wd,cands){
     if(!C.c)return;
     var box=KC.img?kcQuiet(x,cands):cands[0];
@@ -3499,18 +3727,16 @@ function kcDraw(){
   function header(ink){
     x.save();x.textAlign="left";x.fillStyle=ink;x.globalAlpha=.9;
     x.font="600 27px 'IBM Plex Sans KR',sans-serif";
-    x.fillText(name+"  ·  "+dstr+(rname?"  ·  "+rname:""),72,104);
+    x.fillText(name+"  ·  "+dstr+(place?"  ·  "+place:""),72,104);
     x.restore();
   }
   function wordmark(ink){
-    x.save();x.textAlign="right";x.fillStyle=ink;
+    x.save();x.fillStyle=ink;
     x.shadowColor=(ink==="#FFFFFF"?"rgba(0,0,0,.35)":"rgba(255,255,255,.5)");x.shadowBlur=10;
-    try{x.letterSpacing="4px";}catch(e){}
-    x.font=fnum(30);x.globalAlpha=.95;x.fillText("PADD",CW-72,CH-84);
-    var wP=x.measureText("PADD").width;
-    try{x.letterSpacing="0px";}catch(e){}
+    x.font=fnum(30);x.globalAlpha=.95;
+    var wP=k2Spaced(x,"PADD",CW-72,CH-84,4,"right");
     x.restore();
-    kcPaw(x,CW-72-wP-14-56,CH-84-52,56,KLC[KC.logo||0].c);
+    kcPaw(x,CW-72-wP-14-56,CH-84-52,56,LG);
   }
   function bigStat(x0,y0,num,unit,numPx,unitPx,ink,acc){
     x.textAlign="left";x.fillStyle=acc||ink;x.font=fnum(numPx);
@@ -3519,7 +3745,6 @@ function kcDraw(){
     if(unit){x.fillStyle=ink;x.font=fnum(unitPx);x.globalAlpha=.85;x.fillText(unit,x0+wN+numPx*0.08,y0);x.globalAlpha=1;}
     return wN;
   }
-  // 숫자 + 라벨. 한글 라벨은 살짝 올리고 굵기를 낮춰 Oswald와 베이스라인·무게를 맞춘다.
   function smallStat(x0,y0,num,lab,numPx,ink){
     x.textAlign="left";x.fillStyle=ink;x.font=fnum(numPx);x.fillText(num,x0,y0);
     var wN=x.measureText(num).width, lp=Math.max(28,Math.round(numPx*0.40));
@@ -3528,10 +3753,14 @@ function kcDraw(){
     x.fillText(lab,x0+wN+10,y0-(latin?0:3));x.globalAlpha=1;
     return wN+10+x.measureText(lab).width;
   }
+  function logoWhite(yb){
+    x.save();x.fillStyle="#fff";x.shadowColor="rgba(0,0,0,.4)";x.shadowBlur=12;
+    x.font=fnum(30);var wP=k2Spaced(x,"PADD",CW-72,yb,4,"right");x.restore();
+    return wP;
+  }
 
   if(F===4){                                     /* ── 경로 (사진 + 큰 경로 + 스탯 4개) ── */
     bgPhoto();
-    // 경로를 조용한 자리에 크게. 심플과 같은 문법, 경로만 주인공.
     (function(){ if(!C.c)return;
       var cands=[[120,190,CW-240,560],[120,700,CW-240,560],[560,1000,460,520]];
       var box=KC.img?kcQuiet(x,cands):cands[0];
@@ -3549,10 +3778,8 @@ function kcDraw(){
       x.textAlign="left";x.fillStyle="#fff";x.font=fnum(66);x.fillText(c[0],cx,CH-190);
       x.font=isLatin(c[1])?fnum(26):flab(24);x.globalAlpha=.75;x.fillText(c[1],cx+2,CH-150);x.globalAlpha=1; });
     x.restore();
-    x.save();x.textAlign="right";x.fillStyle="#fff";x.shadowColor="rgba(0,0,0,.4)";x.shadowBlur=12;
-    try{x.letterSpacing="4px";}catch(e){} x.font=fnum(30);x.fillText("PADD",CW-72,CH-72);
-    var wP=x.measureText("PADD").width;x.restore();
-    kcPaw(x,CW-72-wP-14-56,CH-72-52,56,KLC[KC.logo||0].c);
+    var wP4=logoWhite(CH-72);
+    kcPaw(x,CW-72-wP4-14-56,CH-72-52,56,LG);
   }
   else if(F===3){                                /* ── 미니멀 (경로 + 거리만) ── */
     bgPhoto();
@@ -3565,159 +3792,730 @@ function kcDraw(){
   }
   else if(F===2){                                /* ── 빅넘버 (평소 대비가 주인공) ── */
     bgPhoto();
-    var ink=inkFor(40,120,760,720), acc=accentOf(ink);
-    header(ink);
-    x.textAlign="left";x.fillStyle=acc;x.font=fnum(560);
+    var ink2=inkFor(40,120,760,720), acc2=accentOf(ink2);
+    header(ink2);
+    x.textAlign="left";x.fillStyle=acc2;x.font=fnum(560);
     x.fillText(String(g),52,612);
-    x.fillStyle=ink;x.font=flab(34);x.globalAlpha=.85;
+    x.fillStyle=ink2;x.font=flab(34);x.globalAlpha=.85;
     x.fillText(L.vsl.replace("{n}",name),78,672);x.globalAlpha=1;
     routeLine(8,[[670,150,350,470],[150,720,CW-300,520],[600,1100,420,480]]);
-    var ink2=inkFor(40,CH-260,760,200);
+    var ink3=inkFor(40,CH-260,760,200);
     var cx=76, yb=CH-150;
-    cx+=smallStat(cx,yb,km,L.km,66,ink2)+48;
-    cx+=smallStat(cx,yb,String(mins),L.min,66,ink2)+48;
-    smallStat(cx,yb,String(pee),L.pee,66,ink2);
+    cx+=smallStat(cx,yb,km,L.km,66,ink3)+48;
+    cx+=smallStat(cx,yb,String(mins),L.min,66,ink3)+48;
+    smallStat(cx,yb,String(pee),L.pee,66,ink3);
     wordmark(inkFor(CW-360,CH-200,300,140));
   }
-  else if(F===0){                                /* ── 심플 (기본) · 한 줄 스탯 ── */
+  else if(F===0){                                /* ── 심플 · 한 줄 스탯 ── */
     bgPhoto();
     routeLine(6,[[640,150,380,520],[150,150,380,520],[600,1050,420,420]]);
-    // 아래 어두운 띠
-    var gr=x.createLinearGradient(0,CH-420,0,CH);gr.addColorStop(0,"rgba(0,0,0,0)");gr.addColorStop(1,"rgba(0,0,0,.55)");
-    x.fillStyle=gr;x.fillRect(0,CH-420,CW,420);
+    var gr0=x.createLinearGradient(0,CH-420,0,CH);gr0.addColorStop(0,"rgba(0,0,0,0)");gr0.addColorStop(1,"rgba(0,0,0,.55)");
+    x.fillStyle=gr0;x.fillRect(0,CH-420,CW,420);
     var inkH=inkFor(40,60,900,90);
     x.save();x.textAlign="left";x.fillStyle=inkH;x.globalAlpha=.85;x.font="600 26px 'IBM Plex Sans KR',sans-serif";
-    var place=(S.manual&&S.manual.label)?S.manual.label:"";
     x.fillText(name+"  ·  "+dstr+(place?"  ·  "+place:""),72,104);x.restore();
-    // 한 줄 스탯: 시간 · 거리 · 게이지
-    var yb=CH-150, cx=72; x.fillStyle="#fff";
+    var yb0=CH-150, cx0=72; x.fillStyle="#fff";
     x.save();x.shadowColor="rgba(0,0,0,.4)";x.shadowBlur=12;
     x.strokeStyle="#fff";x.lineWidth=3.2;x.lineCap="round";
-    x.beginPath();x.arc(cx+20,yb-18,14,0,7);x.stroke();
-    x.beginPath();x.moveTo(cx+20,yb-27);x.lineTo(cx+20,yb-18);x.lineTo(cx+26,yb-14);x.stroke();
-    x.beginPath();x.moveTo(cx+16,yb-36);x.lineTo(cx+24,yb-36);x.stroke();
-    cx+=56; x.textAlign="left";x.font=fnum(64);
-    var tm=ms2t((w.end||w.start)-w.start); x.fillText(tm,cx,yb); cx+=x.measureText(tm).width+56;
-    x.fillText(km,cx,yb); cx+=x.measureText(km).width+8; x.font=fnum(26);x.globalAlpha=.85;x.fillText(L.km,cx,yb-2);x.globalAlpha=1; cx+=x.measureText(L.km).width+56;
-    // 작은 링 + 점수
-    var acc=(C.c&&!C.mul)?C.c:"#DFFF3A";
-    x.lineWidth=5;x.strokeStyle="rgba(255,255,255,.3)";x.beginPath();x.arc(cx+22,yb-22,17,0,7);x.stroke();
-    x.strokeStyle=acc;x.beginPath();x.arc(cx+22,yb-22,17,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.max(.02,g/100));x.stroke();
-    cx+=58; x.font=fnum(64);x.fillText(String(g),cx,yb);
+    x.beginPath();x.arc(cx0+20,yb0-18,14,0,7);x.stroke();
+    x.beginPath();x.moveTo(cx0+20,yb0-27);x.lineTo(cx0+20,yb0-18);x.lineTo(cx0+26,yb0-14);x.stroke();
+    x.beginPath();x.moveTo(cx0+16,yb0-36);x.lineTo(cx0+24,yb0-36);x.stroke();
+    cx0+=56; x.textAlign="left";x.font=fnum(64);
+    var tm=ms2t((w.end||w.start)-w.start); x.fillText(tm,cx0,yb0); cx0+=x.measureText(tm).width+56;
+    x.fillText(km,cx0,yb0); cx0+=x.measureText(km).width+8; x.font=fnum(26);x.globalAlpha=.85;x.fillText(L.km,cx0,yb0-2);x.globalAlpha=1; cx0+=x.measureText(L.km).width+56;
+    var acc0=(C.c&&!C.mul)?C.c:"#DFFF3A";
+    x.lineWidth=5;x.strokeStyle="rgba(255,255,255,.3)";x.beginPath();x.arc(cx0+22,yb0-22,17,0,7);x.stroke();
+    x.strokeStyle=acc0;x.beginPath();x.arc(cx0+22,yb0-22,17,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.max(.02,g/100));x.stroke();
+    cx0+=58; x.font=fnum(64);x.fillText(String(g),cx0,yb0);
     x.restore();
-    // 로고 + PADD
-    x.save();x.textAlign="right";x.fillStyle="#fff";x.shadowColor="rgba(0,0,0,.4)";x.shadowBlur=12;
-    try{x.letterSpacing="4px";}catch(e){} x.font=fnum(30);x.fillText("PADD",CW-72,yb-12);
-    var wP=x.measureText("PADD").width;x.restore();
-    kcPaw(x,CW-72-wP-14-64,yb-64,64,KLC[KC.logo||0].c);
+    var wP0=logoWhite(yb0-12);
+    kcPaw(x,CW-72-wP0-14-64,yb0-64,64,LG);
   }
   else {                                         /* ── 스탯 (스트라바식 · 왼쪽 아래 블록) ── */
     bgPhoto();
     routeLine(8,[[150,200,CW-300,440],[150,660,CW-300,520],[600,900,420,420]]);
-    var ink=inkFor(40,CH-620,720,560), acc=accentOf(ink);
+    var ink1=inkFor(40,CH-620,720,560), acc1=accentOf(ink1);
     header(inkFor(40,60,900,90));
     var y0=CH-372;
-    var wK=bigStat(72,y0,km,L.km,220,64,ink,acc);
-    // 평소 대비는 같은 줄 오른쪽에, 거리와 같은 무게로
+    var wK=bigStat(72,y0,km,L.km,220,64,ink1,acc1);
+    x.font=fnum(64);
     var vx=72+wK+64+Math.round(220*0.08)+x.measureText(L.km).width+70;
-    x.textAlign="left";x.fillStyle=acc;x.font=fnum(150);x.fillText(String(g),vx,y0);
+    x.textAlign="left";x.fillStyle=acc1;x.font=fnum(150);x.fillText(String(g),vx,y0);
     var wG=x.measureText(String(g)).width;
-    x.fillStyle=ink;x.font=isLatin(L.vs)?fnum(30):flab(28);x.globalAlpha=.8;x.fillText(L.vs,vx+wG+14,y0-4);x.globalAlpha=1;
-    var cx=76, y1=y0+112;
-    cx+=smallStat(cx,y1,String(mins),L.min,68,ink)+44;
-    cx+=smallStat(cx,y1,String(pee),L.pee,68,ink)+44;
-    if(poo>0&&KC.showPoo)cx+=smallStat(cx,y1,String(poo),L.poo,68,ink)+44;
-    smallStat(cx,y1,sn,L.sniff,68,ink);
-    x.fillStyle=ink;x.globalAlpha=.35;x.fillRect(76,y1+42,420,2);x.globalAlpha=1;
+    x.fillStyle=ink1;x.font=isLatin(L.vs)?fnum(30):flab(28);x.globalAlpha=.8;x.fillText(L.vs,vx+wG+14,y0-4);x.globalAlpha=1;
+    var cx1=76, y1=y0+112;
+    cx1+=smallStat(cx1,y1,String(mins),L.min,68,ink1)+44;
+    cx1+=smallStat(cx1,y1,String(pee),L.pee,68,ink1)+44;
+    smallStat(cx1,y1,sn,L.sniff,68,ink1);
+    x.fillStyle=ink1;x.globalAlpha=.35;x.fillRect(76,y1+42,420,2);x.globalAlpha=1;
     wordmark(inkFor(CW-360,CH-200,300,140));
   }
-  cv.toBlob(function(b){
-    if(!b)return;
-    if(KC.url)URL.revokeObjectURL(KC.url);
-    KC.url=URL.createObjectURL(b);KC.blob=b;
-    $("kc-img").src=KC.url;
-  },"image/png");
 }
-function kcFrames(){
-  $("kc-frames").innerHTML=KCF.map(function(n,i){
-    return '<button class="big ghost" data-f="'+i+'" style="flex:1;padding:9px 0;font-size:13px'+
-      (i===KC.frame?';border-color:var(--amber);color:var(--amber);font-weight:700':'')+'">'+n+'</button>';
-  }).join("");
+function kcV1Render(F,s){
+  var cv=document.createElement("canvas");cv.width=Math.round(1080*s);cv.height=Math.round(1920*s);
+  var x=cv.getContext("2d");x.setTransform(s,0,0,s,0,0);
+  if(KC.img&&!KC.A){KC.fx=k2Focus(KC.img);KC.A=k2Analyze(KC.img);}
+  KCS=s; try{ kcV1Draw(x,F); }finally{ KCS=1; }
+  return cv;
 }
-function kcColors(){
-  $("kc-colors").innerHTML=KCC.map(function(c,i){
-    var on=(i===KC.color);
-    var inner=c.dot==="none"
-      ?'<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--ink-3)">✕</span>'
-      :'';
-    return '<button data-c="'+i+'" aria-label="'+c.n+'" aria-pressed="'+on+'" style="position:relative;width:34px;height:34px;border-radius:50%;'+
-      'background:'+(c.dot==="none"?"transparent":c.dot)+';border:2px solid '+(on?'var(--amber)':'rgba(0,0,0,.18)')+';'+
-      (on?'box-shadow:0 0 0 3px rgba(0,0,0,.08);':'')+'padding:0">'+inner+'</button>';
-  }).join("");
+
+/* ══ 꾹카드 v2 ══════════════════════════════════════════════════
+   인증하는 건 "나는 안심되는 좋은 주인이다", 근거는 꾹게이지.
+   문장은 넣지 않는다. 스탯 셋(거리·시간·꾹게이지)과 경로 모양, 로고만.
+   사진은 선택이다. 사진이 없어도 예쁘게 나오는 게 기본값이다.
+   좌표는 전부 1080×1920 설계 좌표. 미리보기는 같은 코드를 축소해서 그린다. */
+var K2={W:1080,H:1920,M:80};
+var KCF2=[                      // 첫 번째가 기본. 확정 사항: 기본 = 나이키식 한 줄 스트립
+  {id:"strip", n:"스트립"},
+  {id:"poster",n:"포스터"},
+  {id:"film",  n:"필름"},
+  {id:"route", n:"루트"},
+  {id:"mini",  n:"미니멀"}
+];
+/* 경로·게이지 강조색. KC.color==null 이면 프레임마다 기본값 */
+var KCC2=[
+  {n:"흰색",c:"#FFFFFF"},
+  {n:"볼트",c:"#DFFF3A"},
+  {n:"코랄",c:"#FF6B57"},
+  {n:"하늘",c:"#7FC7F2"},
+  {n:"잉크",c:"#16171A"},
+  {n:"없음",c:null}
+];
+var K2L={
+  ko:{dist:"거리",time:"시간",score:"꾹게이지",km:"km"},
+  en:{dist:"DISTANCE",time:"TIME",score:"VS USUAL",km:"km"}
+};
+var K2INK="#16171A",K2YEL="#EFB02F",K2PAPER="#F4F4F1",K2BLUE="#2E5EAA",K2CORAL="#FF6B57";
+var K2F={
+  num:function(px){return "700 "+px+"px Oswald,'IBM Plex Sans KR',sans-serif";},
+  kr:function(px,w){return (w||600)+" "+px+"px 'IBM Plex Sans KR',-apple-system,'Apple SD Gothic Neo',sans-serif";}
+};
+
+/* ── 사진 분석: 사진마다 한 번. 108×192 축소본(설계 좌표 ÷10) ── */
+function k2Analyze(img){
+  if(!img)return null;
+  var GW=108,GH=192,a=document.createElement("canvas");a.width=GW;a.height=GH;
+  var x=a.getContext("2d");k2Cover(x,img,0,0,GW,GH,0.42);
+  var d;try{d=x.getImageData(0,0,GW,GH).data;}catch(e){return null;}
+  var N=GW*GH,lum=new Float32Array(N),i,p;
+  for(i=0;i<N;i++){p=i*4;lum[i]=(0.2126*d[p]+0.7152*d[p+1]+0.0722*d[p+2])/255;}
+  function avg(x0,y0){var r=0,g=0,b=0,n=0;for(var y=y0;y<y0+14;y++)for(var xx=x0;xx<x0+14;xx++){var q=(y*GW+xx)*4;r+=d[q];g+=d[q+1];b+=d[q+2];n++;}return [r/n,g/n,b/n];}
+  // 아래 귀퉁이는 개·땅이 차지하는 경우가 많아서 위 두 귀퉁이만 배경으로 본다
+  var cs=[avg(0,0),avg(GW-14,0)];
+  // 칸마다: 배경 후보색과 가깝고(40 이내) 주변이 매끈하면 배경
+  var bg=new Uint8Array(N);
+  for(var y=1;y<GH-1;y++)for(var xx=1;xx<GW-1;xx++){
+    i=y*GW+xx;p=i*4;var best=1e9;
+    for(var k=0;k<cs.length;k++){var c=cs[k];var dd=Math.sqrt((d[p]-c[0])*(d[p]-c[0])+(d[p+1]-c[1])*(d[p+1]-c[1])+(d[p+2]-c[2])*(d[p+2]-c[2]));if(dd<best)best=dd;}
+    var edge=Math.abs(lum[i]-lum[i-1])+Math.abs(lum[i]-lum[i+1])+Math.abs(lum[i]-lum[i-GW])+Math.abs(lum[i]-lum[i+GW]);
+    bg[i]=(best<42&&edge<0.12)?1:0;
+  }
+  var I=new Uint32Array((GW+1)*(GH+1)),L=new Float64Array((GW+1)*(GH+1));
+  for(y=0;y<GH;y++){var rs=0,rl=0;for(xx=0;xx<GW;xx++){rs+=bg[y*GW+xx];rl+=lum[y*GW+xx];
+    I[(y+1)*(GW+1)+xx+1]=I[y*(GW+1)+xx+1]+rs;L[(y+1)*(GW+1)+xx+1]=L[y*(GW+1)+xx+1]+rl;}}
+  return {GW:GW,GH:GH,I:I,L:L};
 }
-function kcLogos(){
-  $("kc-logos").innerHTML=KLC.map(function(l,i){
-    var on=(i===(KC.logo||0));
-    return '<button data-l="'+i+'" aria-label="'+l.n+'" style="position:relative;width:34px;height:34px;border-radius:50%;background:#EADFC6;'+
-      'border:2px solid '+(on?'var(--amber)':'rgba(0,0,0,.18)')+';padding:0;display:flex;align-items:center;justify-content:center">'+
-      '<svg width="22" height="22" viewBox="0 0 100 100"><ellipse cx="22" cy="58" rx="13" ry="16" transform="rotate(-22 22 58)" fill="'+l.c[0]+'"/>'+
-      '<ellipse cx="50" cy="40" rx="13" ry="16" fill="'+l.c[1]+'"/><ellipse cx="78" cy="58" rx="13" ry="16" transform="rotate(22 78 58)" fill="'+l.c[2]+'"/></svg></button>';
-  }).join("");
+function k2Sum(T,A,bx,by,bw,bh){
+  var x0=Math.max(0,Math.round(bx/10)),y0=Math.max(0,Math.round(by/10)),x1=Math.min(A.GW,Math.round((bx+bw)/10)),y1=Math.min(A.GH,Math.round((by+bh)/10));
+  var W1=A.GW+1;if(x1<=x0||y1<=y0)return {s:0,n:0};
+  return {s:T[y1*W1+x1]-T[y0*W1+x1]-T[y1*W1+x0]+T[y0*W1+x0],n:(x1-x0)*(y1-y0)};
 }
-$("kc-logos").addEventListener("click",function(e){
-  var b=e.target.closest("[data-l]");if(!b)return; KC.logo=+b.dataset.l;kcLogos();kcDraw();
-});
+/* 설계 좌표 사각형의 평균 밝기 */
+function k2Lum(A,bx,by,bw,bh){if(!A)return 0.3;var r=k2Sum(A.L,A,bx,by,bw,bh);return r.n?r.s/r.n:0.3;}
+/* 경로 자리 찾기: zone 안에서 배경(개가 아닌 곳)이 93% 이상인 가장 큰 정사각형.
+   못 찾으면 null — 개 얼굴 위에 경로를 올리느니 안 그린다. */
+function k2FindBox(A,zone,maxS,minS){
+  if(!A)return null;
+  for(var s=maxS;s>=minS;s-=40){
+    var best=null,bs=0;
+    for(var y=zone[1];y+s<=zone[1]+zone[3];y+=20)for(var x=zone[0];x+s<=zone[0]+zone[2];x+=20){
+      var r=k2Sum(A.I,A,x,y,s,s);if(!r.n)continue;var q=r.s/r.n;
+      if(q>=0.93&&q>bs){bs=q;best=[x,y,s,s];}
+    }
+    if(best)return best;
+  }
+  return null;
+}
+
+/* ── 그리기 도구 ── */
+function k2Cover(x,img,dx,dy,dw,dh,fy){
+  var iw=img.width,ih=img.height,s=Math.max(dw/iw,dh/ih);
+  var sw=dw/s,sh=dh/s,sy=(ih-sh)*(fy==null?0.5:fy);
+  // 가로로 잘라야 할 때는 개가 있는 쪽(KC.fx)을 가운데에 둔다
+  var fx=(img===KC.img&&KC.fx!=null)?KC.fx:0.5;
+  var sx=Math.max(0,Math.min(iw-sw,fx*iw-sw/2));
+  x.drawImage(img,sx,sy,sw,sh,dx,dy,dw,dh);
+}
+/* 사진에서 개가 어디 있나: 위 두 귀퉁이 색과 다른 칸들의 무게중심(위쪽 65%만) */
+function k2Focus(img){
+  try{
+    var GW=64,GH=Math.max(8,Math.round(64*img.height/img.width)),c=document.createElement("canvas");c.width=GW;c.height=GH;
+    var x=c.getContext("2d");x.drawImage(img,0,0,GW,GH);var d=x.getImageData(0,0,GW,GH).data;
+    function avg(x0){var r=0,g=0,b=0,n=0;for(var y=0;y<6;y++)for(var xx=x0;xx<x0+6;xx++){var q=(y*GW+xx)*4;r+=d[q];g+=d[q+1];b+=d[q+2];n++;}return [r/n,g/n,b/n];}
+    var cs=[avg(0),avg(GW-6)],sx=0,sw=0;
+    for(var y=0;y<Math.round(GH*0.65);y++)for(var xx=0;xx<GW;xx++){var q=(y*GW+xx)*4,best=1e9;
+      cs.forEach(function(k){var dd=Math.abs(d[q]-k[0])+Math.abs(d[q+1]-k[1])+Math.abs(d[q+2]-k[2]);if(dd<best)best=dd;});
+      if(best>70){sx+=xx+0.5;sw++;}}
+    if(sw<GW*GH*0.03)return 0.5;
+    return Math.max(0.2,Math.min(0.8,sx/sw/GW));
+  }catch(e){return 0.5;}
+}
+var K2GRAIN=null;
+function k2Grain(){
+  if(K2GRAIN)return K2GRAIN;
+  var c=document.createElement("canvas");c.width=c.height=220;
+  var x=c.getContext("2d"),im=x.createImageData(220,220),seed=7;
+  function rnd(){seed=(seed*16807)%2147483647;return seed/2147483647;}
+  for(var i=0;i<im.data.length;i+=4){var v=108+rnd()*40;im.data[i]=im.data[i+1]=im.data[i+2]=v;im.data[i+3]=255;}
+  x.putImageData(im,0,0);K2GRAIN=c;return c;
+}
+function k2GrainOver(x,bx,by,bw,bh,alpha){
+  try{var p=x.createPattern(k2Grain(),"repeat");
+    x.save();x.globalCompositeOperation="overlay";x.globalAlpha=alpha;x.fillStyle=p;x.fillRect(bx,by,bw,bh);x.restore();}catch(e){}
+}
+/* 사진 보정: 대비·채도 살짝, 가장자리 비네트, 필름 그레인 */
+function k2Photo(x,img,bx,by,bw,bh,fy){
+  x.save();x.beginPath();x.rect(bx,by,bw,bh);x.clip();
+  if("filter" in x)x.filter="saturate(1.07) contrast(1.05)";
+  k2Cover(x,img,bx,by,bw,bh,fy);
+  if("filter" in x)x.filter="none";
+  var cx=bx+bw/2,cy=by+bh*0.46,r=Math.max(bw,bh)*0.8;
+  var g=x.createRadialGradient(cx,cy,r*0.45,cx,cy,r);
+  g.addColorStop(0,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(0,0,0,.28)");
+  x.fillStyle=g;x.fillRect(bx,by,bw,bh);x.restore();
+  k2GrainOver(x,bx,by,bw,bh,0.10);
+}
+/* 매끄러운 명암 띠 */
+function k2Scrim(x,y0,y1,a0,a1){
+  var g=x.createLinearGradient(0,y0,0,y1),n=8;
+  for(var i=0;i<=n;i++){var t=i/n,e=t*t*(3-2*t);g.addColorStop(t,"rgba(8,8,10,"+(a0+(a1-a0)*e).toFixed(3)+")");}
+  x.fillStyle=g;x.fillRect(0,Math.min(y0,y1),K2.W,Math.abs(y1-y0));
+}
+/* 사진 없을 때 바탕 셋: 노랑 포스터 / 밤 / 인화지 */
+function k2BgYellow(x){
+  x.fillStyle=K2YEL;x.fillRect(0,0,K2.W,K2.H);
+  var g=x.createRadialGradient(K2.W*0.3,K2.H*0.18,0,K2.W*0.3,K2.H*0.18,K2.H*0.9);
+  g.addColorStop(0,"rgba(255,236,170,.55)");g.addColorStop(0.55,"rgba(255,220,120,0)");g.addColorStop(1,"rgba(170,95,0,.30)");
+  x.fillStyle=g;x.fillRect(0,0,K2.W,K2.H);k2GrainOver(x,0,0,K2.W,K2.H,0.12);
+}
+function k2BgNight(x,glow,gx,gy){
+  var g=x.createLinearGradient(0,0,0,K2.H);g.addColorStop(0,"#1C1D22");g.addColorStop(1,"#0D0E11");
+  x.fillStyle=g;x.fillRect(0,0,K2.W,K2.H);
+  if(glow){var r=x.createRadialGradient(gx,gy,0,gx,gy,760);
+    r.addColorStop(0,k2Alpha(glow,0.16));r.addColorStop(1,k2Alpha(glow,0));x.fillStyle=r;x.fillRect(0,0,K2.W,K2.H);}
+  k2GrainOver(x,0,0,K2.W,K2.H,0.14);
+}
+function k2BgPaper(x){x.fillStyle=K2PAPER;x.fillRect(0,0,K2.W,K2.H);k2GrainOver(x,0,0,K2.W,K2.H,0.06);}
+function k2Alpha(hex,a){
+  var h=hex.replace("#","");if(h.length===3)h=h.split("").map(function(c){return c+c;}).join("");
+  var n=parseInt(h,16);return "rgba("+((n>>16)&255)+","+((n>>8)&255)+","+(n&255)+","+a+")";
+}
+/* 자간: 브라우저 지원과 상관없이 똑같이 나오게 글자마다 찍는다 */
+function k2Spaced(x,t,px,y,ls,align){
+  var w=0,i,ws=[];
+  for(i=0;i<t.length;i++){ws.push(x.measureText(t[i]).width);w+=ws[i]+(i<t.length-1?ls:0);}
+  var s=align==="right"?px-w:align==="center"?px-w/2:px;
+  x.save();x.textAlign="left";for(i=0;i<t.length;i++){x.fillText(t[i],s,y);s+=ws[i]+ls;}x.restore();
+  return w;
+}
+function k2SpacedW(x,t,ls){var w=0;for(var i=0;i<t.length;i++)w+=x.measureText(t[i]).width+(i<t.length-1?ls:0);return w;}
+/* 로고: 점 세 개 + PADD. (rx,base)=오른쪽 끝·기준선. align:"center"면 rx가 가운데 */
+function k2Logo(x,rx,base,sz,cols,ink,shadow,align){
+  x.save();x.font=K2F.num(Math.round(sz*0.5));
+  var ls=Math.round(sz*0.1),wT=k2SpacedW(x,"PADD",ls),gap=sz*0.2,tot=sz+gap+wT;
+  var left=align==="center"?rx-tot/2:rx-tot;
+  if(shadow){x.shadowColor="rgba(0,0,0,.35)";x.shadowBlur=12;}
+  x.fillStyle=ink;k2Spaced(x,"PADD",left+sz+gap,base,ls,"left");x.restore();
+  kcPaw(x,left,base-sz*0.83,sz,cols);
+}
+/* 경로 좌표 → 상자. [lat,lng,gap] 배열과 {lat,lng} 둘 다 받는다 */
+function k2Fit(pts,bx,by,bw,bh){
+  var P=[],i;
+  for(i=0;i<(pts||[]).length;i++){var p=pts[i];if(!p)continue;
+    var la=(p.lat!=null)?p.lat:p[0],ln=(p.lng!=null)?p.lng:p[1];
+    if(la==null||ln==null)continue;P.push([la,ln,(p[2]===1)]);}
+  if(P.length<4)return null;
+  var mnA=1e9,mxA=-1e9,mnO=1e9,mxO=-1e9;
+  P.forEach(function(p){mnA=Math.min(mnA,p[0]);mxA=Math.max(mxA,p[0]);mnO=Math.min(mnO,p[1]);mxO=Math.max(mxO,p[1]);});
+  var kx=Math.cos((mnA+mxA)/2*Math.PI/180);
+  var w=Math.max(1e-6,(mxO-mnO)*kx),h=Math.max(1e-6,mxA-mnA),s=Math.min(bw/w,bh/h);
+  var ox=bx+(bw-w*s)/2,oy=by+(bh-h*s)/2,out=[];
+  P.forEach(function(p){out.push([ox+(p[1]-mnO)*kx*s,oy+(mxA-p[0])*s,p[2]]);});
+  return out;
+}
+/* 너무 붙은 점은 솎고 모서리를 두 번 깎는다(차이킨). 끊긴 구간은 따로 그린다 */
+function k2Smooth(pl){
+  var segs=[],cur=[];
+  pl.forEach(function(p){if(p[2]&&cur.length){segs.push(cur);cur=[];}
+    var q=cur[cur.length-1];if(!q||Math.hypot(p[0]-q[0],p[1]-q[1])>3)cur.push([p[0],p[1]]);});
+  if(cur.length)segs.push(cur);
+  return segs.map(function(s){
+    for(var it=0;it<2&&s.length>2;it++){var o=[s[0]];
+      for(var i=0;i<s.length-1;i++){var a=s[i],b=s[i+1];
+        o.push([a[0]*0.75+b[0]*0.25,a[1]*0.75+b[1]*0.25],[a[0]*0.25+b[0]*0.75,a[1]*0.25+b[1]*0.75]);}
+      o.push(s[s.length-1]);s=o;}
+    return s;});
+}
+/* mode: "glow"(어두운 바탕) · "shadow"(사진 위) · "flat"(종이·노랑) */
+function k2Route(x,pts,box,col,wd,mode){
+  if(!box||!col)return false;
+  var pl=k2Fit(pts,box[0],box[1],box[2],box[3]);if(!pl)return false;
+  var segs=k2Smooth(pl);
+  function path(){x.beginPath();segs.forEach(function(s){x.moveTo(s[0][0],s[0][1]);for(var i=1;i<s.length;i++)x.lineTo(s[i][0],s[i][1]);});}
+  x.save();x.lineJoin="round";x.lineCap="round";x.strokeStyle=col;x.lineWidth=wd;
+  if(mode==="glow"){x.shadowColor=k2Alpha(col,0.6);x.shadowBlur=wd*3.4;path();x.stroke();}
+  else if(mode==="shadow"){x.shadowColor="rgba(0,0,0,.38)";x.shadowBlur=wd*2.2;path();x.stroke();}
+  x.shadowBlur=0;path();x.stroke();
+  var a=segs[0][0],z=segs[segs.length-1][segs[segs.length-1].length-1];
+  x.lineWidth=wd*0.7;x.beginPath();x.arc(a[0],a[1],wd*1.4,0,7);x.stroke();
+  x.fillStyle=col;x.beginPath();x.arc(z[0],z[1],wd*1.5,0,7);x.fill();
+  x.restore();return true;
+}
+/* 경로가 없는 산책(GPS 거부·아이폰 화면 꺼짐)에서 비는 자리를 로고 점 세 개로 채운다 */
+function k2Mark(x,cx,cy,sz,cols,glow){
+  x.save();
+  if(glow){x.shadowColor=k2Alpha(glow,0.55);x.shadowBlur=sz*0.12;}
+  kcPaw(x,cx-sz/2,cy-sz*0.52,sz,cols);
+  x.restore();
+}
+function k2Ring(x,cx,cy,r,lw,frac,col,trk){
+  x.save();x.lineCap="round";x.lineWidth=lw;
+  x.strokeStyle=trk;x.beginPath();x.arc(cx,cy,r,0,7);x.stroke();
+  x.strokeStyle=col;x.beginPath();x.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.max(0.03,Math.min(1,frac)));x.stroke();
+  x.restore();
+}
+
+/* ── 카드 값 ── */
+function k2Data(w){
+  var lang=KC.lang||"ko",L=K2L[lang];
+  var gd=null;try{gd=gaugeDetail(w);}catch(e){}
+  var g=(w.gauge!=null)?w.gauge:(gd&&gd.ready?gd.score:null);
+  var d=new Date(w.start),slotKo=SLOTS[w.slot||slotOf(w.start)]||"";
+  var MON=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+  var slotEn={"아침":"MORNING","낮":"AFTERNOON","저녁":"EVENING"}[slotKo]||"";
+  var date=lang==="en"?(MON[d.getMonth()]+" "+d.getDate()+" "+slotEn):((d.getMonth()+1)+"월 "+d.getDate()+"일 "+slotKo);
+  var place=lang==="en"?(w.placeEn||""):(w.place||((S.manual&&S.manual.label)||""));
+  return {L:L,lang:lang,g:(g==null?null:Math.round(g)),km:((w.dist||0)/1000).toFixed(1),
+    time:ms2t((w.end||w.start)-w.start),name:(S.dog&&S.dog.name)||(lang==="en"?"My dog":"우리 아이"),
+    date:date,place:place,pts:w.pts||[]};
+}
+function k2Meta(D){return D.place?(D.date+" · "+D.place):D.date;}
+
+/* 스탯 한 줄. items=[{lab,num,unit,g}] — 폭을 재서 줄 폭에 맞게 크기를 고르고 양 끝을 맞춘다 */
+function k2Row(x,items,left,right,base,px,T,align){
+  var i,ws=[];
+  function meas(p){
+    ws=[];var tot=0;
+    items.forEach(function(it){x.font=K2F.num(p);var w=x.measureText(it.num).width;
+      if(it.unit){x.font=K2F.num(Math.round(p*0.34));w+=p*0.07+x.measureText(it.unit).width;}
+      if(it.g!=null)w+=p*0.48+p*0.15;ws.push(w);tot+=w;});
+    return tot;
+  }
+  var gapMin=px*0.42,tot=meas(px);
+  while(tot+gapMin*(items.length-1)>right-left&&px>40){px-=4;gapMin=px*0.42;tot=meas(px);}
+  var gap=items.length>1?(align==="spread"?(right-left-tot)/(items.length-1):gapMin):0;
+  gap=Math.min(gap,px*1.1);
+  var cx=align==="center"?(left+right-tot-gap*(items.length-1))/2:left;
+  var lp=Math.max(26,Math.round(px*0.25)),ls=T.lang==="en"?Math.round(lp*0.14):0;
+  for(i=0;i<items.length;i++){
+    var it=items[i],sx=cx;
+    x.save();x.fillStyle=T.lab;x.font=K2F.kr(lp,600);x.textAlign="left";
+    if(ls)k2Spaced(x,it.lab,sx,base-px*1.0,ls,"left");else x.fillText(it.lab,sx,base-px*1.0);
+    x.restore();
+    x.save();x.fillStyle=T.ink;x.textAlign="left";
+    if(it.g!=null){var r=px*0.24,lw=Math.max(5,px*0.075);
+      k2Ring(x,sx+r,base-px*0.37,r,lw,it.g/100,T.acc,T.trk);sx+=px*0.48+px*0.15;}
+    x.font=K2F.num(px);x.fillText(it.num,sx,base);var wn=x.measureText(it.num).width;
+    if(it.unit){x.font=K2F.num(Math.round(px*0.34));x.globalAlpha=0.86;x.fillText(it.unit,sx+wn+px*0.07,base);}
+    x.restore();
+    cx+=ws[i]+gap;
+  }
+  return px;
+}
+function k2Items(D){
+  var it=[{lab:D.L.dist,num:D.km,unit:D.L.km},{lab:D.L.time,num:D.time}];
+  if(D.g!=null)it.push({lab:D.L.score,num:String(D.g),g:D.g});
+  return it;
+}
+
+/* ── 프레임 ── */
+function k2Draw(x,F,D,A){
+  var W=K2.W,H=K2.H,M=K2.M,img=KC.img,lg=KLC[KC.logo||0],logoC=lg.c;
+  var pick=(KC.color==null)?undefined:KCC2[KC.color].c;   // undefined=기본, null=경로 없음
+  function acc(def,avoid){var c=(pick===undefined)?def:pick;if(c&&avoid&&c===avoid)c=def;return c;}
+  function logoOn(dark){ // 바탕과 겹치는 단색 로고는 반대색으로
+    if(dark&&lg.mono==="black")return ["#FFFFFF","#FFFFFF","#FFFFFF"];
+    if(!dark&&lg.mono==="white")return [K2INK,K2INK,K2INK];
+    return logoC;
+  }
+  var WHITE={ink:"#FFFFFF",lab:"rgba(255,255,255,.68)",trk:"rgba(255,255,255,.24)",lang:D.lang};
+  var INKT={ink:K2INK,lab:"rgba(22,23,26,.55)",trk:"rgba(22,23,26,.14)",lang:D.lang};
+
+  if(F==="poster"){
+    var T;
+    if(img){k2Photo(x,img,0,0,W,H,0.42);k2Scrim(x,0,440,0.46,0);k2Scrim(x,H-860,H,0,0.78);T=WHITE;}
+    else{k2BgYellow(x);T=INKT;}
+    T.acc=acc(img?"#FFFFFF":K2INK,img?null:"#FFFFFF");
+    var box=img?k2FindBox(A,[M,300,W-M*2,H-300-900],560,300):[190,420,700,700];
+    var rc=T.acc;if(img&&box&&rc==="#FFFFFF"&&k2Lum(A,box[0],box[1],box[2],box[3])>0.62)rc=K2INK;  // 밝은 사진엔 잉크색
+    var drew=rc?k2Route(x,D.pts,box,rc,img?8:10,img&&rc!==K2INK?"shadow":"flat"):false;
+    if(!drew&&!img)k2Mark(x,W/2,770,440,logoOn(false).map(function(c){return c===K2YEL?K2INK:c;}));
+    if(!T.acc)T.acc=T.ink;
+    x.save();if(img){x.shadowColor="rgba(0,0,0,.28)";x.shadowBlur=12;}
+    x.fillStyle=T.ink;x.textAlign="left";x.font=K2F.kr(56,700);x.fillText(D.name,M,160);
+    x.font=K2F.kr(32,500);x.globalAlpha=img?0.84:0.72;x.fillText(k2Meta(D),M,214);x.restore();
+    k2Logo(x,W-M,156,66,img?logoC:logoOn(false).map(function(c){return c===K2YEL?K2INK:c;}),T.ink,!!img);
+    x.save();if(img){x.shadowColor="rgba(0,0,0,.26)";x.shadowBlur=16;}
+    k2Row(x,k2Items(D),M,W-M,H-168,134,T,"spread");x.restore();
+  }
+  else if(F==="film"){
+    k2BgPaper(x);
+    var p0=72,pw=W-144,ph=1248;
+    var a2=acc(K2INK,"#FFFFFF");
+    if(img)k2Photo(x,img,p0,p0,pw,ph,0.40);
+    else{x.fillStyle="#E4E3DE";x.fillRect(p0,p0,pw,ph);
+      if(!(a2&&k2Route(x,D.pts,[p0+130,p0+170,pw-260,ph-340],a2,12,"flat")))k2Mark(x,W/2,p0+ph/2,420,logoOn(false));}
+    var top=p0+ph,hb=top+268;
+    x.fillStyle=K2INK;x.textAlign="left";x.font=K2F.num(240);x.fillText(D.km,p0-8,hb);
+    var wk=x.measureText(D.km).width;x.font=K2F.num(80);x.fillText(D.L.km,p0-8+wk+16,hb);
+    if(img&&a2)k2Route(x,D.pts,[W-p0-300,top+64,300,236],a2,7,"flat");
+    var T2={ink:K2INK,lab:"rgba(22,23,26,.52)",trk:"rgba(22,23,26,.14)",lang:D.lang,acc:a2||K2INK};
+    var it2=[{lab:D.L.time,num:D.time}];if(D.g!=null)it2.push({lab:D.L.score,num:String(D.g),g:D.g});
+    k2Row(x,it2,p0,p0+620,hb+158,78,T2,"left");
+    x.save();x.fillStyle=K2INK;x.font=K2F.kr(30,700);x.textAlign="left";x.fillText(D.name,p0,H-80);
+    var wn=x.measureText(D.name).width;x.font=K2F.kr(30,500);x.globalAlpha=0.55;x.fillText(k2Meta(D),p0+wn+18,H-80);x.restore();
+    k2Logo(x,W-p0,H-80,50,logoOn(false),K2INK,false);
+  }
+  else if(F==="route"){
+    var a3=acc("#DFFF3A",K2INK);
+    if(img){
+      var t=document.createElement("canvas");t.width=36;t.height=64;          // 작게 그렸다 키우면 싸게 흐려진다
+      k2Cover(t.getContext("2d"),img,0,0,36,64,0.42);
+      x.save();x.imageSmoothingEnabled=true;x.imageSmoothingQuality="high";x.drawImage(t,0,0,W,H);x.restore();
+      x.fillStyle="rgba(12,13,16,.56)";x.fillRect(0,0,W,H);k2GrainOver(x,0,0,W,H,0.16);
+    } else k2BgNight(x,a3||"#DFFF3A",W/2,780);
+    x.save();x.fillStyle="#fff";x.textAlign="center";x.font=K2F.kr(48,700);x.fillText(D.name,W/2,204);
+    x.font=K2F.kr(30,500);x.globalAlpha=0.7;x.fillText(k2Meta(D),W/2,256);x.restore();
+    if(!(a3&&k2Route(x,D.pts,[170,370,W-340,840],a3,12,"glow")))k2Mark(x,W/2,790,420,logoOn(true),a3||"#DFFF3A");
+    var T3={ink:"#FFFFFF",lab:"rgba(255,255,255,.62)",trk:"rgba(255,255,255,.2)",lang:D.lang,acc:a3||"#FFFFFF"};
+    k2Row(x,k2Items(D),M,W-M,1560,116,T3,"center");
+    k2Logo(x,W/2,H-150,58,logoOn(true),"#FFFFFF",false,"center");
+  }
+  else if(F==="mini"){
+    /* 거리 하나가 주인공. 게이지는 시간 옆 작은 링 — 스탯끼리 같은 무게 */
+    var T4;
+    if(img){k2Photo(x,img,0,0,W,H,0.42);k2Scrim(x,H-760,H,0,0.7);T4=WHITE;T4.acc=acc("#DFFF3A",K2INK)||"#DFFF3A";}
+    else{ /* 사진 없으면 코랄 한 장 + 잉크 글자: 색면 포스터 */
+      x.fillStyle=K2CORAL;x.fillRect(0,0,W,H);
+      var gm=x.createRadialGradient(W*0.25,H*0.2,0,W*0.25,H*0.2,H*0.95);
+      gm.addColorStop(0,"rgba(255,200,170,.35)");gm.addColorStop(1,"rgba(120,20,10,.22)");x.fillStyle=gm;x.fillRect(0,0,W,H);
+      k2GrainOver(x,0,0,W,H,0.12);
+      T4=INKT;T4.acc=acc(K2INK,K2CORAL)||K2INK;}
+    var b4=H-316;
+    x.save();if(img){x.shadowColor="rgba(0,0,0,.3)";x.shadowBlur=14;}
+    x.fillStyle=T4.ink;x.textAlign="left";
+    x.font=K2F.num(200);x.fillText(D.km,M-6,b4);var w1=x.measureText(D.km).width;
+    x.font=K2F.num(64);x.fillText(D.L.km,M-6+w1+14,b4);
+    var y2=b4+104;x.font=K2F.num(62);x.fillText(D.time,M,y2);var wt=x.measureText(D.time).width;
+    if(D.g!=null){var gx=M+wt+50;
+      k2Ring(x,gx+21,y2-24,20,6,D.g/100,T4.acc,T4.trk);
+      x.font=K2F.num(62);x.fillText(String(D.g),gx+56,y2);}
+    x.font=K2F.kr(28,500);x.fillStyle=T4.lab;x.fillText(D.name+"  "+k2Meta(D),M,y2+64);
+    x.restore();
+    k2Logo(x,W-M,156,54,img?logoC:logoOn(false).map(function(c){return c===K2CORAL?K2INK:c;}),T4.ink,!!img);
+  }
+  else if(F==="strip"){
+    var T5;
+    if(img){k2Photo(x,img,0,0,W,H,0.42);k2Scrim(x,H-480,H,0,0.66);k2Scrim(x,0,300,0.34,0);T5=WHITE;}
+    else{x.fillStyle=K2BLUE;x.fillRect(0,0,W,H);
+      var gb=x.createRadialGradient(W*0.7,H*0.25,0,W*0.7,H*0.25,H*0.9);
+      gb.addColorStop(0,"rgba(120,170,255,.28)");gb.addColorStop(1,"rgba(10,20,60,.35)");x.fillStyle=gb;x.fillRect(0,0,W,H);
+      k2GrainOver(x,0,0,W,H,0.12);T5=WHITE;}
+    T5.acc=acc("#DFFF3A",K2INK);
+    var bx5=img?k2FindBox(A,[M,240,W-M*2,H-240-640],520,280):[220,400,640,640];
+    var rc5=(T5.acc==="#DFFF3A"&&img)?"#FFFFFF":(img?T5.acc:"#FFFFFF");
+    if(!img&&pick!==undefined)rc5=pick;
+    if(img&&bx5&&rc5==="#FFFFFF"&&k2Lum(A,bx5[0],bx5[1],bx5[2],bx5[3])>0.62)rc5=K2INK;
+    var drew5=rc5?k2Route(x,D.pts,bx5,rc5,img?6:9,img?(rc5===K2INK?"flat":"shadow"):"shadow"):false;
+    if(!drew5&&!img)k2Mark(x,W/2,760,360,["#FFFFFF","#FFFFFF","#FFFFFF"]);
+    if(!T5.acc)T5.acc="#DFFF3A";
+    x.save();x.fillStyle="#fff";x.globalAlpha=0.86;x.font=K2F.kr(30,600);x.textAlign="left";
+    x.fillText(D.name+"  "+k2Meta(D),M,124);x.restore();
+    var yb=H-150,cx=M;x.save();if(img){x.shadowColor="rgba(0,0,0,.35)";x.shadowBlur=12;}
+    x.fillStyle="#fff";x.font=K2F.num(68);x.textAlign="left";
+    x.fillText(D.time,cx,yb);cx+=x.measureText(D.time).width+52;
+    x.fillText(D.km,cx,yb);cx+=x.measureText(D.km).width+8;x.font=K2F.num(28);x.fillText(D.L.km,cx,yb);cx+=x.measureText(D.L.km).width+52;
+    if(D.g!=null){k2Ring(x,cx+21,yb-25,20,6,D.g/100,T5.acc,"rgba(255,255,255,.28)");x.font=K2F.num(68);x.fillText(String(D.g),cx+56,yb);}
+    x.restore();
+    k2Logo(x,W-M,yb-6,50,logoOn(true),"#fff",!!img);
+  }
+}
+/* 한 장 렌더: s=1 → 1080×1920, 미리보기는 s<1 */
+function k2Render(F,s){
+  var cv=document.createElement("canvas");cv.width=Math.round(K2.W*s);cv.height=Math.round(K2.H*s);
+  var x=cv.getContext("2d");x.setTransform(s,0,0,s,0,0);
+  if(KC.img&&!KC.A){KC.fx=k2Focus(KC.img);KC.A=k2Analyze(KC.img);}
+  k2Draw(x,F,k2Data(KC.w),KC.img?KC.A:null);
+  return cv;
+}
+
+
+/* ── 동네 이름 (카드 한 줄: "9월 16일 저녁 · 강서구 화곡동") ──
+   오픈스트리트맵 Nominatim 역지오코딩. 산책 한 번에 한 번, 좌표는 날씨와 같은 소수 셋째 자리(약 100m)로
+   뭉개서 보낸다. 결과는 이 기기에 캐시. 정책: 초당 1회 이하, 출처 표기. 바꿔야 하면 PLACE_API 한 줄. */
+var PLACE_API="https://nominatim.openstreetmap.org/reverse";
+var placeBusy=Promise.resolve();
+function walkCenter(w){
+  var la=0,ln=0,n=0;
+  (w.pts||[]).forEach(function(p){var a=(p&&p.lat!=null)?p.lat:(p?p[0]:null),b=(p&&p.lng!=null)?p.lng:(p?p[1]:null);
+    if(a!=null&&b!=null){la+=a;ln+=b;n++;}});
+  if(!n)(w.kkuks||[]).concat(w.poops||[]).forEach(function(k){if(k.lat!=null){la+=k.lat;ln+=k.lng;n++;}});
+  return n?{lat:la/n,lng:ln/n}:null;
+}
+function placeParse(j,lang){
+  if(!j)return "";
+  var toks=String(j.display_name||"").split(",").map(function(t){return t.trim();}).filter(Boolean);
+  var a=j.address||{};
+  ["quarter","suburb","neighbourhood","village","town","borough","city_district","county","city","province","state"].forEach(function(k){
+    if(a[k]&&toks.indexOf(a[k])<0)toks.push(a[k]);});
+  var dong="",gu="",si="";
+  if(lang==="en"){
+    toks.forEach(function(t){
+      if(!dong&&/-(dong|eup|myeon|ga)(\s|$)/i.test(t))dong=t;
+      else if(!gu&&/-(gu|gun)(\s|$)/i.test(t))gu=t;
+      else if(!si&&(/-si(\s|$)/i.test(t)||/^(Seoul|Busan|Daegu|Incheon|Gwangju|Daejeon|Ulsan|Sejong)/i.test(t)))si=t.replace(/\s*(Special|Metropolitan|Self-Governing).*$/i,"");
+    });
+    if(dong&&(gu||si))return dong+", "+(gu||si);
+    return gu&&si?gu+", "+si:(gu||dong||si||"");
+  }
+  toks.forEach(function(t){
+    if(/(대로|로|길)$/.test(t)||/^\d/.test(t))return;          // 도로명·번지·아파트 동 번호는 건너뜀
+    if(!dong&&/(동|읍|면|가)$/.test(t)&&t.length<=8)dong=t;
+    else if(!gu&&/(구|군)$/.test(t)&&t.length<=6)gu=t;
+    else if(!si&&/(시|특별자치도|도)$/.test(t))si=t;
+  });
+  var siShort=si.replace(/(특별시|광역시|특별자치시)$/,"");
+  if(dong&&gu)return gu+" "+dong;
+  if(dong&&si)return siShort+" "+dong;
+  if(gu&&si)return siShort+" "+gu;
+  return dong||gu||siShort||"";
+}
+function placeFor(w,lang){
+  var c=walkCenter(w);if(!c)return Promise.resolve("");
+  var k=c.lat.toFixed(3)+","+c.lng.toFixed(3)+"|"+lang;
+  S.placeCache=S.placeCache||{};
+  if(S.placeCache[k]!=null)return Promise.resolve(S.placeCache[k]);
+  if(!window.fetch||navigator.onLine===false)return Promise.resolve("");
+  var job=placeBusy.then(function(){
+    return fetch(PLACE_API+"?format=jsonv2&zoom=16&addressdetails=1&accept-language="+lang+
+      "&lat="+c.lat.toFixed(3)+"&lon="+c.lng.toFixed(3),{headers:{"Accept":"application/json"}})
+      .then(function(r){return r.ok?r.json():null;});
+  }).then(function(j){
+    var n=placeParse(j,lang);
+    var ks=Object.keys(S.placeCache);if(ks.length>60)delete S.placeCache[ks[0]];
+    S.placeCache[k]=n;save();return n;
+  },function(){return "";});
+  placeBusy=job.then(function(){return new Promise(function(r){setTimeout(r,1100);});});
+  return job;
+}
+function placeFill(w,lang,cb){
+  var has=lang==="en"?w.placeEn:w.place;
+  if(has!=null&&has!==""){if(cb)cb(false);return;}
+  placeFor(w,lang).then(function(n){
+    if(!n){if(cb)cb(false);return;}
+    if(lang==="en")w.placeEn=n;else w.place=n;
+    save();if(cb)cb(true);
+  });
+}
+
+/* ── 캔버스용 한글 글꼴 — 웹폰트는 글자 범위별로 쪼개져 있어 쓸 글자를 미리 불러야 한다 ── */
+var KCFONT={};
+function kcFonts(extra){
+  var t=((S.dog&&S.dog.name)||"우리 아이")+" "+(extra||"")+" 월일 아침 낮 저녁 거리 시간 꾹게이지 평소 대비 킁킁 0123456789·:.";
+  if(KCFONT[t])return KCFONT[t];
+  if(!(document.fonts&&document.fonts.load))return (KCFONT[t]=Promise.resolve());
+  var list=["700 100px Oswald","500 32px 'IBM Plex Sans KR'","600 32px 'IBM Plex Sans KR'","700 32px 'IBM Plex Sans KR'"];
+  KCFONT[t]=Promise.race([
+    Promise.all(list.map(function(f){return document.fonts.load(f,t).catch(function(){});})),
+    new Promise(function(r){setTimeout(r,2500);})]);
+  return KCFONT[t];
+}
+
+/* ── 공유: 웹은 Web Share, 앱(안드로이드)은 파일로 쓰고 공유 시트 ──
+   안드로이드 WebView엔 navigator.share도 <a download>도 없다. 그래서 앱에선 네이티브로 돈다. */
+function blobB64(b){return new Promise(function(res,rej){var r=new FileReader();
+  r.onload=function(){var s=String(r.result);res(s.slice(s.indexOf(",")+1));};r.onerror=rej;r.readAsDataURL(b);});}
+function saveShare(b,name,text,title){
+  if(NATIVE&&NP.Filesystem&&NP.Share){
+    blobB64(b).then(function(d){return NP.Filesystem.writeFile({path:name,data:d,directory:"CACHE"});})
+      .then(function(r){return NP.Share.share({title:title||name,text:text||undefined,files:[r.uri],dialogTitle:title||"공유"});})
+      .catch(function(e){var m=String((e&&(e.message||e.errorMessage))||e);
+        if(!/cancel/i.test(m))toast("공유를 못 했어요");});
+    return;
+  }
+  var f=null;try{f=new File([b],name,{type:b.type});}catch(e){}
+  if(f&&navigator.canShare&&navigator.canShare({files:[f]})){
+    navigator.share({files:[f],text:text||undefined}).catch(function(){});return;
+  }
+  var u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=name;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(u);},4000);
+  toast("파일로 저장했어요");
+}
+
+/* ── 꾹카드 시트 ──
+   미리보기는 옆으로 넘기는 5장. 가운데 온 게 선택. 공유는 선택된 한 장을 1080×1920 JPEG로. */
+var KC={w:null,img:null,A:null,fx:null,set:"v2",frame:"strip",color:null,color1:0,logo:0,lang:"ko",gen:0,blob:null,bkey:"",imgId:0};
+var DL_LINK="https://062-sibi.github.io/kkukkkukkkuk/download.html";
+function kcPrefLoad(){
+  var p=S.kcPref||{};
+  KC.set=p.set==="v1"?"v1":"v2";KC.frame=p.frame||kcList()[0].id;
+  KC.color=(p.color==null?null:p.color);KC.color1=p.color1||0;KC.logo=p.logo||0;KC.lang=p.lang==="en"?"en":"ko";
+  if(!kcList().some(function(f){return f.id===KC.frame;}))KC.frame=kcList()[0].id;
+}
+function kcPrefSave(){S.kcPref={set:KC.set,frame:KC.frame,color:KC.color,color1:KC.color1,logo:KC.logo,lang:KC.lang};save();}
+function kcList(){return KC.set==="v1"?KCF.map(function(n,i){return {id:"v1_"+i,n:n,v1:i};}):KCF2;}
+function kcCanvas(id,s){
+  if(id.indexOf("v1_")===0)return kcV1Render(+id.slice(3),s);
+  return k2Render(id,s);
+}
+function kcKey(){return [KC.set,KC.frame,KC.color,KC.color1,KC.logo,KC.lang,KC.imgId,KC.w&&KC.w.start,KC.w&&KC.w.place,KC.w&&KC.w.placeEn].join("|");}
+function kcBuild(){
+  var L=kcList(),rail=$("kc-rail");
+  rail.innerHTML=L.map(function(f){
+    return '<button class="kc-slide" data-f="'+f.id+'" aria-label="'+f.n+'"><span class="kc-ph"></span></button>';}).join("");
+  $("kc-dots").innerHTML=L.map(function(f){return '<i data-f="'+f.id+'"></i>';}).join("");
+  kcMeta();kcSwatches();
+  requestAnimationFrame(function(){kcCenter(false);kcRenderAll();});
+}
+function kcMeta(){
+  var L=kcList(),cur=L.filter(function(f){return f.id===KC.frame;})[0]||L[0];
+  $("kc-fname").textContent=cur.n;
+  Array.prototype.forEach.call($("kc-dots").children,function(i){i.classList.toggle("on",i.dataset.f===KC.frame);});
+  Array.prototype.forEach.call($("kc-rail").children,function(b){b.classList.toggle("on",b.dataset.f===KC.frame);
+    b.setAttribute("aria-pressed",b.dataset.f===KC.frame?"true":"false");});
+  $("kc-old").textContent=KC.set==="v1"?"새 디자인으로":"이전 디자인";
+}
+function kcCenter(smooth){
+  var rail=$("kc-rail"),b=rail.querySelector('[data-f="'+KC.frame+'"]');if(!b)return;
+  var left=rail.scrollLeft+(b.getBoundingClientRect().left-rail.getBoundingClientRect().left)-(rail.clientWidth-b.clientWidth)/2;
+  try{rail.scrollTo({left:left,behavior:smooth?"smooth":"auto"});}catch(e){rail.scrollLeft=left;}
+}
+function kcScale(){
+  var b=$("kc-rail").querySelector(".kc-slide");var w=b?b.clientWidth:200;
+  return Math.max(0.12,Math.min(2,window.devicePixelRatio||1)*w/1080);
+}
+function kcRenderAll(){
+  var gen=++KC.gen,rail=$("kc-rail");
+  var all=Array.prototype.slice.call(rail.children);
+  var idx=all.map(function(b){return b.dataset.f;}).indexOf(KC.frame);
+  var slides=all.map(function(b,i){return {b:b,d:Math.abs(i-idx)};})       // 선택된 것부터, 가까운 순서로
+    .sort(function(p,q){return p.d-q.d;}).map(function(o){return o.b;});
+  var extra=(KC.w&&((KC.lang==="en"?KC.w.placeEn:KC.w.place)||""))||"";
+  kcFonts(extra).then(function(){
+    var s=kcScale(),i=0;
+    (function next(){
+      if(gen!==KC.gen||i>=slides.length){if(gen===KC.gen)kcPrepare();return;}
+      var b=slides[i++];
+      try{var cv=kcCanvas(b.dataset.f,s);cv.className="kc-cv";b.innerHTML="";b.appendChild(cv);}catch(e){}
+      setTimeout(next,i===1?0:16);
+    })();
+  });
+}
+/* 공유 직전 렌더는 iOS에서 "사용자 동작 없이 공유" 거절을 부른다. 선택이 멈추면 미리 만들어 둔다 */
+function kcPrepare(){
+  var key=kcKey();if(KC.bkey===key&&KC.blob)return;
+  clearTimeout(KC._pt);
+  KC._pt=setTimeout(function(){
+    var cv;try{cv=kcCanvas(KC.frame,1);}catch(e){return;}
+    cv.toBlob(function(b){if(b&&key===kcKey()){KC.blob=b;KC.bkey=key;}},"image/jpeg",0.93);
+  },250);
+}
+function kcSwatches(){
+  var v1=KC.set==="v1",html;
+  if(v1){
+    html=KCC.map(function(c,i){var on=(i===KC.color1);
+      return '<button class="sw'+(c.dot==="none"?" none":"")+'" data-c="'+i+'" aria-label="경로 '+c.n+'" aria-pressed="'+on+'" style="--c:'+(c.dot==="none"?"transparent":c.dot)+'"></button>';}).join("");
+  } else {
+    html='<button class="sw auto" data-c="-1" aria-label="경로 자동" aria-pressed="'+(KC.color==null)+'"></button>'+
+      KCC2.map(function(c,i){var on=(KC.color===i);
+      return '<button class="sw'+(c.c?"":" none")+'" data-c="'+i+'" aria-label="경로 '+c.n+'" aria-pressed="'+on+'" style="--c:'+(c.c||"transparent")+'"></button>';}).join("");
+  }
+  $("kc-colors").innerHTML=html;
+  $("kc-logos").innerHTML=KLC.map(function(l,i){var on=(i===(KC.logo||0));
+    return '<button class="sw logo" data-l="'+i+'" aria-label="로고 '+l.n+'" aria-pressed="'+on+'">'+
+      '<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="22" cy="58" rx="13" ry="16" transform="rotate(-22 22 58)" fill="'+l.c[0]+'"/>'+
+      '<ellipse cx="50" cy="40" rx="13" ry="16" fill="'+l.c[1]+'"/><ellipse cx="78" cy="58" rx="13" ry="16" transform="rotate(22 78 58)" fill="'+l.c[2]+'"/></svg></button>';}).join("");
+  Array.prototype.forEach.call(document.querySelectorAll("#kc-lang button"),function(b){b.setAttribute("aria-pressed",b.dataset.v===KC.lang?"true":"false");});
+  $("kc-drop").hidden=!KC.img;
+}
 function kcOpen(wk){
   if(!wk)return;
-  KC.w=wk;KC.frame=0;KC.showPoo=false;if(KC.logo==null)KC.logo=0;kcLogos();
-  if(KC.color==null)KC.color=0;
-  kcFrames();kcColors();$("kcsheet").classList.add("on");
-  if(document.fonts&&document.fonts.load){
-    Promise.all([document.fonts.load("700 100px Oswald"),document.fonts.load("900 30px Hahmlet")])
-      .then(kcDraw,kcDraw);
-  } else kcDraw();
+  KC.w=wk;KC.blob=null;KC.bkey="";kcPrefLoad();
+  $("kcsheet").classList.add("on");beta("cardOpen");
+  kcBuild();
+  placeFill(wk,KC.lang,function(ch){if(ch&&KC.w===wk&&$("kcsheet").classList.contains("on"))kcRenderAll();});
 }
-$("kc-colors").addEventListener("click",function(e){
-  var b=e.target.closest("[data-c]");if(!b)return;
-  KC.color=+b.dataset.c;kcColors();kcDraw();
-});
-$("kc-cam").addEventListener("click",function(){$("kc-camf").click();});
-$("kc-lang").addEventListener("click",function(){
-  KC.lang=(KC.lang==="en")?"ko":"en";
-  this.textContent=(KC.lang==="en")?"한":"EN";
-  this.style.borderColor=(KC.lang==="en")?"var(--amber)":"";
-  kcDraw();
-});
-$("kc-frames").addEventListener("click",function(e){
-  var b=e.target.closest("[data-f]");if(!b)return;
-  KC.frame=+b.dataset.f;kcFrames();kcDraw();
-});
-$("kc-pic").addEventListener("click",function(){$("kc-file").click();});
-function kcLoadFile(){
-  var f=this.files&&this.files[0];if(!f)return;
-  var done=function(im){KC.img=im;kcDraw();};
-  if(window.createImageBitmap){
-    createImageBitmap(f,{imageOrientation:"from-image"}).then(done)
-      .catch(function(){var u=URL.createObjectURL(f),i=new Image();i.onload=function(){done(i);};i.src=u;});
-  } else {var u=URL.createObjectURL(f),i=new Image();i.onload=function(){done(i);};i.src=u;}
-  this.value="";                                   // 같은 사진을 다시 골라도 change가 뜨게
-}
-$("kc-file").addEventListener("change",kcLoadFile);
-$("kc-camf").addEventListener("change",kcLoadFile);
-$("kc-close").addEventListener("click",function(){$("kcsheet").classList.remove("on");});
-$("kcsheet").addEventListener("click",function(e){if(e.target===this)this.classList.remove("on");});
-$("kc-share").addEventListener("click",function(){
-  if(!KC.blob){toast("카드를 만드는 중이에요");return;}
-  var w=KC.w,g=(w.gauge==null?"":w.gauge);
-  var f=new File([KC.blob],"꾹카드.png",{type:"image/png"});
-  var txt=((S.dog&&S.dog.name)||"우리 아이")+" 오늘 산책 "+((w.dist||0)/1000).toFixed(1)+"km · 평소 대비 "+g;
-  if(navigator.canShare&&navigator.canShare({files:[f]})){
-    navigator.share({files:[f],text:txt}).catch(function(){});
-  }else{
-    var a=document.createElement("a");a.href=KC.url;a.download="꾹카드.png";a.click();
-    toast("카드를 저장했어요");
+function kcClose(){$("kcsheet").classList.remove("on");KC.gen++;}
+(function(){
+  var rail=$("kc-rail");
+  function pick(){
+    var r=rail.getBoundingClientRect(),cx=r.left+r.width/2,best=null,bd=1e9;
+    Array.prototype.forEach.call(rail.children,function(b){var q=b.getBoundingClientRect(),d=Math.abs(q.left+q.width/2-cx);if(d<bd){bd=d;best=b;}});
+    if(best&&best.dataset.f!==KC.frame){KC.frame=best.dataset.f;kcMeta();kcPrepare();}
   }
-});
+  rail.addEventListener("scroll",function(){clearTimeout(rail._t);rail._t=setTimeout(pick,80);},{passive:true});
+  rail.addEventListener("click",function(e){var b=e.target.closest(".kc-slide");if(!b)return;
+    if(b.dataset.f!==KC.frame){KC.frame=b.dataset.f;kcMeta();kcCenter(true);kcPrepare();}});
+  $("kc-dots").addEventListener("click",function(e){var i=e.target.closest("[data-f]");if(!i)return;
+    KC.frame=i.dataset.f;kcMeta();kcCenter(true);kcPrepare();});
+  $("kc-colors").addEventListener("click",function(e){var b=e.target.closest("[data-c]");if(!b)return;
+    var c=+b.dataset.c;if(KC.set==="v1")KC.color1=c;else KC.color=(c<0?null:c);kcSwatches();kcRenderAll();});
+  $("kc-logos").addEventListener("click",function(e){var b=e.target.closest("[data-l]");if(!b)return;
+    KC.logo=+b.dataset.l;kcSwatches();kcRenderAll();});
+  $("kc-lang").addEventListener("click",function(e){var b=e.target.closest("[data-v]");if(!b||b.dataset.v===KC.lang)return;
+    KC.lang=b.dataset.v;kcSwatches();kcRenderAll();
+    var wk=KC.w;placeFill(wk,KC.lang,function(ch){if(ch&&KC.w===wk)kcRenderAll();});});
+  $("kc-old").addEventListener("click",function(){
+    KC.set=KC.set==="v1"?"v2":"v1";KC.frame=kcList()[0].id;kcBuild();});
+  $("kc-cam").addEventListener("click",function(){$("kc-camf").click();});
+  $("kc-pic").addEventListener("click",function(){$("kc-file").click();});
+  $("kc-drop").addEventListener("click",function(){KC.img=null;KC.A=null;KC.fx=null;KC.imgId++;kcSwatches();kcRenderAll();});
+  function useImg(im){
+    /* 1200만 화소 사진을 통째로 들고 있으면 저가 폰이 죽는다. 긴 변 2048로 줄여 둔다 */
+    var mx=2048,s=Math.min(1,mx/Math.max(im.width,im.height)),c=document.createElement("canvas");
+    c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+    if(im.close)try{im.close();}catch(e){}
+    KC.img=c;KC.A=null;KC.fx=null;KC.imgId++;kcSwatches();kcRenderAll();
+  }
+  function load(){
+    var f=this.files&&this.files[0];this.value="";if(!f)return;
+    function viaImg(){var u=URL.createObjectURL(f),i=new Image();i.onload=function(){useImg(i);URL.revokeObjectURL(u);};
+      i.onerror=function(){toast("이 사진은 못 읽었어요");};i.src=u;}
+    if(window.createImageBitmap)createImageBitmap(f,{imageOrientation:"from-image"}).then(useImg,viaImg);else viaImg();
+  }
+  $("kc-file").addEventListener("change",load);
+  $("kc-camf").addEventListener("change",load);
+  $("kc-close").addEventListener("click",kcClose);
+  $("kcsheet").addEventListener("click",function(e){if(e.target===this)kcClose();});
+  $("kc-share").addEventListener("click",function(){
+    var btn=this,w=KC.w;if(!w||btn.disabled)return;
+    var D=k2Data(w),stamp=new Date(w.start);
+    var nm="kkukcard_"+stamp.getFullYear()+pad(stamp.getMonth()+1)+pad(stamp.getDate())+".jpg";
+    var txt=D.name+" "+D.km+"km · "+D.time+(D.g!=null?" · 꾹게이지 "+D.g:"")+"\n꾹꾹이 "+DL_LINK+"?r=card";
+    function go(b){
+      kcPrefSave();beta("cardShare");beta("f_"+KC.frame);if(KC.img)beta("cardPhoto");
+      saveShare(b,nm,txt,"꾹카드");
+    }
+    if(KC.blob&&KC.bkey===kcKey()){go(KC.blob);return;}
+    btn.disabled=true;btn.textContent="만드는 중…";
+    kcFonts().then(function(){
+      var cv=kcCanvas(KC.frame,1);
+      cv.toBlob(function(b){btn.disabled=false;btn.textContent="공유하기";
+        if(!b){toast("카드를 못 만들었어요");return;}KC.blob=b;KC.bkey=kcKey();go(b);},"image/jpeg",0.93);
+    });
+  });
+})();
 
 
 /* ══ 내보내기 · 가져오기 ════════════════════════════════════════
@@ -3744,6 +4542,7 @@ $("importfile").addEventListener("change",function(){
 $("export").addEventListener("click",function(){
   var t=JSON.stringify(S);
   var d=new Date(), nm="꾹꾹이_"+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+".json";
+  if(NATIVE){saveShare(new Blob([t],{type:"application/json"}),"kkukkkuki_"+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+".json","","꾹꾹이 기록 백업");return;}
   try{
     var b=new Blob([t],{type:"application/json"}), u=URL.createObjectURL(b);
     var a=document.createElement("a"); a.href=u; a.download=nm; a.click();
@@ -3772,7 +4571,8 @@ document.querySelectorAll("#tabs button").forEach(function(b){
     else renderHome();});});
 /* 자동 테스트용 훅. 앱은 이걸 쓰지 않는다 — 헤드리스 브라우저에서 계산을 검증하려고 연다.
    저장되는 값은 전부 이 기기 localStorage 안에 있고 새로 노출되는 비밀은 없다. */
-window.__kk={get S(){return S;},baseline:baseline,gaugeDetail:gaugeDetail,
+window.__kk={get S(){return S;},get KC(){return KC;},gpsFix:gpsFix,placeParse:placeParse,betaText:betaText,kcOpen:kcOpen,
+  baseline:baseline,gaugeDetail:gaugeDetail,
   slotOf:slotOf,gradeAt:gradeAt,roadTemp:roadTemp,solar:solar,renderHome:renderHome};
 boot();
 })();

@@ -1,18 +1,32 @@
 {
-  "name": "꾹꾹꾹",
-  "short_name": "꾹꾹꾹",
+  "name": "꾹꾹이",
+  "short_name": "꾹꾹이",
+  "description": "우리 개 기준으로 오늘 산책이 충분했는지. 끝나면 한 장으로.",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#F4F2ED",
   "theme_color": "#A9713F",
   "lang": "ko",
-  "description": "나가기 전에 바닥이 몇 도인지 보는 반려견 산책 앱",
   "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "icon.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "id": "./"
 }
