@@ -97,7 +97,14 @@ edit(path.join(RES, 'values', 'strings.xml'), s => mustReplace(s, '</resources>'
   '    <string name="capacitor_background_geolocation_notification_color">#EFB02F</string>\n</resources>',
   'strings.xml'));
 
-// 5) 버전 · 릴리스 서명 (키는 워크플로가 저장소 비밀값에서 풀어 app/release.p12로 둔다)
+// 5) 카메라: PWC 기록 인증샷을 앱 안에서 찍는다(라이브 카메라 · getUserMedia).
+//    권한을 적어 두지 않으면 웹뷰가 카메라를 바로 거절한다. 카메라 없는 기기도 설치는 되게 required=false
+edit(path.join(APP, 'src', 'main', 'AndroidManifest.xml'), s => mustReplace(s,
+  '<uses-permission android:name="android.permission.INTERNET" />',
+  '<uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-feature android:name="android.hardware.camera" android:required="false" />',
+  'camera permission'));
+
+// 6) 버전 · 릴리스 서명 (키는 워크플로가 저장소 비밀값에서 풀어 app/release.p12로 둔다)
 edit(path.join(APP, 'build.gradle'), s => {
   s = mustReplace(s, /versionCode \d+/, `versionCode ${ver.code}`, 'versionCode');
   s = mustReplace(s, /versionName "[^"]*"/, `versionName "${ver.name}"`, 'versionName');
