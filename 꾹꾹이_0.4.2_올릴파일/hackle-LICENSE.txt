@@ -1,0 +1,6 @@
+hackle.min.js
+- 출처: npm 패키지 @hackler/javascript-sdk 12.2.1 (2026-10-08 배포)의 lib/index.browser.umd.min.js를 그대로 옮긴 파일
+- 만든 곳: Hackle (https://www.hackle.io/)
+- 라이선스: ISC (패키지 package.json 기준)
+- sha256: 98a29be604e70d4061f4f1cf901cc3a650de95df17cd393060b8fa91817fa3d5
+- 파일 안에 함께 묶인 core-js(MIT), uuid(MIT)의 고지는 원본 파일에 있는 그대로 둡니다.

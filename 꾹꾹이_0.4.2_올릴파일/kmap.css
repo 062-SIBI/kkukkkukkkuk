@@ -1,0 +1,103 @@
+/* ══ 귀여운 지도 ══ */
+.km{position:relative;overflow:hidden;border-radius:14px;background:#FFF5E4;isolation:isolate;-webkit-tap-highlight-color:transparent;touch-action:pan-y}
+.km .km-base{position:absolute;inset:0}
+.km .km-base.km-flat{background:repeating-linear-gradient(0deg,transparent 0 47px,rgba(70,100,50,.08) 47px 48px)}
+.km canvas.km-ov{position:absolute;left:0;top:0;pointer-events:none}
+.km-ui{position:absolute;inset:0;pointer-events:none;z-index:3}
+.km-ui>*{pointer-events:auto}
+.km-chip{position:absolute;left:10px;top:10px;display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;
+  background:rgba(255,255,255,.95);color:#1B1712;font-size:12.5px;font-weight:700;box-shadow:0 1px 3px rgba(60,40,20,.14);pointer-events:none}
+.km-leg{position:absolute;left:10px;bottom:24px;display:flex;align-items:center;gap:10px;padding:7px 11px;border-radius:999px;color:#1B1712;
+  background:rgba(255,255,255,.94);box-shadow:0 1px 3px rgba(60,40,20,.15);font-size:12.5px;font-weight:700;pointer-events:none}
+.km-leg span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.km-me{position:absolute;right:10px;bottom:40px;width:44px;height:44px;border-radius:50%;border:0;background:#FFFFFF;color:#1B1712;
+  display:none;place-items:center;box-shadow:0 1px 3px rgba(60,40,20,.2),0 6px 16px -8px rgba(60,40,20,.35)}
+.km-ui.moved .km-me{display:grid}
+.km-me:active{transform:scale(.95)}
+.km .maplibregl-ctrl-attrib{font-size:9.5px;line-height:1.45;padding:1px 6px;margin:0;background:rgba(255,255,255,.7);border-radius:8px 0 0 0}
+.km .maplibregl-ctrl-attrib a{color:#5C5246}
+.km .maplibregl-cooperative-gesture-screen{font-family:var(--pui);font-size:15px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .km:not(.km-night) .maplibregl-canvas,:root:not([data-theme="light"]) .km:not(.km-night) canvas.km-ov{filter:brightness(.82) saturate(.92)}}
+:root[data-theme="dark"] .km:not(.km-night) .maplibregl-canvas,:root[data-theme="dark"] .km:not(.km-night) canvas.km-ov{filter:brightness(.82) saturate(.92)}
+
+/* 산책 상세 */
+#w-map{height:min(46vh,360px);margin:12px 0 2px}
+#w-map[hidden]{display:none}
+
+/* 꾹·똥: 산책 동네 */
+.km-area{padding:14px}
+.km-area .km-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+.km-area .km-h b{font-size:17px;font-weight:800;color:var(--ink)}
+.km-area .km-h span{font-size:12.5px;color:var(--ink-3)}
+#ka-map{height:min(78vw,320px)}
+.km-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:10px 0 4px}
+.km-stats .s{display:flex;flex-direction:column;gap:1px;padding:9px 10px;border-radius:12px;background:var(--panel-2)}
+.km-stats .v{font-family:var(--pnum);font-size:21px;font-weight:700;line-height:1.05;color:var(--ink)}
+.km-stats .v small{font-size:12px;font-weight:600;margin-left:2px;color:var(--ink-3)}
+.km-stats .k{font-size:11.5px;color:var(--ink-2)}
+.km-row{width:100%;display:flex;align-items:center;gap:10px;padding:9px 2px;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);text-align:left;font:inherit;min-height:48px}
+.km-row b{flex:1 1 auto;min-width:0;font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.km-row .km-st{flex:none;color:var(--ink)}
+.km-row.on{background:var(--panel-2);border-radius:12px;border-top-color:transparent;padding-left:8px;padding-right:8px}
+.km-rk{width:24px;height:24px;flex:none;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font-family:var(--pnum);font-size:13px;font-weight:700}
+.km-cnt{font-family:var(--pnum);font-size:19px;font-weight:700}
+.km-cnt small{font-family:var(--pui);font-size:12px;font-weight:600;color:var(--ink-3);margin-left:2px}
+.km-more{width:100%;border:0;border-top:1px solid var(--line);background:none;color:var(--ink-2);font:inherit;font-size:13.5px;font-weight:700;padding:12px 0 4px;min-height:44px}
+.km-pick{display:flex;align-items:center;gap:10px;margin-top:8px;padding:10px 12px;border-radius:12px;background:var(--panel-2)}
+.km-pick[hidden]{display:none}
+.km-pick .t{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px}
+.km-pick .t b{font-size:15px;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.km-pick .t span{font-size:12.5px;color:var(--ink-3)}
+.km-pick button{flex:none;min-height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;font-size:13.5px;font-weight:700}
+#ka-reco{margin-top:10px}
+#ka-reco[hidden],#ka-empty[hidden],#ka-body[hidden]{display:none}
+#ka-note{margin-top:9px}
+
+/* 추천 길 시트 */
+#r-map{height:min(50vh,400px);margin:10px 0;touch-action:none}
+#krsheet .km-sub{font-size:13px;color:var(--ink-3);margin-top:3px}
+.km-cards{display:flex;flex-direction:column;gap:8px;margin-top:2px}
+.km-card{display:grid;grid-template-columns:1fr auto;align-items:center;gap:4px 10px;width:100%;padding:12px 14px;border-radius:14px;border:1.5px solid var(--line);
+  background:var(--panel);color:var(--ink);font:inherit;text-align:left;min-height:64px;transition:border-color .15s ease,background-color .15s ease}
+.km-card b{font-size:16px;font-weight:700}
+.km-card .m{grid-row:1;grid-column:2;font-size:13px;color:var(--ink-3);white-space:nowrap}
+.km-card .m em{font-style:normal;font-family:var(--pnum);font-size:19px;font-weight:700;color:var(--ink);margin-right:1px}
+.km-card .cs{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.km-card .c{font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--panel-2);color:var(--ink-2)}
+.km-card .c.warn{background:var(--amber-tint);color:var(--amber)}
+.km-card .c.new{background:var(--sky-t);color:#1F64A8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .km-card .c.new{color:#A9D3FF}}
+:root[data-theme="dark"] .km-card .c.new{color:#A9D3FF}
+.km-card.on{border-color:var(--ink);background:var(--panel-2)}
+.km-card:active{transform:scale(.98)}
+.km-wait{padding:18px 4px;font-size:14px;color:var(--ink-3);text-align:center}
+.km-se{position:absolute;right:10px;top:10px;z-index:3;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.92);color:#1B1712;
+  font-size:12px;font-weight:700;pointer-events:none;box-shadow:0 1px 3px rgba(60,40,20,.14)}
+.km-night .km-se{background:rgba(42,43,61,.9);color:#F4F0E9}
+.km-night .maplibregl-ctrl-attrib{background:rgba(42,43,61,.72)}
+.km-night .maplibregl-ctrl-attrib a{color:#D8D0C4}
+.km-2btn{display:grid;grid-template-columns:1fr 1.4fr;gap:8px;margin-top:12px}
+.km-2btn .big{margin:0}
+
+/* 산책 중: 꾹게이지 | 지도 */
+#wseg{margin:2px 0 4px}
+#wseg b{font-family:var(--pnum);font-weight:700;margin-left:4px}
+#w-livemap{display:none;flex:1 1 auto;min-height:250px;margin:6px 0 8px}
+#v-walk.km-on #w-livemap{display:block}
+#v-walk.km-on .ring,#v-walk.km-on #gmsg,#v-walk.km-on #gsub{display:none}
+
+/* 강아지 사진(프로필) */
+.km-hd{display:flex;align-items:center;gap:10px;align-self:center;min-width:0}
+.km-ava{width:40px;height:40px;flex:none;border-radius:50%;border:2px solid var(--ink);background:var(--panel-2);padding:0;overflow:hidden;display:grid;place-items:center;cursor:pointer}
+.km-ava img{width:100%;height:100%;object-fit:cover;display:block}
+.km-ava svg{width:62%;height:auto}
+.km-ava:active{transform:scale(.95)}
+.km-ava.sm{width:28px;height:28px;border-width:1.5px;cursor:default}
+.km-area .km-h .km-tt{display:flex;align-items:center;gap:8px;min-width:0}
+.km-prof{display:flex;align-items:center;gap:14px;margin:4px 0 14px;padding:12px;border-radius:14px;background:var(--panel-2)}
+.km-prof .km-ava{width:72px;height:72px;border-width:2.5px}
+.km-prof .t{display:flex;flex-direction:column;gap:3px;min-width:0}
+.km-prof .t b{font-size:15px;color:var(--ink)}
+.km-prof .t span{font-size:12.5px;color:var(--ink-3);line-height:1.45}
+.km-prof .row{display:flex;gap:6px;margin-top:6px}
+.km-prof .row button{min-height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;font-size:13.5px;font-weight:700}
