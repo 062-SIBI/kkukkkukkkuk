@@ -1,7 +1,7 @@
 {
   "name": "꾹꾹이",
   "short_name": "꾹꾹이",
-  "description": "우리 개 기준으로 오늘 산책이 충분했는지. 끝나면 한 장으로.",
+  "description": "우리 강아지 기준으로 오늘 산책이 충분했는지. 끝나면 한 장으로.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
