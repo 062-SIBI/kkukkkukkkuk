@@ -1416,6 +1416,8 @@ body{font-synthesis:none}
 #start:not(.ghost) .gi{width:72px;height:72px}
 
 /* ── 0.4.2 디자인 마감 (11/5) ── */
+/* ── 0.4.3 기록 보존과 위치 (11/6): 긴 안내는 두 줄까지 ── */
+.toast.long{width:max-content;max-width:calc(100vw - 32px);border-radius:16px;line-height:1.5;text-align:left}
 .today .ring svg{transform:none}
 .today .ring svg circle{stroke-width:7px}
 #statsopt[hidden],#statsnote[hidden]{display:none}
@@ -1784,22 +1786,20 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
   <!-- 파티꾹 -->
   <div class="view" id="v-party">
     <div class="bar"><h1>파티꾹</h1><span class="sub">같이 걷기</span></div>
-    <button class="big" id="p-new"><svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5l0 14"/><path d="M5 12l14 0"/></svg><span>파티꾹 만들기</span></button>
-    <div id="mine" style="margin-top:14px"></div>
-    <div style="display:flex;align-items:baseline;justify-content:space-between;margin:20px 2px 9px">
-      <span class="lbl">이 근처</span>
-      <span class="pill p-warn">예시</span>
+    <div class="card">
+      <div class="lbl" style="margin:0 0 6px">준비 중이에요</div>
+      <div style="font-size:15px;line-height:1.65">같은 동네, 같은 시간대에 걷는 보호자와 함께 걸을 수 있게 만들고 있어요.</div>
+      <button class="big" id="p-like" style="margin-top:14px" aria-pressed="false">관심 있어요</button>
+      <p class="src" id="p-likemsg" style="margin-top:8px">누르면 관심 수만 세요. 이름이나 위치는 보내지 않아요.</p>
     </div>
-    <div id="nearby"></div>
     <div class="card" style="background:var(--amber-tint);border-color:transparent">
       <div style="font-size:12.5px;color:var(--amber);line-height:1.6">
-        <b>처음 만날 땐</b><br>
+        <b>같이 걸을 때 지킬 것</b><br>
         · 밝은 시간, 사람 있는 공개된 곳에서<br>
         · 접종한 지 1년이 지났으면 참가할 수 없어요<br>
         · 맹견으로 지정된 견종은 입마개가 법적 의무예요
       </div>
     </div>
-    <p class="src">지금은 내가 만든 파티만 이 폰에 남아요. 다른 보호자와 이어 주는 기능은 준비 중이에요.</p>
   </div>
 
   <!-- 기록 -->
@@ -1862,6 +1862,8 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
     <button class="big ghost" id="export">기록 내보내기 (파일로 저장)</button>
     <button class="big ghost" id="import" style="margin-top:9px">기록 가져오기</button>
     <input type="file" id="importfile" accept="application/json,.json" style="display:none">
+    <button class="big ghost" id="gpsexport" style="margin-top:9px">GPS 기록 내보내기 (꾹게이지 시험용)</button>
+    <p class="src" style="margin-top:6px">최근 산책의 GPS 원본 점이에요. 폰 안에만 있고, 누를 때만 파일로 만들어요.</p>
     <button class="big ghost" id="betarep" style="margin-top:9px">베타 기록 보내기</button>
     <button class="big ghost" id="statsopt" style="margin-top:9px" aria-pressed="true" hidden>사용 통계 보내기: 켜짐</button>
     <p class="src" id="statsnote" style="margin-top:6px" hidden>앱을 고치려고 산책 수, 시간, 거리 같은 숫자와 기기 종류(브라우저, 화면 크기)를 핵클(분석 도구)로 보냅니다. 위치와 경로, 강아지 이름과 사진은 보내지 않고 끄면 바로 멈춰요.</p>
@@ -2031,6 +2033,9 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
 
     <div class="pw-tabp" id="pw-p-data" role="tabpanel" aria-labelledby="pw-t-data" hidden>
       <p class="pw-walkid" id="pw-walkid"></p>
+      <p class="pw-lbl">동네 이름</p>
+      <div class="pw-row" id="pw-place"></div>
+      <p class="pw-note">동네 넣기나 ENG를 누를 때만 대략적인 위치(약 100m)를 오픈스트리트맵에 보내 이름을 받아요.</p>
       <p class="pw-lbl">크게 보여줄 숫자</p>
       <div class="pw-row" id="pw-heroes"></div>
       <p class="pw-lbl">같이 보여줄 숫자</p>
@@ -2167,33 +2172,6 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
   </div>
 </div>
 
-<!-- 파티 만들기 -->
-<div class="sheet" id="psheet" role="dialog" aria-modal="true" aria-label="파티꾹 만들기">
-  <div class="in">
-    <div class="grab"></div>
-    <h3 style="font-size:19px;margin-bottom:14px">파티꾹 만들기</h3>
-    <div class="seg2" id="p-kind">
-      <button data-v="flash" aria-pressed="true">번개</button>
-      <button data-v="regular" aria-pressed="false">정기</button>
-    </div>
-    <div class="field" style="margin-top:13px"><label for="p-when">언제</label>
-      <input id="p-when" placeholder="오늘 21:30 / 매주 화·목 22시" autocomplete="off"></div>
-    <div class="field"><label for="p-where">어디서 만나요</label>
-      <input id="p-where" placeholder="서울숲 정문 앞" autocomplete="off"></div>
-    <div class="field"><label>같이 걸을 크기</label>
-      <div class="seg2" id="p-size">
-        <button data-v="small" aria-pressed="false">소형</button>
-        <button data-v="medium" aria-pressed="true">중형</button>
-        <button data-v="large" aria-pressed="false">대형</button>
-      </div>
-      <div class="hint">여러 개 고를 수 있어요</div></div>
-    <div class="field"><label for="p-max">최대 몇 마리</label>
-      <input id="p-max" type="number" inputmode="numeric" value="4" min="2" max="12"></div>
-    <button class="big" id="p-save">만들기</button>
-    <button class="big ghost" id="p-close" style="margin-top:8px">취소</button>
-  </div>
-</div>
-
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <nav class="tabs" id="tabs">
@@ -2211,16 +2189,20 @@ var capacitorExports=function(e){"use strict";var t;e.ExceptionCode=void 0,(t=e.
 (function(){
 "use strict";
 var KEY="kkuk.v3";
+var GPSK=KEY+".gps";   // 0.4.3: GPS 원본 점(꾹게이지 시험용)은 본 기록과 다른 칸에 둔다
 function $(i){return document.getElementById(i);}
 function load(){try{var r=localStorage.getItem(KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true;}catch(e){return false;}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true;}catch(e){
+  /* 0.4.3: 꽉 찼으면 GPS 원본 점(시험용)부터 비우고 한 번 더. 본 기록이 먼저다 */
+  try{ if(localStorage.getItem(GPSK)!=null||localStorage.getItem(GPSK+".live")!=null){ glDrop(); localStorage.setItem(KEY,JSON.stringify(S)); return true; } }catch(e2){}
+  return false;}}
 var S=load()||{ver:3,user:null,dog:null,walks:[],spots:[],routes:[],live:null};
 ["walks","spots","routes"].forEach(function(k){if(!S[k])S[k]=[];});
 
 function pad(n){return(n<10?"0":"")+n;}
 function ms2t(ms){var s=Math.floor(ms/1000);return Math.floor(s/60)+":"+pad(s%60);}
-function toast(m){var t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(t._x);
-  t._x=setTimeout(function(){t.classList.remove("on");},2000);}
+function toast(m,ms){var t=$("toast");t.textContent=m;t.classList.toggle("long",String(m).length>38);t.classList.add("on");clearTimeout(t._x);
+  t._x=setTimeout(function(){t.classList.remove("on");},ms||2000);}
 function press(box,cb,toggle){box.addEventListener("click",function(e){
   var b=e.target.closest("button");if(!b)return;
   if(toggle){b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");}
@@ -2323,7 +2305,7 @@ function beta(k,n){S.beta=S.beta||{since:Date.now()};S.beta[k]=(S.beta[k]||0)+(n
    보내는 것은 app_open, walk_start, walk_end, card_view, card_share 다섯 가지와 아래 숫자 속성뿐이다.
    위치, 경로, 좌표, 강아지 이름, 사진, 메모는 어떤 속성에도 넣지 않는다. 사용자 구분은 핵클 기기 ID만 쓴다.
    기록 탭 맨 아래 '사용 통계 보내기'를 끄면 SDK를 부르지 않는다. */
-var HACKLE_KEY="1P4Ki8uNp9DPaLtyXTafjyPj4AdYuwyr";
+var HACKLE_KEY=(location.hostname==="062-sibi.github.io")?"1P4Ki8uNp9DPaLtyXTafjyPj4AdYuwyr":"";   // 배포 주소(웹과 안드로이드 앱)에서만 켠다. 폰 미리보기(raw.githack.com)와 내 컴퓨터 시험에서는 보내지 않는다
 var HK={c:null,q:[],loading:false,failed:false};
 var HK_OFF=(function(){try{return localStorage.getItem("kkuk.statsOff")==="1";}catch(e){return false;}})();   // 끄기는 기록과 따로 저장한다(가져오기와 저장 실패에도 남게)
 if(S.statsOff&&!HK_OFF){ HK_OFF=true; try{localStorage.setItem("kkuk.statsOff","1");}catch(e){} }   // 기록에만 끄기가 있던 사용자를 따로 저장으로 옮긴다
@@ -2414,6 +2396,7 @@ function betaText(){
     "알게 된 곳: "+(S.src||"안 고름")+(S.ref?" ("+S.ref+")":""),
     "산책 "+n+"회 · 산책당 탭 "+(n?((B.walkTaps||0)/n).toFixed(1):"-")+"회",
     "주머니 모드 "+(B.pocket||0)+"회",
+    "파티꾹 관심: "+(S.partyLike?"있음":"없음"),
     "PWC 기록 열람 "+(B.cardOpen||0)+" · 공유 "+(B.cardShare||0)+" (사진 넣은 것 "+(B.cardPhoto||0)+", 앱 카메라 "+(B.cardCam||0)+", 오려 내기 "+(B.cutOk||0)+")",
     fr?"많이 쓴 카드: "+fr:"",
     gs.length?"최근 꾹게이지 평균 "+Math.round(gs.reduce(function(a,b){return a+b;},0)/gs.length):"",
@@ -3035,18 +3018,30 @@ function enterMain(){
     // 정지를 못 누른 채 앱을 껐다가 다음 날 열면 20시간짜리 "진행 중" 산책이 뜬다.
     // 그대로 정지를 누르면 그 산책이 기준선을 오염시킨다. 5시간 넘으면 버린다.
     if(Date.now()-Math.max(S.live.start,S.live.resumedAt||0)>5*3600e3){
-      var lw=S.live,kept=!!lw.resumedAt; S.live=null;
-      if(kept){
-        var last=lw.resumedAt;
-        ["kkuks","poops","sniffs"].forEach(function(k){(lw[k]||[]).forEach(function(x){if(x.t>last)last=x.t;});});
-        if(lw.anc&&lw.anc.t>last)last=lw.anc.t;
-        lw.end=last; delete lw.resumedAt; delete lw.segNext; delete lw.anc;
-        beta("walks");beta("walkTaps",lw.taps||1);if(NATIVE)beta("walksApp");   // 이어 걸을 때 뺐던 횟수를 되돌린다
+      // 0.4.3: 끝내기를 못 누른 채 5시간이 지난 산책은 버리지 않고 마지막 기록 시각에 끝난 걸로 저장한다.
+      // 끝 시각을 '지금'이 아니라 마지막 기록으로 잡아서 20시간짜리 산책이 기준선을 망치지 않는다.
+      var lw=S.live,wasRes=!!lw.resumedAt; S.live=null;
+      var last=Math.max(lw.start,lw.resumedAt||0);
+      ["kkuks","poops","sniffs"].forEach(function(k){(lw[k]||[]).forEach(function(x){if(x&&x.t>last)last=x.t;});});
+      if(lw.anc&&lw.anc.t>last)last=lw.anc.t;
+      var any=wasRes||!!((lw.kkuks||[]).length||(lw.poops||[]).length||(lw.sniffs||[]).length||(lw.dist||0)>=50);   // 이어 걷던 산책은 원래 저장돼 있던 기록이라 버리지 않는다
+      if(any){
+        lw.end=last; delete lw.resumedAt; delete lw.segNext; delete lw.anc; lw.autoEnd=1;
+        beta("walks");beta("walkTaps",lw.taps||1);if(NATIVE)beta("walksApp");
         var gdl=gaugeDetail(lw); lw.gauge=gdl.ready?gdl.score:null; lw.slot=gdl.slot;
-        S.walks.unshift(lw); S.walks=S.walks.slice(0,100);
-      }
+        hk("walk_end",{minutes:Math.round((lw.end-lw.start)/60000),km:Math.round((lw.dist||0)/100)/10,
+          kkuk:(lw.kkuks||[]).length,poop:(lw.poops||[]).length,gauge:(lw.gauge==null?-1:lw.gauge),resumed:wasRes,auto_end:true});
+        try{kmFogWalk(lw);}catch(e){}
+        S.walks.unshift(lw); slimWalks();
+        glStart(lw); glFinish(lw);
+      } else glDropLive();
       save();
-      setTimeout(function(){toast(kept?"이어 걷던 산책을 마지막 기록까지로 저장했어요":"정지 안 된 채 남아 있던 산책을 정리했어요");},900);
+      var at=new Date(last),hh=at.getHours(),
+          whenTxt=(at.toDateString()===new Date().toDateString()?"":(at.getMonth()+1)+"월 "+at.getDate()+"일 ")+(hh<12?"오전 ":"오후 ")+((hh%12)||12)+":"+pad(at.getMinutes());
+      setTimeout(function(){
+        if(any)toast("지난 산책은 마지막 기록 시각("+whenTxt+")에 끝난 걸로 저장했어요. 끝내기를 제때 눌러 주시면 꾹게이지가 더 정확해져요.",7000);
+        else toast("끝내기를 못 누른 빈 산책을 정리했어요",2500);
+      },900);
     } else begin(S.live);
   }
   widgetPush();widgetLaunch();
@@ -3138,17 +3133,21 @@ function gauge(w){
 function gaugeDetail(w){
   var slot=slotOf(w.start), B=baseline(slot,w.start);
   if(!B.ready)return {ready:false,n:B.n,slot:slot};
-  var parts=[];
-  parts.push({k:"꾹",r:Math.min(1.2,(w.kkuks||[]).length/B.kkuk)});
-  parts.push({k:"킁킁",r:Math.min(1.2,(w.sniff||0)/B.sniff)});
-  parts.push({k:"거리",r:Math.min(1.2,(w.dist||0)/B.dist)});
-  if(B.poopCounts)parts.push({k:"똥",r:(w.poops||[]).length>0?1:0});
+  var parts=[],raw=[];
+  function add(k,v){parts.push({k:k,r:Math.min(1.2,v)});raw.push(Math.min(1.5,v));}
+  add("꾹",(w.kkuks||[]).length/B.kkuk);
+  add("킁킁",(w.sniff||0)/B.sniff);
+  add("거리",(w.dist||0)/B.dist);
+  if(B.poopCounts){var pv=(w.poops||[]).length>0?1:0;parts.push({k:"똥",r:pv});raw.push(pv);}
   var sc=Math.round(parts.reduce(function(a,b){return a+b.r;},0)/parts.length*100);
-  return {ready:true,score:Math.max(0,Math.min(100,sc)),parts:parts,B:B,slot:slot,
+  /* 0.4.3 문구: 평소와 똑같이 걸어도 100점이라 예전엔 '넉넉'이 떴다. 항목을 1.5배에서 자른 평균이
+     1.10 이상이고 점수도 100일 때만 '넉넉', 아니면 '평소만큼'(11/5 꾹게이지 회의와 Codex 비교 검토) */
+  var avgRaw=raw.reduce(function(a,b){return a+b;},0)/raw.length;
+  return {ready:true,score:Math.max(0,Math.min(100,sc)),parts:parts,avgRaw:avgRaw,B:B,slot:slot,
     bonusPoop:!B.poopCounts&&(w.poops||[]).length>0, bonusSpot:!!w.newSpot};
 }
-function gmsgOf(t){var n=S.dog?S.dog.name:"우리 아이";
-  return t>=100?"평소보다 넉넉했어요":t>=85?"평소만큼 했어요":t>=60?"조금만 더?":
+function gmsgOf(t,gd){var n=S.dog?S.dog.name:"우리 아이";
+  return (t>=100&&gd&&gd.avgRaw>=1.10)?"평소보다 넉넉했어요":t>=85?"평소만큼 했어요":t>=60?"조금만 더?":
          t>=30?n+" 아직 안 끝났대요":"이제 막 나왔네요";}
 function tick(){
   if(!W)return;
@@ -3176,7 +3175,7 @@ function tick(){
     var tail="";
     if(gd.B&&gd.B.prov>0.01)tail=" · 임시 기준 ("+gd.B.n+"/5회 학습)";
     else if(gd.B&&gd.B.drift)tail=" · 기준선이 내려가는 중이에요";
-    $("gmsg").textContent=gmsgOf(g);
+    $("gmsg").textContent=gmsgOf(g,gd);
     $("gsub").textContent=[gd.bonusPoop?"똥 보너스":"",gd.bonusSpot?"새 꾹자리":"",tail.replace(/^ · /,"")].filter(Boolean).join(" · ");
   }
   $("w-time").textContent=ms2t(Date.now()-W.start);
@@ -3193,6 +3192,7 @@ var gpsResume=false,gpsDenied="",lastSave=0;
 function gpsFix(f){
   if(!W)return;
   widgetDrain();
+  try{glAdd(f);}catch(e){}   // 0.4.3: 걸러지기 전의 원본 점(시험용)
   if(!(f.acc<=60))return;
   gpsDenied="";if(NATIVE&&!S.locOK)S.locOK=1;
   if(!loc||S.manual){loc={lat:f.lat,lng:f.lng};if(S.manual){delete S.manual;save();}loadWeather();}
@@ -3295,7 +3295,7 @@ var quotaWarned=false;
 function persistLive(){
   if(save()){quotaWarned=false;return true;}
   if(!quotaWarned){quotaWarned=true;
-    toast("저장 공간이 꽉 찼어요 · 지금부터 기록이 안 남아요");}
+    toast("저장 공간이 꽉 찼어요 · 기록 탭에서 기록 내보내기를 먼저 해 주세요",4000);}
   return false;
 }
 function holdScreen(){
@@ -3313,7 +3313,7 @@ document.addEventListener("visibilitychange",function(){
     watchId=null; startGPS();
     tick();
   }
-  else if(document.visibilityState==="hidden"&&W){lastSave=0;persistLive();}   // 내려갈 때 한 번 확실히 저장
+  else if(document.visibilityState==="hidden"&&W){lastSave=0;persistLive();glFlush();}   // 내려갈 때 한 번 확실히 저장
 });
 
 /* ── 주머니 모드 ──
@@ -3367,6 +3367,70 @@ function startWalk(routeId){
   });
 }
 $("start").addEventListener("click",function(){startWalk(null);});
+/* ══ 0.4.3 기록 보존 ══════════════════════════════════════════
+   오래된 산책을 지우지 않는다. 횟수와 꾹, 똥, 킁킁 기록은 끝까지 남기고 무거운 경로 점만 줄인다.
+   최근 30개는 그대로, 31~200번째는 점 40개 안팎(모양만), 그 뒤는 경로를 뺀다.
+   예전에는 100개를 넘으면 산책을 통째로(꾹, 똥 기록까지) 지웠고 31번째부터 경로를 다 지웠다. */
+function slimWalks(){
+  (S.walks||[]).forEach(function(w,i){
+    if(i<30||!w||!w.pts)return;
+    if(i>=200){delete w.pts;return;}
+    if(!w.thin&&w.pts.length>48){
+      var n=w.pts.length,step=Math.ceil(n/40),o=[];
+      for(var j=0;j<n;j++){var p=w.pts[j]; if(j%step===0||j===n-1||(p&&p[2]===1))o.push(p);}
+      w.pts=o;w.thin=1;
+    }
+  });
+}
+/* ══ 0.4.3 GPS 원본 점 ══════════════════════════════════════════
+   꾹게이지 거리 계산을 바꾸기 전에 같은 산책을 옛 계산과 새 계산에 다시 돌려 비교하려고 남긴다.
+   걸러지기 전의 점을 [초, 위도, 경도, 정확도m, 속도m/s]로. 폰 안에만 두고 서버로 보내지 않는다.
+   본 기록과 다른 칸에 최근 산책만, 모두 합쳐 400KB까지. 본 기록 저장이 꽉 차면 이것부터 비운다. */
+var GL=null,glT=0;
+function glStart(w){
+  GL={start:w.start,fx:[]};
+  try{var r=localStorage.getItem(GPSK+".live"); if(r){var o=JSON.parse(r); if(o&&o.start===w.start&&Array.isArray(o.fx))GL=o;}}catch(e){}
+}
+function glAdd(f){
+  if(!W)return;
+  if(!GL||GL.start!==W.start)glStart(W);
+  if(GL.fx.length>=20000)return;
+  GL.fx.push([Math.round((f.t-W.start)/100)/10,+(+f.lat).toFixed(6),+(+f.lng).toFixed(6),
+              f.acc==null?null:Math.round(f.acc),f.spd==null?null:Math.round(f.spd*10)/10]);
+  if(f.t-glT>60000){glT=f.t;glFlush();}
+}
+function glFlush(){ if(!GL)return; try{localStorage.setItem(GPSK+".live",JSON.stringify(GL));}catch(e){} }
+function glAll(){ try{var r=localStorage.getItem(GPSK); var a=r?JSON.parse(r):[]; return Array.isArray(a)?a:[];}catch(e){return [];} }
+function glPut(all){
+  while(all.length>1&&JSON.stringify(all).length>400000)all.pop();   // 오래된 산책부터 뺀다(가장 최근 하나는 남긴다)
+  for(var th=0;all.length&&th<24;){
+    var t=JSON.stringify(all);
+    if(t.length<=400000){ try{localStorage.setItem(GPSK,t);return true;}catch(e){} }   // 저장 공간이 모자라 실패해도 아래로
+    if(all.length>1){ all.pop(); continue; }   // 빼기는 횟수를 세지 않는다(하나씩 줄어드니 끝난다)
+    var o=all[0], fx=(o&&o.fx)||[];            // 가장 최근 산책 하나가 혼자 넘치면 버리지 않고 점을 반씩 솎는다
+    if(fx.length<4){ all.pop(); continue; }
+    o.fx=fx.filter(function(p,i){return i%2===0||i===fx.length-1;}); o.thin=(o.thin||1)*2; th++;
+  }
+  try{localStorage.removeItem(GPSK);}catch(e){} return false;
+}
+function glForget(st){   // 산책을 지우면 그 산책의 GPS 원본 점도 지운다
+  try{
+    if(GL&&GL.start===st)GL=null;
+    var all=glAll(), keep=all.filter(function(x){return !x||x.start!==st;});
+    if(keep.length!==all.length)glPut(keep);
+    var r=localStorage.getItem(GPSK+".live"), o=r?JSON.parse(r):null;
+    if(o&&o.start===st)localStorage.removeItem(GPSK+".live");
+  }catch(e){}
+}
+function glFinish(w){
+  if(!GL||GL.start!==w.start){glStart(w);}                // 앱을 껐다 켠 뒤 끝낸 산책은 저장해 둔 점을 불러온다
+  var fx=GL.fx||[], all=glAll();
+  for(var i=0;i<all.length;i++){ if(all[i]&&all[i].start===w.start){ fx=(all[i].fx||[]).concat(fx); all.splice(i,1); break; } }   // 이어 걷기
+  if(fx.length)all.unshift({start:w.start,end:w.end||null,dist:Math.round(w.dist||0),fx:fx});
+  glDropLive(); glPut(all); GL=null;   // 진행 중 칸을 먼저 비워 자리를 만든 뒤 저장한다(점은 위 fx에 있다)
+}
+function glDropLive(){ GL=null; try{localStorage.removeItem(GPSK+".live");}catch(e){} }
+function glDrop(){ GL=null; try{localStorage.removeItem(GPSK);localStorage.removeItem(GPSK+".live");}catch(e){} }
 function endWalk(){
   if(!W)return; pocketOff(); undoHide(); poopClose(); kmLiveStop();
   clearInterval(timer);
@@ -3381,8 +3445,8 @@ function endWalk(){
   // 꾹꾹로는 자동으로 만들지 않는다. 기록에서 불러와 직접 다듬어 만든다.
   try{kmFogWalk(W);}catch(e){}
   S.walks.unshift(W);
-  S.walks=S.walks.slice(0,100);
-  S.walks.forEach(function(w,i){ if(i>=30) delete w.pts; });   // 최근 30개만 좌표를 들고 있는다
+  slimWalks();                                     // 0.4.3: 산책은 지우지 않고 오래된 경로 점만 줄인다
+  glFinish(W);
   S.live=null;
   S.resume={start:W.start,until:Date.now()+5*60e3};   // 실수로 끝냈으면 5분 안에 홈에서 이어 걷는다
   var ok=save();
@@ -3506,9 +3570,9 @@ function recordPee(p,at){
       sp={add:ns,was:!!W.newSpot};W.newSpot=true;tail=", 새 꾹자리예요";}}
   var k={t:at||Date.now(),lat:p?p.lat:null,lng:p?p.lng:null};
   W.kkuks.push(k);
-  S.live=W;save();tick();widgetPush();
+  S.live=W;var okS=persistLive();tick();widgetPush();
   if(at)return;                                   // 위젯에서 누른 건 앱이 나중에 받는다. 되돌리기 바를 띄우지 않는다
-  undoShow("pee","꾹 "+W.kkuks.length+"번째"+tail,function(){
+  undoShow("pee","꾹 "+W.kkuks.length+"번째"+(okS?tail:", 저장 못 했어요"),function(){
     var i=W.kkuks.indexOf(k);if(i>=0)W.kkuks.splice(i,1);
     if(sp&&sp.f){sp.f.n--;sp.f.lat=sp.lat;sp.f.lng=sp.lng;sp.f.last=sp.last;}
     else if(sp&&sp.add){var j=S.spots.indexOf(sp.add);if(j>=0)S.spots.splice(j,1);W.newSpot=sp.was;}
@@ -3549,14 +3613,14 @@ function poopTick(){
 }
 var FIRMN={4:"단단",3:"보통",2:"묽음"};
 function poopOpen(rec){
-  PS.rec=rec; $("poop-h").textContent="똥 "+(W.poops.indexOf(rec)+1)+"번째, 저장했어요";
+  PS.rec=rec; $("poop-h").textContent="똥 "+(W.poops.indexOf(rec)+1)+"번째, "+(PS.fail?"저장 못 했어요":"저장했어요");
   poopSheetSync(); $("sheet").classList.add("on"); poopTouch();
   try{$("poop-h").focus({preventScroll:true});}catch(e){}   // 화면 읽기가 "저장했어요"를 읽게
 }
 function poopClose(auto){
   var r=PS.rec;
   clearTimeout(PS.t); PS.rec=null; PS.hold=false; if(auto)PS.autoAt=Date.now();
-  if(auto&&r&&W&&W.poops.indexOf(r)>=0)undoShow("poop","똥 "+(W.poops.indexOf(r)+1)+"번째, "+(FIRMN[r.f]||"보통")+"으로 저장했어요",function(){poopOpen(r);return false;},"고치기");
+  if(auto&&r&&W&&W.poops.indexOf(r)>=0)undoShow("poop","똥 "+(W.poops.indexOf(r)+1)+"번째, "+(PS.fail?"저장 못 했어요":(FIRMN[r.f]||"보통")+"으로 저장했어요"),function(){poopOpen(r);return false;},"고치기");
   var sh=$("sheet"), had=sh.contains(document.activeElement); sh.classList.remove("on");
   if(had){try{$("b-poop").focus({preventScroll:true});}catch(e){}}
 }
@@ -3565,7 +3629,7 @@ $("b-poop").addEventListener("click",function(){
   if(!W)return;
   headListen();                                    // iOS 나침반 권한, 사용자 제스처인 지금만 요청 가능
   var rec={t:Date.now(),f:3,odd:false,col:true,lat:null,lng:null,hd:(HEAD!=null?Math.round(HEAD):null)};
-  W.poops.push(rec); S.live=W; save(); tick(); widgetPush();
+  W.poops.push(rec); S.live=W; PS.fail=!persistLive(); tick(); widgetPush();
   withFreshFix(function(p){
     if(p){rec.lat=p.lat;rec.lng=p.lng;}
     if(rec.hd==null&&HEAD!=null)rec.hd=Math.round(HEAD);
@@ -3780,7 +3844,7 @@ $("wsheet").addEventListener("click",function(e){if(e.target===this)this.classLi
 $("w-del").addEventListener("click",function(){
   if(curWalk==null)return;
   if(!confirm("이 산책 기록을 지울까요?"))return;
-  S.walks=S.walks.filter(function(x){return x.start!==curWalk;});save();
+  S.walks=S.walks.filter(function(x){return x.start!==curWalk;});save(); glForget(curWalk);
   $("wsheet").classList.remove("on");renderLog();toast("지웠어요");
 });
 
@@ -4134,57 +4198,23 @@ $("d-save").addEventListener("click",function(){
 });
 
 /* ══ 파티꾹 ══════════════════════════════════════
-   실제 매칭은 서버가 있어야 한다. 지금은 내가 만든 파티만 이 기기에 저장하고,
-   근처 파티는 화면 확인용 예시라고 라벨을 붙여 보여준다. */
-if(!S.parties)S.parties=[];
-var pKind="flash";
-press($("p-kind"),function(b){pKind=b.dataset.v;});
-press($("p-size"),null,true);
-var SIZE_KO={small:"소형",medium:"중형",large:"대형"};
-$("p-new").addEventListener("click",function(){
-  $("p-when").value="";$("p-where").value="";$("p-max").value=4;
-  $("psheet").classList.add("on");});
-$("p-close").addEventListener("click",function(){$("psheet").classList.remove("on");});
-$("psheet").addEventListener("click",function(e){if(e.target===this)this.classList.remove("on");});
-$("p-save").addEventListener("click",function(){
-  var when=$("p-when").value.trim(),where=$("p-where").value.trim();
-  if(!when||!where){toast("언제·어디서는 채워주세요");return;}
-  var sizes=picked($("p-size")).map(function(b){return b.dataset.v;});
-  if(!sizes.length){toast("크기를 하나는 골라주세요");return;}
-  S.parties.unshift({id:Date.now(),kind:pKind,when:when,where:where,sizes:sizes,
-    max:Math.max(2,Math.min(12,parseInt($("p-max").value,10)||4)),
-    route:(mainRoute()||{}).name||null,joined:1});
-  if(!save()){toast("저장 공간이 꽉 찼어요");return;}
-  $("psheet").classList.remove("on");renderParty();toast("파티꾹을 만들었어요");
-});
-var NEARBY=[
-  {kind:"flash",name:"서울숲 한 바퀴 같이 걸어요",when:"오늘 16:30",where:"서울숲 정문 앞",
-   sizes:["medium"],max:4,joined:2,who:"보리(14kg) · 콩이(16kg)"},
-  {kind:"regular",name:"왕십리 밤 산책팟",when:"매주 화, 목 22:00",where:"왕십리역 4번 출구",
-   sizes:["medium","large"],max:5,joined:3,who:"4주째 · 멤버 3"}
-];
-function partyCard(p,mineFlag){
-  var kind=p.kind==="flash"?'<span class="pill p-dang">'+IC.bolt+'번개</span>':'<span class="pill p-brand">'+IC.repeat+'정기</span>';
-  return '<div class="pcard"><div class="ptop">'+kind+
-    '<span style="font-size:11.5px;color:var(--ink-3)">'+esc(p.when)+' · '+p.joined+'/'+p.max+'</span></div>'+
-    '<div class="pn">'+esc(p.name||(p.route?p.route+" 같이 걸어요":"같이 걸어요"))+'</div>'+
-    '<div class="pm">'+esc(p.where)+'<br>'+p.sizes.map(function(x){return SIZE_KO[x];}).join("·")+'견 · 목줄 2m'+
-    (p.who?'<br>'+esc(p.who):'')+'</div>'+
-    (mineFlag?'<div class="pact"><button data-pdel="'+p.id+'">지우기</button></div>'
-             :'<div class="pact"><button disabled style="opacity:.45">참가 신청은 준비 중이에요</button></div>')+
-    '</div>';
-}
+   0.4.3: 실제 매칭은 서버가 있어야 한다. 그때까지는 '준비 중' 안내와 '관심 있어요' 하나만 둔다.
+   예전 판의 '만들기'는 내 폰에만 저장돼 아무도 못 보는데 모집된 것처럼 보였고, '이 근처' 예시는
+   진짜 모임처럼 읽혔다. 관심 수는 핵클(사용 통계가 켜져 있을 때)과 베타 기록으로만 센다. */
 function renderParty(){
-  $("mine").innerHTML=S.parties.length
-    ? '<div class="lbl" style="margin:0 2px 9px">내가 만든 파티</div>'+S.parties.map(function(p){return partyCard(p,true);}).join("")
-    : '<div class="card"><div class="empty">아직 만든 파티가 없어요</div></div>';
-  $("nearby").innerHTML=NEARBY.map(function(p){return partyCard(p,false);}).join("");
+  var b=$("p-like"); if(!b)return;
+  var on=!!S.partyLike;
+  b.textContent=on?"관심 표시했어요":"관심 있어요"; b.setAttribute("aria-pressed",on?"true":"false");
+  b.classList.toggle("ghost",on);
+  $("p-likemsg").textContent=on?"고마워요. 열리면 이 탭에서 바로 쓸 수 있어요. 다시 누르면 취소돼요."
+                               :"누르면 관심 수만 세요. 이름이나 위치는 보내지 않아요.";
 }
-$("mine").addEventListener("click",function(e){
-  var b=e.target.closest("[data-pdel]");if(!b)return;
-  if(!confirm("이 파티꾹을 지울까요?"))return;
-  var id=+b.dataset.pdel;
-  S.parties=S.parties.filter(function(x){return x.id!==id;});save();renderParty();toast("지웠어요");
+$("p-like").addEventListener("click",function(){
+  var on=!S.partyLike; S.partyLike=on?Date.now():null;
+  hk("party_interest",{on:on});
+  if(!save())toast("저장 공간이 꽉 찼어요");
+  else if(on)toast("관심 고마워요");
+  renderParty();
 });
 
 /* ══ 실측 보정 ══════════════════════════════════════════════════
@@ -4637,7 +4667,10 @@ function walkData(w){
   while(days[dayKey(c.getTime())]){ streak++; c.setDate(c.getDate()-1); }
   var month=all.filter(function(x){ var q=new Date(x.start); return q.getFullYear()===d.getFullYear()&&q.getMonth()===d.getMonth()&&x.start<=w.start; }).length;
   var rt=null; if(w.route!=null) rt=(S.routes||[]).filter(function(r){return r.id===w.route;})[0]||null;
-  var place=w.place||((S.manual&&S.manual.label)||'');
+  // 0.4.3: 동네 이름은 카드에서 '동네 넣기'를 누를 때만 받는다(예전엔 카드가 뜨자마자 받았다). 한글과 ENG 중 고른다
+  var plang=w.placeLang||S.placeLang||'ko';
+  var pname=(plang==='en'?(w.placeEn||w.place):w.place)||((S.manual&&S.manual.label)||'');
+  var place=w.placeOff?'':pname;
   return {
     dog:(S.dog&&S.dog.name)||'우리 아이', dow:DOW[d.getDay()], tod:SLOTS[w.slot||slotOf(w.start)]||'', place:place,
     md:(d.getMonth()+1)+'월 '+d.getDate()+'일', ymd:d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate()),
@@ -5214,9 +5247,55 @@ var IC_INFO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 var COLORS=[['auto','자동',null],['white','흰색','#FFFFFF'],['ink','잉크','#17100A'],['orange','주황','#F0952A']];
 function buildColors(){ var box=$('pw-colors'); box.innerHTML=''; COLORS.forEach(function(o){ var sw=o[2]?'<span class="pw-sw" style="background:'+o[2]+'"></span>':'<span class="pw-sw" style="background:conic-gradient(#fff 0 50%,#17100A 0)"></span>';
   box.appendChild(btn('pw-chip',sw+o[1],E.color===o[0],function(){ E.color=o[0]; buildColors(); prefSave(); redraw(); })); }); }
+/* ---------- 0.4.3 동네 이름: 누를 때만 받고, 한글과 ENG 중 고른다 ---------- */
+function placeLangOf(w){ return w.placeLang||S.placeLang||'ko'; }
+function placeNeed(w,lg){ return lg==='en'?(!w.placeEn&&!w.placeEnMiss):!w.place; }
+function buildPlace(){
+  var pb=$('pw-place'); if(!pb||!E.w) return; pb.innerHTML='';
+  var w=E.w, on=!!E.D.place, lg=placeLangOf(w);
+  var b=btn('pw-chip',E.placeBusy?'받는 중':'동네 넣기',on,placeToggle); if(E.placeBusy) b.disabled=true; pb.appendChild(b);
+  pb.appendChild(btn('pw-chip','한글',lg==='ko',function(){ placeSetLang('ko'); }));
+  pb.appendChild(btn('pw-chip','ENG',lg==='en',function(){ placeSetLang('en'); }));
+}
+function refreshPlace(){ if(!E.w) return; E.D=walkData(E.w); buildData(); facesFor().then(function(){ if(OPEN) redraw(true); }); }
+function placeGet(w,lg){
+  if(navigator.onLine===false){ toast('인터넷이 연결되면 동네 이름을 받을 수 있어요'); refreshPlace(); return; }
+  if(!walkCenter(w)){ toast('위치 기록이 없는 산책이라 동네 이름을 못 받아요',3000); refreshPlace(); return; }
+  E.placeBusy=true; buildPlace();
+  placeFill(w,lg,function(ch){
+    E.placeBusy=false;
+    if(E.w!==w||!OPEN) return;
+    if(ch||!placeNeed(w,lg)){ refreshPlace(); return; }
+    if(lg==='en'){
+      placeFill(w,'ko',function(){
+        if(E.w!==w||!OPEN) return;
+        if(w.place){ w.placeEnMiss=1; save(); toast('영어 이름이 없어 한글로 넣었어요'); }
+        else toast('동네 이름을 못 받았어요');
+        refreshPlace();
+      });
+      return;
+    }
+    toast('동네 이름을 못 받았어요'); refreshPlace();
+  });
+}
+function placeToggle(){
+  var w=E.w; if(!w||E.placeBusy) return;
+  if(E.D.place){ w.placeOff=1; save(); refreshPlace(); return; }
+  delete w.placeOff;
+  var lg=placeLangOf(w);
+  if(placeNeed(w,lg)&&!(S.manual&&S.manual.label&&!walkCenter(w))){ placeGet(w,lg); return; }
+  save(); refreshPlace();
+}
+function placeSetLang(lg){
+  var w=E.w; if(!w||E.placeBusy) return;
+  w.placeLang=lg; S.placeLang=lg; save();
+  if(!w.placeOff&&E.D.place&&placeNeed(w,lg)&&walkCenter(w)){ placeGet(w,lg); return; }
+  refreshPlace();
+}
 function buildData(){
   var D=E.D, ST=D.st, hb=$('pw-heroes'); hb.innerHTML=''; var allowed=TPL[E.tpl].heroes;
   $('pw-walkid').innerHTML=esc(D.md+' '+D.dow)+' <span>'+D.start+'</span>~<span>'+D.end+'</span>'+(D.course?' · '+esc(D.course):(D.place?' · '+esc(D.place):''));
+  buildPlace();
   ORDER.forEach(function(k){ var st=ST[k]; var b=btn('pw-chip',st.lab+' <span class="n">'+st.v+(st.u?' km':'')+'</span>',E.hero===k,function(){ E.hero=k; E.heroBy[E.tpl]=k; buildData(); relayout(); redraw(true); });
     if(allowed.indexOf(k)<0||(k==='dist'&&!D.hasDist)){ b.disabled=true; b.title=k==='dist'&&!D.hasDist?'거리가 기록되지 않은 산책이에요':(k==='dist'&&E.tpl==='depth'?'소수점이 머리에 가려져요':'이 카드에는 안 맞아요'); } hb.appendChild(b); });
   var sb=$('pw-stats'); sb.innerHTML='';
@@ -5426,7 +5505,6 @@ pwcOpen=function(w){
   underUI(); redraw(true); kickSeg();
   // 막 끝난 산책이면 카메라부터. 그 자리에서 찍은 사진이 인증이다
   if(!E.photo&&camOK()&&Date.now()-(w.end||w.start)<3*3600e3) camStart();
-  placeFill(w,'ko',function(ch){ if(ch&&E.w===w&&OPEN){ E.D=walkData(w); buildData(); facesFor().then(function(){ redraw(true); }); } });
 };
 function pwcClose(){ camStop(); CAM.resume=false; OPEN=false; $('pwc').classList.remove('on'); document.body.classList.remove('pwc-on'); E.sel=null; }
 $('pwc-close').addEventListener('click',pwcClose);
@@ -5447,6 +5525,13 @@ $("importfile").addEventListener("change",function(){
     var j;
     try{ j=JSON.parse(r.result); }catch(e){ toast("이 파일은 꾹꾹이 기록이 아니에요"); return; }
     if(!j||typeof j!=="object"||!("walks" in j)){ toast("이 파일은 꾹꾹이 기록이 아니에요"); return; }
+    // 0.4.3: 'GPS 기록 내보내기' 파일도 walks가 있어 아래 검사를 지나간다. 백업이 아니므로 덮어쓰기 전에 막는다
+    if(j.type==="gps"||Array.isArray(j.cols)){ toast("GPS 기록 파일은 백업이 아니에요 · 기록 내보내기로 만든 파일을 골라 주세요",4000); return; }
+    // 0.4.3: 모양이 틀린 백업(walks가 목록이 아님 등)으로 덮어쓰면 앱이 기록을 못 읽는다. 덮어쓰기 전에 검사한다
+    var okShape=Array.isArray(j.walks)&&j.walks.every(function(w){return !!w&&typeof w==="object"&&typeof w.start==="number";})
+      &&["routes","spots","parties"].every(function(k){return !(k in j)||Array.isArray(j[k]);})
+      &&(!("dog" in j)||j.dog===null||typeof j.dog==="object");
+    if(!okShape){ toast("백업 파일이 손상돼서 가져오지 않았어요 · 지금 기록은 그대로예요",4000); return; }
     var nw=(j.walks||[]).length, nr=(j.routes||[]).length;
     if(!confirm("산책 "+nw+"개 · 꾹꾹로 "+nr+"개를 가져옵니다.\n지금 이 기기의 기록은 덮어써집니다. 계속할까요?"))return;
     try{ localStorage.setItem(KEY,JSON.stringify(j)); }catch(e){ toast("저장 공간이 부족해요"); return; }
@@ -5470,7 +5555,17 @@ $("export").addEventListener("click",function(){
                                            function(){toast("저장 실패");});
     else toast("이 브라우저에서는 저장할 수 없어요");
   }});
-$("reset").addEventListener("click",function(){try{localStorage.removeItem(KEY);}catch(e){}location.reload();});
+$("gpsexport").addEventListener("click",function(){
+  var all=glAll(), lv=null;
+  if(W&&GL&&GL.start===W.start&&GL.fx.length)lv=GL;
+  else{ try{var r=localStorage.getItem(GPSK+".live"), o=r?JSON.parse(r):null; if(o&&Array.isArray(o.fx)&&o.fx.length)lv=o;}catch(e){} }   // 앱을 다시 켜고 새 점이 오기 전
+  if(lv)all=[{start:lv.start,end:null,dist:(W&&W.start===lv.start)?Math.round(W.dist||0):null,fx:lv.fx,live:true}].concat(all);
+  if(!all.length){toast("아직 GPS 기록이 없어요 · 산책을 한 번 하면 생겨요",3000);return;}
+  var d=new Date(), nm="kkukkkuki_gps_"+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+".json";
+  var t=JSON.stringify({app:"kkukkkuki",type:"gps",v:1,made:d.toISOString(),cols:["sec","lat","lng","acc_m","speed_mps"],walks:all});
+  saveShare(new Blob([t],{type:"application/json"}),nm,"","꾹꾹이 GPS 기록");
+});
+$("reset").addEventListener("click",function(){try{localStorage.removeItem(KEY);glDrop();}catch(e){}location.reload();});
 
 /* ══ 탭 ══ */
 
@@ -6590,7 +6685,7 @@ document.querySelectorAll("#tabs button").forEach(function(b){
 /* 자동 테스트용 훅. 앱은 이걸 쓰지 않는다. 헤드리스 브라우저에서 계산을 검증하려고 연다.
    저장되는 값은 전부 이 기기 localStorage 안에 있고 새로 노출되는 비밀은 없다. */
 window.__kk={get S(){return S;},get HK(){return HK;},hk:function(k,p){hk(k,p);},get KM(){return {A:KMA,W:KMW,L:KML,R:KMR,reco:kmReco,recos:kmRecos,net:kmNet,theme:kmTheme,pal:kmPal,cleared:kmCleared,home:kmHome,name:kmSpotName,fogWalk:kmFogWalk,lib:KM,pins:KMR_PINS,list:function(){return KMR_LIST;}};},get W(){return W;},widgetDrain:widgetDrain,widgetPush:widgetPush,gpsFix:gpsFix,placeParse:placeParse,betaText:betaText,pwcOpen:function(w){pwcOpen(w);},
-  baseline:baseline,gaugeDetail:gaugeDetail,
+  baseline:baseline,gaugeDetail:gaugeDetail,gmsgOf:gmsgOf,slimWalks:slimWalks,glAll:glAll,glPut:glPut,glForget:glForget,glFinish:glFinish,
   slotOf:slotOf,gradeAt:gradeAt,roadTemp:roadTemp,solar:solar,renderHome:renderHome};
 boot();
 })();
