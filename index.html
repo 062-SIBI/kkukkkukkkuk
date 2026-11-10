@@ -2534,6 +2534,9 @@ function widgetLate(w,evs){
     else if(ev.type==="poop"){ if(!w.poops)w.poops=[]; w.poops.push({t:t,f:3,odd:false,col:true,lat:null,lng:null,hd:null,qw:1}); n++; }
   });
   if(!n)return;
+  /* 0.5.0(Codex PR #3): 끝낼 때 계산해 둔 꾹게이지는 늦게 붙인 꾹과 똥을 모른다. 기록 목록, 상세, 산책 카드가
+     저장된 값을 쓰므로 여기서 다시 계산한다. 기준선은 이 산책을 빼고 잡으므로 끝낼 때와 같은 기준이다 */
+  try{ var gd=gaugeDetail(w); w.gauge=gd.ready?gd.score:null; w.slot=gd.slot; }catch(e){}
   save(); try{ renderLog(); renderHome(); }catch(e){}
 }
 function widgetDrain(force){
