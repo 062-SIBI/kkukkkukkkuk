@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#A9713F">
+<meta name="theme-color" content="#F5F2EC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#13100C" media="(prefers-color-scheme: dark)">
 <meta name="description" content="기온 33도면 아스팔트는 45~49도로 올라갑니다(서울 실측). 나가기 전에 바닥이 몇 도인지 보고, 산책이 끝나면 오늘 기록을 한 장으로 자랑하는 반려견 앱.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -850,10 +851,10 @@ details.sig .last{padding:0 16px 14px; font-size:11.5px; color:var(--clay); opac
 #pocket{position:fixed;inset:0;background:#000;color:#fff;z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;-webkit-user-select:none;user-select:none;touch-action:none}
 #pocket.on{display:flex}
 #pocket .pt{font-family:"IBM Plex Mono",monospace;font-size:64px;font-weight:600;letter-spacing:-2px;color:#9a9a9a}
-#pocket .pk{font-size:22px;color:#6f6f6f;margin-top:2px}
+#pocket .pk{font-size:22px;color:#808080;margin-top:2px}
 #pocket .pg{font-size:120px;font-weight:800;line-height:1;color:#DFFF3A;margin-top:14px}
-#pocket .pl{font-size:13px;color:#555;margin-top:6px;letter-spacing:.5px}
-#pocket .ph{position:absolute;bottom:38px;left:24px;right:24px;text-align:center;font-size:13px;line-height:1.6;color:#4a4a4a}
+#pocket .pl{font-size:13px;color:#808080;margin-top:6px;letter-spacing:.5px}
+#pocket .ph{position:absolute;bottom:38px;left:24px;right:24px;text-align:center;font-size:13px;line-height:1.6;color:#808080}
 #pocket .pbar{position:absolute;bottom:0;left:0;height:4px;background:#DFFF3A;width:0;transition:none}
 .walkbar .pk-btn{margin-right:8px}
 .walkbar{display:flex; align-items:center; justify-content:space-between; padding:4px 2px 10px}
@@ -971,7 +972,8 @@ details.sig .last{padding:0 16px 14px; font-size:11.5px; color:var(--clay); opac
 .toast{position:fixed; left:50%; bottom:96px; transform:translateX(-50%) translateY(14px); background:var(--ink); color:var(--ground);
   padding:11px 20px; border-radius:999px; font-size:13.5px; font-weight:500; opacity:0; pointer-events:none; transition:.25s; z-index:60}
 .toast.on{opacity:1; transform:translateX(-50%) translateY(0)}
-.src{font-size:10.5px; color:var(--ink-3); line-height:1.6}
+.src{font-size:11.5px; color:var(--ink-3); line-height:1.6}
+.src a{display:inline-block;padding:9px 2px;margin:-9px -2px}
 details.calib{background:var(--panel); border:1px solid var(--line); border-radius:16px; margin-top:14px}
 details.calib summary{padding:14px 15px; font-size:13px; font-weight:600; color:var(--ink-2); cursor:pointer; list-style:none}
 details.calib summary::-webkit-details-marker{display:none}
@@ -998,7 +1000,7 @@ details.calib[open] summary::after{content:" ▴"}
   padding:10px 0; font-size:12.5px; color:var(--ink-2)}
 .tier2{margin-top:16px;border-top:1px dashed var(--line);padding-top:14px}
 .tierhead{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;
-  background:none;border:0;padding:2px 0;color:var(--ink);font:inherit;font-size:14.5px;cursor:pointer;text-align:left}
+  background:none;border:0;padding:10px 0;margin:-8px 0;color:var(--ink);font:inherit;font-size:14.5px;cursor:pointer;text-align:left}
 .tierhead .ar{transition:transform .18s;opacity:.5;font-size:12px}
 .tierhead[aria-expanded="true"] .ar{transform:rotate(180deg)}
 .tiernote{font-size:12px;color:var(--ink-2);line-height:1.62;margin:6px 0 0}
@@ -1012,6 +1014,20 @@ details.calib[open] summary::after{content:" ▴"}
 .winter .why{font-size:11.5px;color:var(--ink-3);line-height:1.65;margin-top:10px;
   border-top:1px solid var(--line);padding-top:9px}
 
+/* ── 0.4.5 산책 끝 신호, 새 길 권하기 ── */
+.esig,.nudge{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px 15px;margin-bottom:10px}
+.nudge{border-color:var(--brand)}
+.esig .k,.nudge .k{font-weight:700;font-size:15.5px;color:var(--ink);line-height:1.4}
+.esig .s,.nudge .s{font-size:12.5px;color:var(--ink-3);margin-top:6px;line-height:1.55}
+.esig .b3{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.esig .b3 button,.nudge .b2 button{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;
+  padding:10px 13px;font:inherit;font-size:14px;font-weight:600;min-height:44px}
+.esig .b3 button:active,.nudge .b2 button:active{transform:scale(.97)}
+.esig .lk{border:none;background:none;color:var(--ink-3);font:inherit;font-size:12.5px;text-decoration:underline;padding:12px 2px 4px;min-height:40px}
+.nudge .b2{display:flex;gap:8px;margin-top:11px}
+.nudge .b2 button{flex:1}
+.nudge .b2 button.go{background:var(--brand);border-color:var(--brand);color:#FFF6EC}
+
 /* ── 앱 껍데기·안전 영역 (안드로이드 앱은 화면 끝까지 그린다) ── */
 .app{padding-top:calc(16px + env(safe-area-inset-top,0px))}
 .step{padding-top:calc(26px + env(safe-area-inset-top,0px))}
@@ -1019,12 +1035,21 @@ details.calib[open] summary::after{content:" ▴"}
 .native #pocketbtn{display:none}
 .only-native{display:none!important}
 .native .only-native{display:flex!important}
+.only-ios{display:none!important}
+.ios .only-ios{display:flex!important}
+.ios .only-android{display:none!important}
+/* 아이폰 앱: 화면 글자를 길게 눌러도 고르기나 돋보기가 뜨지 않게(적는 칸은 그대로) */
+.ios body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.ios input,.ios textarea{-webkit-user-select:text;user-select:text}
+/* 아이폰 앱: 화면 끝에서 더 당겨도 화면 전체가 출렁이지 않게(iOS 16부터 듣는다. 시트 안의 스크롤은 그대로) */
+html.ios,.ios body{overscroll-behavior:none}
 .hero .mark{width:88px;height:88px;display:block;margin:0 auto 4px}
 
 /* 알게 된 곳 (선택) */
 .srcq{margin-top:18px}
 .srcq .lbl2{font-size:12.5px;font-weight:600;color:var(--ink-2);margin-bottom:8px}
 .srcq .lbl2 span{font-weight:400;color:var(--ink-3);margin-left:4px}
+.srcq .pothint{font-size:11.5px;color:var(--ink-3);margin:7px 0 0;line-height:1.5;word-break:keep-all}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chips button{border:1px solid var(--line);background:var(--panel);color:var(--ink-2);border-radius:999px;
   padding:9px 14px;font-size:13px;transition:transform .12s ease-out}
@@ -1036,6 +1061,10 @@ details.calib[open] summary::after{content:" ▴"}
   border-radius:14px;padding:11px 14px;margin-bottom:10px;font-size:13px}
 .apkbar[hidden]{display:none}
 .apkbar a{color:#DFFF3A;font-weight:700;text-decoration:none;white-space:nowrap}
+.apkbar .pb{display:flex;align-items:center;gap:6px;flex:none}
+.apkbar .pb a,.apkbar button{appearance:none;border:0;background:none;padding:11px 4px;margin:-11px 0;min-width:40px;text-align:center;font:inherit;font-weight:700;white-space:nowrap;cursor:pointer}
+.apkbar button{color:inherit}
+.apkbar button:active{transform:translateY(1px)}
 
 /* ── PWC 기록 숫자 글꼴: Barlow·Barlow Condensed·Jost(라틴 102자만, OFL) ── */
 @font-face{font-family:'Barlow';src:url(data:font/woff2;base64,d09GMgABAAAAABbEABEAAAAAMRwAABZmAAFocgAAAAAAAAAAAAAAAAAAAAAAAAAAGigbhGAcfgZgAIEKCIEgCZwVEQgKtRSsYAE2AiQDgRwLUAAEIAVWByAMgVYbbiuzEVFDSSvXFP+nA22MEHSH9dXaJBpRgZZ29LHEoPjMnPX5OuW2I4qL8DiOgz2mw2/+Ps6xYBEVSfDXvRale5UdC8UziiuaxIhhGLmtEZLMwvN8zdWfe+97VUkRggcPhYVg1k0zEIK2hbQYjKd1GFeW802Wuv07er6I7b7vxBcb8RrAbSpzxuygYjJiomQPFCMxMl8R+IiIqbndQh+0tARk9UjJX//rVDFNJiHiyTTq0prmgSFXALpNTrgqNysL8Dzaal5U4EF++IjNIHYyWNbA9w7LR5PbuS3qK+rpqpc5ARrgH1agQtvaEE2BUuFCwV5F9n9sbXWrmEqoVgP1S6icJ3gnFlHxNV9np0GfWrNk+VL8lu3pT/R2F4h2WEYst90/UACkGpMhOW31vh4h6UYBXtvza1b21e+fAc4BojALZA+EO4f2Oi8w6e6EBzoZzMxCdrlztAjZQ3SAkJmFLBEJdSgskJBoxAp/Tt5jOAF7URyxf6ypYjBrI2XlgGMJ2a+250OADLArzqoIniDYU6RrBhkUrA5EDLGAbu1ULpN9vPb8k2RxAK+RssduPWuk4OwgsYBf0oxSGBme5lMIeRxZv3sUmWKJEnucosoeD6IIES2AUEeAUpd8V5985RYmf85crCk5Lr5eiIA4WW2873u/oeQczaiHGMEgeQwEAZRJg0cir1E6jGpiijyDuHBMxd5ZmpALCPJBierCr0sWZcK6wApKOP1QTxyPSt7gnaHugx6M+UcGOC30MU/6tQt5u9Fnd8R2pZ8NjWWnZ57iQazxc3968v+NeccBKju0wB1n755YJbT2oxgB+dWpxwVSNR5VUCymNL2Gx6WIEigOqvTEh5iALkdSs7OXsEZ+Kvxx3Oku4lERuJvs2hQoCx0IffzgTo1s/bgXnqDVbcwXjNyf59lTSHrUVEEn9Dczumttt/vM/TiNdA8P+m46Cs5a5UHmZI6nNKRLY5EuX9zY55vEHNlfEyG4Pf6FqzeS4PrNdaQBz85sxRC748VN1UEjRoqYaU6wzFl2ucVjPMWbHCX/gZhJZsS4KZ/4eSa/Q3Krp21vW4ua25wctREgx/Fm1k+eGF/HYNHvgiSYtsSGeZ7o5kfoOuip5CeXFyHgLHKEI1/gBfOrwLJI4kSi2XeTH7usoalK5KjJKvLp/jgLDRPyP3oljkzk7T+yF94S3H2PLBxSfElz6a48o5H/pyTFjZnuOO9hHzZ12CNsplAhIK7zCoV69RUGafdt68RCGNBCSSkU3RqEMtzfRPl5T8g4ykFucdd7vfZ6TIH+xTmPctBntxc3zglKDX2LtgxSUDgfd63PqdolZ7GkjdGqk5Rzyy2rk1b45hRXvvdFredoNiLoosfCtn/EEavr9ozz1wWtvEdYYvssvZgUksgtRePmqV1iRp9Rp28OIHPp3l3LUKQlXY8V9IgVx+iYmcwGpoMGGc7gYoSzC82rXmdEPjV/lv81ykxtFv+8XDdrsyFpFgfZBiRHDVbhISPBRW6FkNNI6IGUB+e9IbUiSLpqKXuVcB5EhoP2uSD40sTXlMDPfMuyU7r4/0iyzAyHcWUrpqnL2xbVvAnlu2h1lx23R5OqCEGat3q02JQaMO1BBY7LZXQ+R75NwlmKpyGYM2Q5++fkukCIl6tJRtOwn1qEPr0pm6Nw09cP1Y1aT74M1KwlFTZxkWTUDTZpUx6huyz9iQ8pp83Eos83tHRP6m8SZmgWjJFSlsOa+/36dbHtafROvd30FQ0o2uu42Z2oaERKEaGBb27j+DU9WI15uIjGREUTpDM1WeWfkxvdYKOJSbqHTahtpFmb8fZzLO5naJepX+ieTi1dt+LbT6uw80lpOW8rCs2DL95mPn2kBZrSYBONUBooGgdGdlSwmDZzElNxEbp3x9YTjTOvwx6OzymROphzmzQaOIkqOWqjKdnYFHKGBVp0iBBKvahulq0NCwW6/TnS7EFGZD1Q7/gahFZ9uglpfzv2FmlaOLYQQshHvJVJYS5K6/I47xk/vGQVORTabglqF0IdQqlTGHUJR93CU48IqFeElBcp6hPp+nFoOVokqG8/R5Ua+bh71Jg+IZObk79tTuYW5N97FGOBmWFzxPKQl6NEiX7EGIBhEIYhGIZhKMAwAkMRhlEYxmDNU5CmfWnamuioMtAs14iWRYSpGg7NoMeb6bOZVcxCZCLFbdK8pq/5sVfTXQ5ozrVsKtlRV4GtMTsrXrdH8a7F6ptP0tgrNi9AHuGvW8QCuZvO8dMjiYiF0yV3AMDWM10rC9oW8XtyDNLIJAoTNsO3qOI46lNNxZJGAuFsaOATKCq5K1L7OAzePcnX3btP+rvMWeKO84Z46JdUto/frFgG5Gj3gAvnlM5eMrJBHW/tdlMu0nRL0I57olIv+gmBB5O48PAzZuDyTdx3tho73qusdll48vaOKN2gmanjFJ6KaAz89HO9pTI4plbxzO1mOuYQ90z70RrGssrMjIuO85pTIo7RIKKrh01CdSWa1rUk3jE+Mh46jiu+iNCMu5+sIznsbhUrGdGkVukLMbVZa8hdjRIpecfItnkqAyUFZ0iufKv6ZS7HWhr1rnylCzq/kwsHoU30+lvGVcoxtrx7ynSv/PQ1PAEW7RUTcZ0H7il0rzJU6lyqLHs749RtW5TG6jKjrbd62l6/6rab3v0GwFibveZNsJx2B9wC92QX79xoj7Bb0rAQsGZmztgOnJvUV/LfJ5PxkACu09urNFLrmpPv8B2UaBABcpV9WExamSPjl9lLG11zvmkqvaGlk/Us38qNdkpT90qvw0PoWiJw2td290d6HnPvsWresVmHnEmeRUFyYY7bRAWc+KHdKZEbqdQy7gZbziJV1HUYAHczFn/iA3Y8AiEUFhBEQii2g5NICKFkAUFKiDU98QVsOmQUoWwhQU4Ryh8BBAVFqFhIUFJELzvGtqhwT9UCgpoQqtvBKTSEULOAoCXEaKPDlug4Z9QtJOgpYvQJEwwUoWEhwUiR/uOJN1bKaEx44Zcb5RSePku9s4foNp94U5EWNipLG2lVjVVorOUqNnLVtx2BoB0IV+7hyQMEHatRAsVJlnCWJVxkCVdZwk2WcJclPHLX8JRreMk1vOUaPnINX7mGn1xr/k/fsb90sx4F3e8oatt7g03WPJ8b5o7GrSMbOv//zm5hBoIk/2ngWDDCH6UKzENwP4QbQB6IIfwNBgiCogjrXihyD0ygJcZFnAzp0mRGM5MzaPfWVHno+2a2Z/5n/zuzq6FrezVb0HUsGTZD38X1ZjY2NraeWSfggbAA6hByhQb+6uU3jF/SNwBdEmS4M7oC/yuFKZwmqC4f6YkeElNaaklIs5YqwUlzdrkwQEOUNMYoIFVoitOGIKlv/JX13PeCChMQs2QoTHvhAQh5XmOImpgjr1H0YOt+TPA2amHk13dGXUqjbRCkaqREBZis8krf4EQdwjYuh6jPHD19lKFymUZOuAcaHjcO1kKyfEX8TfIuFFtEBl04R940LPnyGU4ED6NdbByufS+Q5nIqvUlB9Xv0AhlVr2bGy3CF37wOq5XLZBYXWu/dStwm75xZRKBT2nY7Tt7HwMW0M/STj7xLo1HyzuwgT5gja8mjBUD3WqHPeuyMtwgg84aBotUrcDAeEDdgopHQOO8DqWr8rNzWhPLCbMjVct5INGVyuL5hjjCqcH5ti3PabTl8S/hqQGk9GIxEChKGKCmN01xp6k+3G9BhPWLDhtOMlFH6Ce/dzpmS6oUljyOHZoGbNI+utKz/mtzpDszjiSdwt06W5AJBrEbKsEBrM74kj8wZxvNRQ9OSetcbMNNkVLOm63XGVIrJSL/uKi85aSlRiJDGTvIIjNYpI8/jP2Pvlq3hCvYXxPprGhku/ZYE75GM8x2APlL56Xbsml2soFZRRrzH+Wpoz+vZcYg2f47zuzkwhC4dSmeGQtkld5tKB4cPk1vXsds20UkckWwQ2rTzKxfZWBqCA02s7UjdE6mh3W+7Eki1tx3iPujBX/adm71v2F1eTm7DbfDJ0HG/dZsV337D5k4v+Wk/So7cXNv8yuM0D+XmpARpck+HlLttnAWLM977yc4YPQLr89S8/ctf2vKmcFacizps8t7XZfB+0+peJ+6BnMA+CG4CL3fA9nflYAQp3G3LgfAoG4HYHOXl6bUELAfdZZlWvS7FJGMXmwZ3BwaD5aDEZfaekJDdS/UOpdl0bVlNy2XrAwZ4/gA/w6MScgMoT8LIAV8HBDu7QVUehqOogGJKDwSuqDcR/XZ7aHm0B75rKlzvfoMH0p3Stw+nAu4sPUpqJbnkm+Ocv/XzV7ccXEy2GIAXsNlgKDIFq0J1BpxX5Z+VWbfRnwvc5BeWOGo1Dz15u6rv3S9C9xd/6Ovz8fISgSDBHmrIdXJ1CFxdSJdG7L0u5ygSa3UTygrFmwN19bbEo2FncVUuk2wRQa6nPRgmHWpgyHWOUdVr8aZy9+o452rATFLgdHUgzt2zCBLW/hXqnGR3YraVsdY1IzcV87CPgCIgkylgx43eLphJ8xTogP3PmUUnArwAuzKCwTPRBWQ000rlFgx1LSxINSp9Ii4ihGEDwtMmwl6HG56aetytMSlED0qVH3PbTVabpd4aosWrFbgQfYPNSikxbZ2Exs9fnkWnZm2dwuNNWV5Fj90IdbeXRZR2t1ZV9baWRpT1tlehpXfiKHEsjJ5Jb30Gje3f7VaY+HkV4vh+JTF+gIsOxKmglhpBxKkKAIiuaxaDdfNg9EjHbCVtz+zVCcypCDIUjtiQd6jAwaKkYlimKeEJMuJTMqp/P9GRLb0fJRdC9VVazFxrbtjn7+WV5+WFb57oQlaPPYOgD2aW/Q/zAFB3nwKA6LLF/oHAL4uYSJnTmDARbcr1omUrfPDloM12Y4FgP2JvfwbcRVK6MvYsFELFbnraxpHOgbhNIDhKjUatU5b4lReXczKpwYyZ64x5bRjO06sAYoGSRZ/bwZDJI/HRPYUBFFJ9pwgqmtPGMQyHZZOGgaDTZheu/yO1vlzPtr6kmmSyrnK5EavS1v1cmo0XJBfGKmT5cFxSXIjddevGUDNZpaw6gOc/yyzJ4i3IcjDZvvsl8slvucyT7WrFdGmn9Y4m2PW6B9keRozB8n+3bK6M23qmZ0n2M5xIOmlBiUCrqYibskAa3yDUqtHBitmoQuWws0SSLJaDJE9YAQ9G+elm+vMgEtQpjN/5lB7Sf2xXPmrX9j0T+MjP8Q/JaoiLRK2WCGcJ7gR7XcZnwqgXK9fDhI1mmayzQmHAqrV1JaMR2pl2tXL6Axobv18snyx1QO1VdUZ7a1lZp7dTi3FL52HNPB7n6mWc2KjdEAEv416U6+GZCk3Zr444Em0RcuV5aZXdcxPtNScORdgtIvfCQSJbISxVfxUM2x3L24c6JeJpOA71ra+5EFZnHrgpev78GxcGkbVjL7D4nxw04DARdKWwlb3ot/2X02jSxYsKvGmZireSLrMkBVvPyHdLCF4lV8msjHTxB+8V+0xio9ligZPnU3DQDwHIFOriTnxMdSGfSh4wqrONoWhzC8DD47T6Sl22j52rwssDqo1WrN5Qfy0Brmd8clGsUn4aCx7GavzDBKyyaIpUvbXTmkmkodbRPmQqefwwKnHMOCqV6LNHOj0h+K3GmYz72Fphp9FO7i17Y2BcKfmVs1C2YGHpeZeMlwnzDHFzNUm5QqBKOpbLEktymNuVSmE/dBk2qtYEv4omum9yREVtu/xTOnceuxVHnzzxzffNUvtX/+v67+76MhWJ3iUWzRI8rjCOoB0FlCJbdwmmK1T3HJBJD/TVGC1YnaG+bBCVNny8C40Ys8ZaiicXWVf964YDx0s9AvAZIV+WjiC7K1MbSPuVw0oJSEw87aXXMFmpBfulxrtrL9ev7UsMZk3vHE4aLvpu4ceGW3ovxoQEbjpYNd2hf3WIEYG5E25jsbEYwmbHYTCCHAdjbEQ9LQjVQqbRNoGeT1ij7cDjtYqUMYbWNTAhBX76vw4j4Yz/Jd5YuM//b8aAAeoBawQoJf/8hPdyQIq/ywNi/qG9cm/5QuTVyYx4q3NKaBXUmVM7xLwz/yaCU3EHeILQBwcpCSHctypqDwWTc4vPIUN3D5yQfhE4StA7TsvhINLMK1IRgZVdTlRXtTo2OSEfdY3TyaSPTaf0BCqqFRRB5dDprKjIqlSPDU+kFqLucWoNiRGLs4ZQxVvl7754uRvITME5q2G2vYv3UlOAp+ymlYqjypJrpDVUN7W6X04XxoZD0ohRzzi9SKIImjx86+q5E0oQuBrOgTjhGjetOvQ0rvtV/IemFjt5MRPkRBgtRppT0Yr9epG12IvHz7OylmdHnPj+2OUcotFoOTO/4mupMDDv13Z5VVil2k1T4LIKgh4aBNu0xf1yI8AapVGCpx+gRL3jVB/oYsWaTR0YLd4nvVOzo5IVGolgNBVEXM1LiJUq0FTP1cRrXcT9Bx6BKjVge9eLmdSciGxKtdUHWkd8UubQQnNRjNoN2rGRl80ms93ZrjbfXE9mmNwxMgMVJGNcuBUr1GzUMU5PBWMaiqAVTFHjENVSMHhXkIeMshhjxaZKYy3NnM0dlNt81xXj/EqBNdcvYlbBnDiTQ0Sd6Js45x/C+5VdvENuUi2UBHdYC/N7WI9HnPOdprjmKG2CVQJxa4vjUcxClfcoGnMYDVkEpfzP89/cmA38koTBCbGwTlRcBWdCvBT2NYSYC+2AIPBl/Y0Q0g1xj3KUH6engFEbEu+0gpozdYc4fOD8Ackl+m/sEgRxaIMlqjWkSmiho5FFU6EKHVqpY+Ex5FlAH0J1ZZcXs1WrdtNE4qHtcPjR9ssZIE9PAX0h6hyn685Sp1JBcV4dnhLvJ3Fqp1w67ObTLJnqXqeUsSAnpBGxZJQdEuRLUOn9xDIpj0cbOiYTuKWk02nK842PtnWW/FdbtMWuy+I4v6u5yyjd7nY/0PbEPqBfiM8XCxjyUVcr3UIqZzbXTxwWs9Kx4RBvyBf/1znaXRck3hp1zB5I7ZYpHO7rcs2aqY8I12iR14mcK6AUWzKO6PxrN7fKw6CY7iNgwgGqVnMhtHABiOkbGvZ3V/NbY8tIn0wd2QgHXkzE9it/PkwuNNpAY7edhj40kC3QcmOjG5HYj9VUHDvpW0c0ZKo7EQHkkWf/L7+481DDyt9kN/srwK/D/2qAP/+3fzrJjGdv2weBEAVA4D9gYftmDzXzbtTjcSPyfQb9IejjnNafpK+eZlZ7mdOIkq1CvsaZJ5jWJY5LjQkdUZa1hRE9TUGbmdcm5uWvdGkbE9rAsHYxg6hiHEV02BYxgulFGZUmSnKDA/kGnfJRYv1YR9E6klfJQVJLgBGex3MBQxngLO8D3s62YV4DMVYmLt2NPMzOVrLkDSec1w1qPMvjPMVLxFziFk9wwIZ6+uPc5GLsDi8Qq0aN43UmW80x6bNf5IcX412R9+8fyS+m03n6LuHG59lehH7P2Ngsypkzbjk1FRRcR+ijH1qp6kaw4Ma0z3fTzmx8vfmb5jfrvpn+ZlDGU+eoqZryicl0vwSDrbtD8vaFvaPy23tcuimK8S+mGFiuab/77Sym8OXUIeLKb9+4/DMf57qcqehKMOOK2uV9duyLTIaff99dtin1M/5mwNYWAAA=) format('woff2');font-weight:600;font-style:normal;font-display:block}
@@ -1303,7 +1332,12 @@ p,.lead,.note,.src,.hint,.empty,.why,.gwarn,.gsub{text-wrap:pretty}
 .today .v{font-family:var(--pnum);font-size:30px;letter-spacing:0;margin-top:2px}
 .today .v small{font-family:var(--pui);font-size:13px;letter-spacing:0;opacity:.62;margin:0 10px 0 3px;font-weight:600}
 .today .s{font-size:12.5px;opacity:.72}
-.today .btn{background:var(--sun);color:#1B1712;border-radius:12px;font-weight:700;font-size:13.5px;padding:11px 13px}
+.today .btn{background:var(--sun);color:#1B1712;border-radius:12px;font-weight:700;font-size:13.5px;padding:12px 13px}
+/* 0.4.4 오늘 하루와 나가고 싶어요 */
+.today .wish{font-size:12px;opacity:.72;margin-top:6px;word-break:keep-all}
+.today .wt{font-size:18px;font-weight:700;line-height:1.3;margin-top:3px;word-break:keep-all}
+.today .ring.paws svg{position:absolute;inset:0;width:84px;height:84px}
+.today .btn.ghost{background:transparent;color:#F3EDE2;border:1px solid rgba(243,237,226,.38);font-weight:600;font-size:12.5px;padding:9px 11px}
 .today.empty{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .today:not(.empty){background:var(--panel-2);border:1px solid var(--line)}}
 :root[data-theme="dark"] .today:not(.empty){background:var(--panel-2);border:1px solid var(--line)}
@@ -1344,7 +1378,7 @@ p,.lead,.note,.src,.hint,.empty,.why,.gwarn,.gsub{text-wrap:pretty}
 
 /* 기록 */
 .seg2{background:var(--panel-2);border-radius:13px;padding:3px;gap:3px}
-.seg2 button{border:0;background:none;border-radius:10px;padding:9px 0;font-size:13.5px;font-weight:600;color:var(--ink-3)}
+.seg2 button{border:0;background:none;border-radius:10px;padding:11px 0;font-size:13.5px;font-weight:600;color:var(--ink-3)}
 .seg2 button[aria-pressed="true"]{background:var(--panel);color:var(--ink);border:0;font-weight:700;box-shadow:0 1px 2px rgba(27,23,18,.1),0 2px 8px -3px rgba(27,23,18,.15)}
 .row{gap:12px;padding:11px 0}
 .row .ic{width:36px;height:36px;border-radius:12px;font-size:16px;background:var(--panel-2);color:var(--ink)}
@@ -1376,6 +1410,7 @@ p,.lead,.note,.src,.hint,.empty,.why,.gwarn,.gsub{text-wrap:pretty}
 
 /* 아래 탭 */
 .tabs button{padding:8px 0 10px;font-size:11px;font-weight:600;color:var(--ink-3)}
+@media (min-width:520px){.tabs{left:50%;right:auto;width:100%;max-width:440px;transform:translateX(-50%);border-left:1px solid var(--line);border-right:1px solid var(--line);border-radius:16px 16px 0 0}}
 .tabs button i{display:grid;place-items:center;height:26px;margin-bottom:1px}
 .tabs button i .gi{width:24px;height:24px}
 .tabs button.on{color:var(--ink);font-weight:700}
@@ -1438,6 +1473,101 @@ body{font-synthesis:none}
 :root[data-theme="dark"] .seg2 button[aria-pressed="true"]{background:#3A332A;box-shadow:0 0 0 1px rgba(255,255,255,.08)}
 :root[data-theme="dark"] .km-card .c.new{color:#A9D3FF}
 :root[data-theme="dark"] .apkbar a{color:var(--ground)}
+
+/* ── 0.5.0 마감 (11/10): 깊이와 눌림, 넓은 화면. 색과 모양은 그대로 두고 빛과 그림자만 얹는다.
+   원칙: 누르는 것에만 볼록한 느낌, 판(카드)은 살짝 뜨게, 고르는 띠와 입력 칸은 살짝 파이게 ── */
+:root{
+  --e1:0 1px 2px rgba(27,23,18,.04),0 6px 16px -10px rgba(27,23,18,.16);
+  --e2:0 1px 2px rgba(27,23,18,.12),0 14px 24px -16px rgba(27,23,18,.5);
+  --e-up:0 -1px 0 rgba(27,23,18,.03),0 -12px 28px -20px rgba(27,23,18,.3);
+  --hi:inset 0 1px 0 rgba(255,255,255,.09);
+  --press:transform .12s cubic-bezier(.23,1,.32,1);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --e1:inset 0 1px 0 rgba(255,255,255,.03);
+  --e2:0 14px 24px -16px rgba(0,0,0,.7);
+  --e-up:0 -1px 0 rgba(255,255,255,.05),0 -12px 28px -20px rgba(0,0,0,.8);
+  --hi:inset 0 1px 0 rgba(255,255,255,.06);
+}}
+:root[data-theme="dark"]{
+  --e1:inset 0 1px 0 rgba(255,255,255,.03);
+  --e2:0 14px 24px -16px rgba(0,0,0,.7);
+  --e-up:0 -1px 0 rgba(255,255,255,.05),0 -12px 28px -20px rgba(0,0,0,.8);
+  --hi:inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+/* 글꼴이 빠져 있던 세 곳(꾹꾹로 이름, 오늘의 꾹꾹로, 겨울과 진드기 안내 제목) */
+.rtop .n,.pick .n,.winter .h{font-family:var(--pui)}
+
+/* 살짝 뜬 판: 종이 위 흰 카드 */
+.card,.light.none,.esig,.nudge,.pick,.winter,.rcard,.pcard,.stat3 .s{box-shadow:var(--e1)}
+.esig,.nudge,.pick{border-radius:var(--r)}
+/* 더 뜬 판: 잉크 면(오늘 카드, 큰 단추, 되돌리기 띠, 알림) */
+.today:not(.empty){box-shadow:var(--hi),var(--e2)}
+.big:not(.ghost):not([disabled]),.pick .go,.lk-btn.lk-main{box-shadow:var(--hi),0 1px 2px rgba(27,23,18,.14),0 10px 18px -12px rgba(27,23,18,.5)}
+.big:not(.ghost):not([disabled]):active,.pick .go:active,.lk-btn.lk-main:active{box-shadow:var(--hi),0 1px 2px rgba(27,23,18,.14)}
+.big.ghost,.walkbar button,.lk-btn:not(.lk-main){box-shadow:0 1px 2px rgba(27,23,18,.04)}
+.undo,.toast{box-shadow:var(--hi),var(--e2)}
+.today .btn:not(.ghost){box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 1px 2px rgba(0,0,0,.3)}
+/* 파인 면: 고르는 띠와 입력 칸 */
+.seg2{box-shadow:inset 0 1px 2px rgba(27,23,18,.07)}
+.field input{box-shadow:inset 0 1px 2px rgba(27,23,18,.04)}
+/* 위로 뜬 면: 아래 탭과 시트. 시트 바탕을 그림으로 깔아야 지도가 든 시트의 둥근 모서리 밖이 검게 찍히지 않는다 */
+.tabs{box-shadow:var(--e-up)}
+.sheet .in{box-shadow:0 -16px 40px -20px rgba(20,17,13,.45);background-image:linear-gradient(var(--panel),var(--panel))}
+
+/* 산책 단추: 볼록한 면(윗빛, 받침 위 그림자). 누르면 가라앉는다 */
+#start:not(.ghost){background-image:radial-gradient(circle at 32% 22%,rgba(255,255,255,.11),rgba(255,255,255,0) 58%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 -14px 22px -14px rgba(0,0,0,.55),
+    0 6px 10px -4px rgba(27,23,18,.45),0 0 0 10px var(--panel-2),0 22px 30px -8px rgba(27,23,18,.22)}
+#start.ghost{margin-bottom:10px}
+/* 크기: 화면이 낮으면 아래 탭에 가리지 않게 줄이고, 넓은 화면(웹)에서는 더 작게 */
+@supports (height:1dvh){
+  #start:not(.ghost){--sd:min(256px,66vw,max(148px,calc(100dvh - 484px)));width:var(--sd);gap:calc(var(--sd)*.04);font-size:max(17px,calc(var(--sd)*.098));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 -14px 22px -14px rgba(0,0,0,.55),
+      0 6px 10px -4px rgba(27,23,18,.45),0 0 0 calc(var(--sd)*.04) var(--panel-2),0 22px 30px -8px rgba(27,23,18,.22)}
+  #start:not(.ghost) .gi{width:calc(var(--sd)*.28);height:calc(var(--sd)*.28)}
+  @media (min-width:520px){#start:not(.ghost){--sd:min(192px,max(148px,calc(100dvh - 484px)))}}
+}
+#start:not(.ghost):active{box-shadow:inset 0 3px 8px rgba(0,0,0,.6),0 1px 2px rgba(27,23,18,.3),0 0 0 calc(var(--sd,256px)*.04) var(--panel-2)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) #start:not(.ghost){background-image:radial-gradient(circle at 32% 22%,rgba(255,255,255,.8),rgba(255,255,255,0) 60%);
+    box-shadow:inset 0 -14px 22px -14px rgba(27,23,18,.3),0 6px 10px -4px rgba(0,0,0,.6),0 0 0 calc(var(--sd,256px)*.04) var(--panel-2),0 22px 30px -8px rgba(0,0,0,.5)}
+  :root:not([data-theme="light"]) #start:not(.ghost):active{box-shadow:inset 0 3px 8px rgba(27,23,18,.35),0 0 0 calc(var(--sd,256px)*.04) var(--panel-2)}
+  :root:not([data-theme="light"]) .act{--cs:rgba(0,0,0,.5)}
+}
+:root[data-theme="dark"] #start:not(.ghost){background-image:radial-gradient(circle at 32% 22%,rgba(255,255,255,.8),rgba(255,255,255,0) 60%);
+  box-shadow:inset 0 -14px 22px -14px rgba(27,23,18,.3),0 6px 10px -4px rgba(0,0,0,.6),0 0 0 calc(var(--sd,256px)*.04) var(--panel-2),0 22px 30px -8px rgba(0,0,0,.5)}
+:root[data-theme="dark"] #start:not(.ghost):active{box-shadow:inset 0 3px 8px rgba(27,23,18,.35),0 0 0 calc(var(--sd,256px)*.04) var(--panel-2)}
+:root[data-theme="dark"] .act{--cs:rgba(0,0,0,.5)}
+
+/* 산책 중 세 단추: 조약돌처럼 윗빛과 색 그림자. 빛은 세 개 모두 왼쪽 위에서 온다(기운 만큼 자리를 옮겨 둠) */
+.act .pad{background-image:radial-gradient(120% 90% at var(--hx,34%) var(--hy,20%),rgba(255,255,255,.26),rgba(255,255,255,0) 58%)}
+.act{filter:drop-shadow(0 7px 7px var(--cs,rgba(27,23,18,.2)))}
+.a-poop{--cs:rgba(190,60,40,.3);--hx:49%;--hy:17%} .a-sniff{--cs:rgba(170,115,10,.3)} .a-pee{--cs:rgba(25,95,170,.3);--hx:21%;--hy:27%}
+.act:active{filter:drop-shadow(0 2px 3px var(--cs,rgba(27,23,18,.2)))}
+/* 끝내기 글자를 단추 가운데로 */
+.walkbar #stop{justify-content:center}
+
+/* 눌림: 단추는 살짝 줄고, 줄과 글자 단추는 흐려진다 */
+.tabs button i,.today .btn,.walkbar #pocketbtn,.lk-btn,.cities button,.etools button,.picks button,.firm3 button,.pcard .pact button,.chk,.rcard,.seg2 button,#d-photo-b{transition:var(--press)}
+.tabs button:active i{transform:scale(.88)}
+.today .btn:active,.walkbar #pocketbtn:active,.lk-btn:active,.cities button:active,.etools button:active,.picks button:active,.firm3 button:active,.pcard .pact button:active,#d-photo-b:active{transform:scale(.96)}
+.chk:active,.rcard:active,.seg2 button:active{transform:scale(.985)}
+.km-row:active,.km-more:active,.more>summary:active,details.calib summary:active,details.sig summary:active,.tierhead:active,.esig .lk:active,.lk-txt:active,.src a:active{opacity:.55}
+
+/* 마우스로 쓰는 넓은 화면(웹): 올려놓으면 반응 */
+@media (hover:hover) and (pointer:fine){
+  .big:not(.ghost):not([disabled]):hover,.pick .go:hover,.lk-btn.lk-main:hover{opacity:.9}
+  #start:not(.ghost):hover{opacity:1}
+  #start:not(.ghost):hover:not(:active){transform:translateY(-2px)}
+  .big.ghost:hover,.walkbar button:hover,.lk-btn:not(.lk-main):hover,.chips button:hover,.esig .b3 button:hover,.nudge .b2 button:hover,.cities button:hover,.etools button:hover,.picks button:hover,.rcard:hover,.km-card:hover{border-color:var(--ink-3)}
+  .tabs button:hover,.more>summary:hover,details.calib summary:hover,.km-more:hover{color:var(--ink)}
+  .km-row:hover,.row.tap:hover{background-image:linear-gradient(rgba(127,120,110,.08),rgba(127,120,110,.08))}
+  .today .btn:hover{filter:brightness(1.06)}
+}
+/* 자판으로 옮겨 다닐 때 보이는 테두리 */
+.app button:not(.act):focus-visible,.app summary:focus-visible,.app a:focus-visible,.tabs button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 </style>
 <style id="km-css">
 /* MapLibre GL JS 6.14.0 기본 틀(BSD-3-Clause), 쓰는 규칙만 */
@@ -1601,7 +1731,7 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
     </div></div>
     <div class="lockline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z"/><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0"/><path d="M8 11v-4a4 4 0 1 1 8 0v4"/></svg><span>가입 없이 바로 써요. 기록은 이 폰에만 남고 기록 탭에서 파일로 옮길 수 있어요.</span></div>
     <button class="big" data-sso="local">시작하기</button>
-    <p class="src" style="text-align:center;padding-top:10px">계속하면 이용약관과 개인정보 처리방침에 동의하는 거예요</p>
+    <p class="src" style="text-align:center;padding-top:10px">계속하면 <a href="privacy/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:3px">개인정보처리방침</a>에 동의하는 거예요</p>
   </div>
 
   <div class="step" id="st1">
@@ -1633,12 +1763,17 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
       <input id="f-name" placeholder="혜준이" autocomplete="off"></div>
     <div class="field"><label for="f-weight">체중 (kg)</label>
       <input id="f-weight" type="number" inputmode="decimal" step="0.1" placeholder="13.4">
-      <div class="hint" id="sizehint">10kg 미만 소형 · 10~25kg 중형 · 25kg 초과 대형</div></div>
+      <div class="hint" id="sizehint">10kg 미만 소형, 10~25kg 중형, 25kg 초과 대형</div></div>
     <button class="chk" id="f-brachy" aria-pressed="false">
       <span class="bx">✓</span>
       <span class="t"><b>코가 납작한 편이에요</b>
       <span>퍼그, 불독, 시추처럼 코가 납작한 아이는 열사병 위험이 2.1배 높아서 기준을 한 단계 올려요.</span></span>
     </button>
+    <div class="srcq potty">
+      <div class="lbl2">배변은 어디서 해요? <span>안 골라도 돼요</span></div>
+      <div class="chips" id="f-potty"><button aria-pressed="false" data-v="out">밖에서만</button><button aria-pressed="false" data-v="in">주로 집 안(패드)</button><button aria-pressed="false" data-v="both">둘 다</button></div>
+      <p class="pothint">배변 습관을 알려 주시면 꾹게이지와 산책 안내가 더 정확해져요</p>
+    </div>
 
     <div class="tier2">
       <button class="tierhead" id="f-more" aria-expanded="false">
@@ -1695,8 +1830,10 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
     <p class="lead">거부해도 기록은 돼요. 다만 바닥 온도는 계산할 수 없어요.</p>
     <div class="permrow"><span class="e"><svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/><path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z"/></svg></span><div class="t"><b>위치</b>
       <span>지금 있는 자리의 기온과 일사량을 받아 바닥 온도를 계산해요. 원본 위치는 서버에 저장하지 않아요.</span></div></div>
-    <div class="permrow only-native"><span class="e"><svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6"/><path d="M9 17v1a3 3 0 0 0 6 0v-1"/></svg></span><div class="t"><b>알림</b>
+    <div class="permrow only-native only-android"><span class="e"><svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6"/><path d="M9 17v1a3 3 0 0 0 6 0v-1"/></svg></span><div class="t"><b>알림</b>
       <span>산책 중엔 알림줄에 "산책 기록 중"이 떠요. 그래야 화면을 꺼도 경로가 이어져요.</span></div></div>
+    <div class="permrow only-ios"><span class="e"><svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/><path d="M12 7v5l3 3"/></svg></span><div class="t"><b>산책 중 위치</b>
+      <span>산책을 시작하면 끝낼 때까지만 걸은 길을 그려요. 화면을 꺼도 이어지고 그동안 화면 위에 위치 표시가 떠요. 길은 이 폰에만 남아요.</span></div></div>
     <div class="grow"></div>
     <button class="big" id="askperm">위치 허용하고 시작</button>
     <button class="big ghost" id="skipperm" style="margin-top:9px">나중에</button>
@@ -1711,6 +1848,7 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
   <!-- 홈 -->
   <div class="view on" id="v-home">
     <div class="bar"><span class="km-hd"><button type="button" class="km-ava" id="hdr-ava" aria-label="강아지 프로필"></button><h1 id="hdr">꾹꾹이</h1></span><span class="sub" id="today"></span></div>
+    <div class="apkbar" id="privbar" hidden><span>개인정보처리방침이 바뀌어요. 30일 뒤부터 사용 통계에 산책 끝 신호와 새 길 권하기가 더해져요</span><span class="pb"><a href="privacy/" target="_blank" rel="noopener">보기</a><button type="button" id="privok">확인</button></span></div>
     <div class="apkbar" id="apkbar" hidden><span>앱 새 버전이 나왔어요</span><a id="apkget" href="https://github.com/062-SIBI/kkukkkukkkuk/releases/latest/download/kkukkkuki.apk">받기</a></div>
     <div class="light none" id="light">
       <div class="dot" id="l-dot"><svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/><path d="M12 7v5l3 3"/></svg></div>
@@ -1724,7 +1862,9 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
     </div>
 
     <div class="today" id="todaycard"></div>
+    <div id="endsig" hidden></div>
     <button class="big ghost resume" id="resume" hidden><span>방금 산책 이어 걷기</span><b id="resume-t">5:00</b></button>
+    <div id="newnudge" hidden></div>
     <button class="big" id="start"><svg class="gi brand" viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(0 1)"><ellipse cx="22" cy="58" rx="13" ry="16" transform="rotate(-22 22 58)" fill="#FF6B57"/><ellipse cx="50" cy="40" rx="13" ry="16" fill="#EFB02F"/><ellipse cx="78" cy="58" rx="13" ry="16" transform="rotate(22 78 58)" fill="#3B9DF5"/></g></svg><span>산책 시작</span></button>
     <div id="pickcard"></div>
 
@@ -1733,13 +1873,13 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
       <details class="sig" id="sig">
         <summary>더울 때 이 신호가 보이면 즉시 멈추세요</summary>
         <ol>
-          <li><b>경증</b>: 격렬한 헐떡임 · 처지거나 걷기 싫어함 <span class="g">생존 97.8%</span></li>
-          <li><b>중등증</b>: 토함 · 설사 · 침 심하게 흘림 · 한 번 주저앉음 · 발작 1회 <span class="g">94.5%</span></li>
-          <li><b>중증</b>: 비틀거림 · 발작 2회 이상 · 반응 없음 · 혼수 <span class="g">43.2%</span> → <b>바로 병원</b></li>
+          <li><b>경증</b>: 격렬한 헐떡임, 처지거나 걷기 싫어함 <span class="g">생존 97.8%</span></li>
+          <li><b>중등증</b>: 토함, 설사, 침 심하게 흘림, 한 번 주저앉음, 발작 1회 <span class="g">94.5%</span></li>
+          <li><b>중증</b>: 비틀거림, 발작 2회 이상, 반응 없음, 피 섞인 구토나 설사 <span class="g">43.2%</span> → <b>바로 병원</b></li>
         </ol>
         <div class="last">숫자는 등급별 생존율입니다. <b>발작을 한 번 했다고 43%가 되는 게 아니에요</b>.
-        반복되거나 비틀거림·무반응이 같이 올 때가 중증입니다.<br>
-        Hall 외, Scientific Reports 2021;11:6828 · VetCompass, 영국 왕립수의대</div>
+        반복되거나 비틀거림, 무반응이 같이 올 때가 중증입니다.<br>
+        Hall 외, Scientific Reports 2021;11:6828(영국 1차 진료 856건)</div>
       </details>
       <div id="wintercard"></div>
       <button class="big ghost" id="share" style="margin-top:9px"><svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2"/><path d="M9 13a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/></svg><span>오늘 바닥 온도 공유하기</span></button>
@@ -1853,7 +1993,7 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
       <div class="card" style="padding:12px 15px" id="compasscard" hidden>
         <div class="lbl" style="margin:2px 0 7px">똥 나침반 · 진짜로 논문이 있어요</div>
         <div id="compassrose"></div>
-        <div class="src" style="margin-top:8px">체코 연구진이 강아지 70마리의 배변 1,893회를 관찰해
+        <div class="src" style="margin-top:8px">체코와 독일 연구진이 강아지 70마리의 배변 1,893회를 관찰해
         <b>지자기장이 안정된 날엔 남북 방향으로 정렬해 싼다</b>고 보고했어요(Hart 외 2013, p=6.2×10⁻⁸).
         2021년 프랑스 공원 재현 연구는 실패했고요(Rouviere &amp; Ruxton).
         <b>과학계도 아직 다투는 중</b>: 그래서 점수는 없고, 그냥 기록만 합니다.</div>
@@ -1866,7 +2006,7 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
     <p class="src" style="margin-top:6px">최근 산책의 GPS 원본 점이에요. 폰 안에만 있고, 누를 때만 파일로 만들어요.</p>
     <button class="big ghost" id="betarep" style="margin-top:9px">베타 기록 보내기</button>
     <button class="big ghost" id="statsopt" style="margin-top:9px" aria-pressed="true" hidden>사용 통계 보내기: 켜짐</button>
-    <p class="src" id="statsnote" style="margin-top:6px" hidden>앱을 고치려고 산책 수, 시간, 거리 같은 숫자와 기기 종류(브라우저, 화면 크기)를 핵클(분석 도구)로 보냅니다. 위치와 경로, 강아지 이름과 사진은 보내지 않고 끄면 바로 멈춰요.</p>
+    <p class="src" id="statsnote" style="margin-top:6px" hidden>앱을 고치려고 산책 수, 시간, 거리 같은 숫자와 기기 종류(브라우저, 화면 크기)를 핵클(분석 도구)로 보냅니다. 위치와 경로, 강아지 이름과 사진은 보내지 않고 끄면 바로 멈춰요. <a href="privacy/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:3px">처리방침 보기</a></p>
     <p class="src" style="margin-top:9px">폰을 바꾸거나 브라우저 기록을 지우면 <b>산책 기록이 사라져요.</b>
     가끔 내보내서 파일로 두세요. 기록을 받아 두는 서버가 없어서 이 기기에만 저장돼요.</p>
     <button class="big ghost" id="reset" style="margin-top:13px;color:var(--clay)">처음부터 다시</button>
@@ -1880,8 +2020,8 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
       <div class="body">
         <p class="src" style="margin:4px 0 12px">강아지가 <b>깊이 잠들었을 때</b>, 가슴이 한 번
         오르내릴 때마다 아래 버튼을 누르세요. 30초를 재서 1분 값으로 바꿔드립니다.<br>
-        건강한 강아지는 평균 <b>14회/분</b>, 정상 상한은 약 <b>25회/분</b>이에요.
-        안정 시 호흡수의 <b>상승 추세</b>가 심장 문제의 가장 이른 신호 중 하나입니다.</p>
+        건강한 강아지는 평균 <b>13회/분</b>이고, 잘 때 <b>25회/분</b>을 넘는 일은 드물어요.
+        잘 때 호흡수가 <b>며칠에 걸쳐 올라가면</b> 심장 문제의 신호일 수 있어요.</p>
         <div id="srr-live" style="display:none;text-align:center;padding:6px 0 2px">
           <div id="srr-clock" class="mono" style="font-size:30px;font-weight:600;color:var(--brand-deep)">30.0</div>
           <div class="src">남은 시간 · 탭한 횟수 <b id="srr-n">0</b></div>
@@ -1889,8 +2029,8 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
         <button class="big" id="srr-tap" style="margin-top:6px">숨 세기 시작 (30초)</button>
         <div id="srr-result" class="src" style="margin-top:10px"></div>
         <div id="srr-hist" style="margin-top:8px"></div>
-        <p class="src" style="margin-top:11px">기준: Rishniw 외 2012(건강견 평균 14회/분) ·
-        Ohad 외 2013 · ACVIM 심장 가이드라인 2019(가정 내 호흡수 관찰 권고).
+        <p class="src" style="margin-top:11px">기준: Rishniw 외 2012(건강한 강아지 114마리, 평균 13회/분),
+        Ohad 외 2013(심장병 초기 190마리도 대부분 25회 미만), ACVIM 심장 가이드라인 2019(집에서 호흡수 세기 권고).
         진단이 아니라 <b>기록</b>입니다. 25회를 계속 넘거나 며칠에 걸쳐 올라가면 병원에 이 기록을 보여주세요.</p>
       </div>
     </details>
@@ -2159,6 +2299,22 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
       <span class="t"><b>코가 납작한 편이에요</b>
       <span>퍼그, 불독, 시추처럼 코가 납작한 아이는 열사병 위험이 2.1배 높아서 기준을 한 단계 올려요.</span></span>
     </button>
+    <div class="srcq potty" style="margin-top:13px">
+      <div class="lbl2">배변은 어디서 해요? <span>선택</span></div>
+      <div class="chips" id="d-potty"><button aria-pressed="false" data-v="out">밖에서만</button><button aria-pressed="false" data-v="in">주로 집 안(패드)</button><button aria-pressed="false" data-v="both">둘 다</button></div>
+      <p class="pothint">배변 습관을 알려 주시면 꾹게이지와 산책 안내가 더 정확해져요</p>
+    </div>
+    <div class="srcq potty" style="margin-top:13px">
+      <div class="lbl2">마지막 산책 뒤 시간 보기 <span>선택</span></div>
+      <div class="chips" id="d-gap"><button aria-pressed="false" data-v="auto">배변 습관대로</button><button aria-pressed="false" data-v="on">켬</button><button aria-pressed="false" data-v="off">끔</button></div>
+      <div class="chips" id="d-quiet" style="margin-top:8px"><button aria-pressed="false" data-v="none">숨길 시간 없음</button><button aria-pressed="false" data-v="wd9-18">평일 9~18시 숨김</button><button aria-pressed="false" data-v="wd8-19">평일 8~19시 숨김</button></div>
+      <p class="pothint">출근처럼 바로 나갈 수 없는 시간에는 홈에서 숨겨요</p>
+    </div>
+    <div class="srcq potty" style="margin-top:13px">
+      <div class="lbl2">견종 크기 <span>선택</span></div>
+      <div class="chips" id="d-bsize"><button aria-pressed="false" data-v="s">작은 견종</button><button aria-pressed="false" data-v="m">중간 견종</button><button aria-pressed="false" data-v="l">큰 견종</button><button aria-pressed="false" data-v="x">믹스나 모름</button></div>
+      <p class="pothint">기록으로만 받아 둬요. 꾹게이지 기준은 체중으로 정해요</p>
+    </div>
     <div class="field" style="margin-top:13px"><label for="d-age">나이 (살) · 선택</label>
       <input id="d-age" type="number" inputmode="numeric" step="1" min="0" max="25" placeholder="안 적어도 돼요">
       <div class="hint" id="d-agehint"></div></div>
@@ -2192,11 +2348,87 @@ var KEY="kkuk.v3";
 var GPSK=KEY+".gps";   // 0.4.3: GPS 원본 점(꾹게이지 시험용)은 본 기록과 다른 칸에 둔다
 function $(i){return document.getElementById(i);}
 function load(){try{var r=localStorage.getItem(KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true;}catch(e){
+/* 0.5.0 두 탭 보호(Codex 11/10): 같은 기록을 두 탭(창)이 들고 있으면, 오래된 탭이 옛 기록을 통째로 저장해
+   다른 탭에서 한 산책을 지울 수 있었다. 기록을 쓸 때마다 작은 번호(kkuk.v3.rv)를 올리고, 저장소의 번호가
+   이 탭이 아는 번호(RV)보다 크면 다른 탭이 더 새 기록을 쓴 것이다(이 탭은 '오래된 탭').
+   - 걷는 중이 아닌 오래된 탭: 기록을 쓰지 않는다. 다시 보일 때, 누르기 직전, 저장하려는 순간에 새로 불러온다.
+     오프라인이면 새로 불러오다 화면을 잃으니 기다렸다가 연결되면 한다.
+   - 걷는 중인 오래된 탭: 새로 불러오지 않는다(기록이 끊기면 안 된다). 저장할 때 다른 탭이 더한 산책과 꾹꾹로를
+     합쳐서 쓴다. 이 산책을 다른 탭이 이미 끝내 저장했으면 이 탭의 산책은 저장하지 않고 내려놓는다.
+   - 저장소가 비워져 번호가 작아진 경우는 오래된 것으로 보지 않는다(이 탭의 기록으로 다시 쓴다).
+   한 탭만 쓰면 번호가 늘 같아서 예전과 똑같이 돈다. */
+var RVK=KEY+".rv", RV=0, RV_DEAD=false, RV_DROP=false;
+function rvRead(){ try{ return +localStorage.getItem(RVK)||0; }catch(e){ return RV; } }
+function rvBump(keep){ var n=Math.max(rvRead(),RV)+1; try{ localStorage.setItem(RVK,String(n)); if(!keep)RV=n; }catch(e){ if(!keep)RV=rvRead(); } }
+function rvReload(){
+  if(RV_DEAD)return true;
+  if(navigator.onLine===false)return false;           // 오프라인: 새로 불러오면 화면을 잃는다
+  try{ var now=Date.now(), last=+sessionStorage.getItem("kk.rvr")||0;
+    if(now-last<4000)return false;                    // 연달아 새로 불러오지 않는다(그동안에도 쓰지는 않는다)
+    sessionStorage.setItem("kk.rvr",String(now)); sessionStorage.setItem("kk.rvm","1");
+  }catch(e){ return false; }
+  RV_DEAD=true; location.reload(); return true;
+}
+function rvTell(){ setTimeout(function(){ if(!RV_DEAD)toast(navigator.onLine===false?"다른 창에서 기록이 바뀌었어요. 인터넷이 연결되면 새로 불러와요":"다른 창에서 기록이 바뀌었어요. 잠시 뒤 다시 눌러 주세요",3500); },60); }
+/* 이 탭이 걷고 있는 산책을 다른 탭이 이미 끝내 저장했는가.
+   이어 걷는 산책이면, 이어 걷기 전에 끝냈던 옛 기록(end가 이어 걸은 때보다 앞)은 '끝낸 것'으로 치지 않는다(Codex 11/10 3차) */
+function rvWalkGone(n){
+  if(!W||!n||!Array.isArray(n.walks)||(n.live&&n.live.start===W.start))return false;
+  var ra=W.resumedAt||0;
+  return n.walks.some(function(x){ return !!x&&x.start===W.start&&(!ra||(x.end||0)>=ra); });
+}
+/* 다른 탭이 더한 산책과 꾹꾹로를 이 탭의 기록에 합친다. 더하기만 하고 지우지 않는다.
+   같은 산책(start가 같음)이 양쪽에 있으면 더 늦게 끝난 쪽이 새 판이다(이어 걸은 뒤 끝낸 것). 지금 걷는 산책은 건드리지 않는다 */
+function rvMerge(n){
+  var at={}; S.walks.forEach(function(w,i){ if(w)at[w.start]=i; });
+  var mine=W?W.start:null, add=[];
+  (n.walks||[]).forEach(function(w){
+    if(!w||typeof w.start!=="number"||w.start===mine)return;
+    var i=at[w.start];
+    if(i==null){ add.push(w); at[w.start]=-1; }
+    else if(i>=0&&S.walks[i]!==W&&(w.end||0)>(S.walks[i].end||0))S.walks[i]=w;
+  });
+  if(add.length)S.walks=S.walks.concat(add).sort(function(a,b){return b.start-a.start;});
+  var hr={}; S.routes.forEach(function(r){ if(r)hr[r.id]=1; });
+  (Array.isArray(n.routes)?n.routes:[]).forEach(function(r){ if(r&&r.id!=null&&!hr[r.id])S.routes.push(r); });
+}
+/* 이 탭의 산책을 저장하지 않고 내려놓는다(다른 탭이 이미 끝낸 산책) */
+function dropWalk(){
+  RV_DROP=false; if(!W)return;
+  try{ pocketOff(); undoHide(); poopClose(); kmLiveStop(); }catch(e){}
+  clearInterval(timer); try{ stopGPS(); }catch(e){}
+  GL=null; W=null; lastFix=null; S.live=null;
+  try{ tab("home"); renderLog(); renderHome(); }catch(e){}
+  toast("이 산책은 다른 창에서 이미 끝냈어요",3500);
+  rvReload();
+}
+/* 오래된 탭이면 맞는 일을 한다. 방금 누른 것을 먹어야 하면(새로 불러오거나 산책을 내려놓음) true */
+function rvFresh(){
+  if(RV_DEAD)return true;
+  if(rvRead()<=RV)return false;
+  if(W){ if(rvWalkGone(load())){ dropWalk(); return true; } return false; }
+  return rvReload();
+}
+function save(){
+  if(RV_DEAD)return false;                              // 새로 불러오는 중인 탭은 쓰지 않는다
+  if(rvRead()>RV){                                      // 다른 탭이 더 새 기록을 썼다
+    if(!W){ if(!rvReload())rvTell(); return false; }    // 걷는 중이 아니면 쓰지 않는다
+    var n=load();
+    if(rvWalkGone(n)){ if(!RV_DROP){ RV_DROP=true; setTimeout(dropWalk,0); } return false; }   // 다른 탭이 이미 끝낸 산책
+    if(n&&typeof n==="object"&&Array.isArray(n.walks))rvMerge(n);
+  }
+  try{localStorage.setItem(KEY,JSON.stringify(S));rvBump();return true;}catch(e){
   /* 0.4.3: 꽉 찼으면 GPS 원본 점(시험용)부터 비우고 한 번 더. 본 기록이 먼저다 */
-  try{ if(localStorage.getItem(GPSK)!=null||localStorage.getItem(GPSK+".live")!=null){ glDrop(); localStorage.setItem(KEY,JSON.stringify(S)); return true; } }catch(e2){}
+  try{ if(localStorage.getItem(GPSK)!=null||localStorage.getItem(GPSK+".live")!=null){ glDrop(); localStorage.setItem(KEY,JSON.stringify(S)); rvBump(); return true; } }catch(e2){}
   return false;}}
+RV=rvRead();   // 기록보다 번호를 먼저 읽는다(그 사이 다른 탭이 쓰면 오래된 쪽으로 판정돼 안전하다)
 var S=load()||{ver:3,user:null,dog:null,walks:[],spots:[],routes:[],live:null};
+document.addEventListener("visibilitychange",function(){ if(!document.hidden)rvFresh(); });
+window.addEventListener("pageshow",function(){ rvFresh(); });
+window.addEventListener("focus",function(){ rvFresh(); });
+window.addEventListener("online",function(){ rvFresh(); });
+["pointerdown","keydown"].forEach(function(t){ document.addEventListener(t,function(e){ if(rvFresh()){ e.stopPropagation(); if(e.cancelable)e.preventDefault(); } },true); });
+window.addEventListener("load",function(){ try{ if(sessionStorage.getItem("kk.rvm")){ sessionStorage.removeItem("kk.rvm"); setTimeout(function(){ toast("다른 창에서 바뀐 기록을 불러왔어요",3000); },700); } }catch(e){} });
 ["walks","spots","routes"].forEach(function(k){if(!S[k])S[k]=[];});
 
 function pad(n){return(n<10?"0":"")+n;}
@@ -2220,12 +2452,29 @@ function picked(box){ return Array.prototype.filter.call(box.querySelectorAll("b
    웹에서는 전부 꺼져 있고 예전과 똑같이 돈다. */
 var CAP=window.Capacitor||null;
 var NATIVE=!!(CAP&&typeof CAP.isNativePlatform==="function"&&CAP.isNativePlatform());
+/* 0.5.0 아이폰 앱 준비: 같은 웹 코드가 아이폰 앱 안에서도 돈다(아이폰 앱은 웹 파일을 앱 안에 넣어 둔다).
+   아이폰 앱일 때만 달라지는 것:
+   ① 위치는 플러그인으로만 받는다. 웹뷰의 위치 기능은 앱 권한 창 뒤에 "localhost가 위치를 쓰려 합니다" 창을 한 번 더 띄운다.
+   ② 알림 권한을 묻지 않는다(아이폰은 화면 위 위치 표시가 그 일을 한다). 위젯도 없다.
+   ③ 새 버전 받기 띠와 받기 페이지 링크를 쓰지 않는다(다른 스토어 이야기를 앱에 넣지 않는다).
+   ④ 처리방침처럼 앱 밖에 있는 페이지는 사파리로 연다.
+   웹과 안드로이드 앱은 예전과 똑같이 돈다. 맥과 아이폰에서 돌려 보지는 못했다(시험은 다리 흉내로만 했다). */
+var IOS=false; try{ IOS=NATIVE&&typeof CAP.getPlatform==="function"&&CAP.getPlatform()==="ios"; }catch(e){}
+var SITE="https://062-sibi.github.io/kkukkkukkkuk/";
 var NP={};
 if(NATIVE&&CAP.registerPlugin){
-  ["BackgroundGeolocation","App","Share","Filesystem","LocalNotifications","PaddWidget"].forEach(function(n){
+  (IOS?["BackgroundGeolocation","App","Share","Filesystem"]
+      :["BackgroundGeolocation","App","Share","Filesystem","LocalNotifications","PaddWidget"]).forEach(function(n){
     try{NP[n]=CAP.registerPlugin(n);}catch(e){}});
   document.documentElement.classList.add("native");
+  if(IOS)document.documentElement.classList.add("ios");
 }
+/* 아이폰 앱: 앱 안 파일로 도므로 처리방침과 소개 페이지는 사이트 주소를 붙여 사파리로 연다 */
+if(IOS)document.addEventListener("click",function(e){
+  var a=e.target&&e.target.closest?e.target.closest("a[href]"):null; if(!a)return;
+  var h=a.getAttribute("href")||"";
+  if(/^(privacy|about)\//.test(h)){ e.preventDefault(); try{window.open(SITE+h,"_blank");}catch(x){} }
+},true);
 var APK_NEED=1;   // 이 웹 코드가 기대하는 최소 앱 버전(versionCode). 플러그인을 바꿔 APK를 새로 낼 때만 올린다
 var APK_URL="https://github.com/062-SIBI/kkukkkukkkuk/releases/latest/download/kkukkkuki.apk";
 function nativeInit(){
@@ -2245,7 +2494,7 @@ function nativeInit(){
     if(WG.on)try{NP.PaddWidget.addListener("launch",function(){widgetLaunch();});}catch(e){}
     NP.App.getInfo().then(function(i){
       S.app={v:i.version,b:+i.build||0};
-      if((+i.build||0)<APK_NEED)$("apkbar").hidden=false;
+      if(!IOS&&(+i.build||0)<APK_NEED)$("apkbar").hidden=false;   // 아이폰 앱에는 받기 띠를 띄우지 않는다
     }).catch(function(){});
   }
 }
@@ -2262,7 +2511,7 @@ function notifAsk(cb){
    가운데 킁킁(코)도 버튼이다. 오래 맡는 곳에서 한 번 누르면 그 시각과 자리가 남는다(GPS 멈춤은 신호등과 구분이 안 돼서 사람이 고른다).
    앱은 GPS 점이 올 때마다(화면이 꺼져 있어도) 쌓인 것을 가져가 그 시각과 마지막 위치로 기록한다.
    산책이 아닐 땐 위젯에 "산책 시작"만. 누르면 앱이 열리며 바로 시작한다. */
-var WG={on:!!(NATIVE&&NP.PaddWidget&&(!CAP.isPluginAvailable||CAP.isPluginAvailable("PaddWidget"))),t:0,p:0,busy:false,pend:false};
+var WG={on:!!(NATIVE&&NP.PaddWidget&&(!CAP.isPluginAvailable||CAP.isPluginAvailable("PaddWidget"))),t:0,p:0,busy:false,pend:false,pr:null};
 function wgBusy(){ return WG.busy&&Date.now()-WG.t<5000; }   // 받는 중. 5초 넘게 답이 없으면 막힌 걸로 본다
 function widgetPush(){
   if(!WG.on)return;
@@ -2273,11 +2522,28 @@ function widgetPush(){
   WG.p=Date.now();
 }
 function widgetPushSoon(){ if(WG.on&&Date.now()-WG.p>10000)widgetPush(); }
+/* 0.5.0(Codex 11/10): 답이 늦게 와서 그 산책이 이미 끝났으면, 끝난 그 산책 기록에 붙여 저장한다.
+   앱이 가져가는 순간 위젯 쪽 큐는 비워지므로 여기서 버리면 다시 받을 수 없다. 위치는 알 수 없어 비워 둔다 */
+function widgetLate(w,evs){
+  if(!w||S.walks.indexOf(w)<0)return;                   // 저장된 산책일 때만
+  var lo=w.start-60000, hi=(w.end||Date.now())+60000, n=0;
+  evs.forEach(function(ev){
+    var t=+ev.t; if(!isFinite(t)||t<lo||t>hi)return;
+    if(ev.type==="pee"){ if(!w.kkuks)w.kkuks=[]; w.kkuks.push({t:t,lat:null,lng:null}); n++; }
+    else if(ev.type==="sniff"){ if(!w.sniffs)w.sniffs=[]; w.sniffs.push({t:t,lat:null,lng:null}); n++; }
+    else if(ev.type==="poop"){ if(!w.poops)w.poops=[]; w.poops.push({t:t,f:3,odd:false,col:true,lat:null,lng:null,hd:null,qw:1}); n++; }
+  });
+  if(!n)return;
+  save(); try{ renderLog(); renderHome(); }catch(e){}
+}
 function widgetDrain(force){
-  if(!WG.on||!W||wgBusy())return;
-  var now=Date.now(); if(!force&&now-WG.t<1500)return; WG.t=now; WG.busy=true;
-  NP.PaddWidget.drain().then(function(r){
-    WG.busy=false; var evs=(r&&r.events)||[]; if(!evs.length||!W){ if(WG.pend)widgetPush(); return; }
+  if(!WG.on||!W)return null;
+  if(wgBusy())return WG.pr;
+  var now=Date.now(); if(!force&&now-WG.t<1500)return null; WG.t=now; WG.busy=true;
+  var w0=W;                                             // 이 요청은 이 산책의 것이다. 답이 늦어도 이 산책에 붙인다
+  var pr=NP.PaddWidget.drain().then(function(r){
+    WG.busy=false; var evs=(r&&r.events)||[]; if(!evs.length){ if(WG.pend)widgetPush(); return; }
+    if(W!==w0){ widgetLate(w0,evs); if(WG.pend)widgetPush(); return; }
     evs.forEach(function(ev){
       var t=+ev.t; if(!isFinite(t)||t<W.start-60000||t>Date.now()+60000)return;   // 이 산책 전에 누른 건 버린다
       var p=(lastFix&&Math.abs(lastFix.t-t)<60000)?lastFix:null;
@@ -2287,6 +2553,22 @@ function widgetDrain(force){
     });
     widgetPush();
   },function(){WG.busy=false;WG.on=false;});
+  var clr=function(){ if(WG.pr===pr)WG.pr=null; };
+  WG.pr=pr; pr.then(clr,clr);
+  return pr;
+}
+/* 0.5.0(Codex 11/10): 위젯에서 누른 것이 아직 앱으로 안 넘어왔으면 그것부터 받고 끝낸다.
+   받는 중인 것이 있으면 그것을 기다린 뒤 한 번 더 받는다. 위젯이 없는 웹과 옛 앱은 예전처럼 바로 끝낸다.
+   다리가 답이 없어도 0.9초 뒤에는 끝낸다(그 뒤에 온 답은 widgetLate가 이 산책에 붙인다). */
+var ENDING=false;
+function stopWalk(){
+  if(!W||ENDING)return;
+  if(!WG.on){ endWalk(); return; }
+  ENDING=true;
+  var w0=W, done=false, fin=function(){ if(done)return; done=true; ENDING=false; if(W===w0)endWalk(); };
+  setTimeout(fin,900);
+  var go=function(){ if(done||W!==w0)return; var p=null; try{ p=widgetDrain(true); }catch(e){} if(p&&p.then)p.then(fin,fin); else fin(); };
+  if(WG.pr&&WG.pr.then)WG.pr.then(go,go); else go();
 }
 function widgetLaunch(){
   if(!WG.on)return;
@@ -2302,15 +2584,23 @@ function beta(k,n){S.beta=S.beta||{since:Date.now()};S.beta[k]=(S.beta[k]||0)+(n
 
 /* ══ 사용 통계(핵클) ══════════════════════════════════════════════
    HACKLE_KEY가 비어 있으면 아무것도 하지 않는다(파일도 안 받고 요청도 0개). 키는 사람이 넣는다.
-   보내는 것은 app_open, walk_start, walk_end, card_view, card_share 다섯 가지와 아래 숫자 속성뿐이다.
+   보내는 것은 app_open, walk_start, walk_end, card_view, card_share, party_interest와
+   0.4.5에서 더한 walk_endsig, newroute_nudge(이 둘은 방침을 알린 지 30일 뒤부터), 그리고 아래 숫자 속성뿐이다.
    위치, 경로, 좌표, 강아지 이름, 사진, 메모는 어떤 속성에도 넣지 않는다. 사용자 구분은 핵클 기기 ID만 쓴다.
    기록 탭 맨 아래 '사용 통계 보내기'를 끄면 SDK를 부르지 않는다. */
-var HACKLE_KEY=(location.hostname==="062-sibi.github.io")?"1P4Ki8uNp9DPaLtyXTafjyPj4AdYuwyr":"";   // 배포 주소(웹과 안드로이드 앱)에서만 켠다. 폰 미리보기(raw.githack.com)와 내 컴퓨터 시험에서는 보내지 않는다
+var HK_IOS=true;   // 아이폰 앱에서도 사용 통계를 켠다(안드로이드 앱, 웹과 같게). 끄려면 false로 바꾸고 앱스토어 개인정보 답에서 기기 ID와 제품 상호 작용을 뺀다(위치는 남는다). 앱 안의 개인정보 파일은 ios-kit이 이 줄을 읽어 맞춘다
+var HACKLE_KEY=(location.hostname==="062-sibi.github.io"||(IOS&&HK_IOS))?"1P4Ki8uNp9DPaLtyXTafjyPj4AdYuwyr":"";   // 배포 주소(웹과 안드로이드 앱)에서만 켠다. 폰 미리보기(raw.githack.com)와 내 컴퓨터 시험에서는 보내지 않는다
 var HK={c:null,q:[],loading:false,failed:false};
 var HK_OFF=(function(){try{return localStorage.getItem("kkuk.statsOff")==="1";}catch(e){return false;}})();   // 끄기는 기록과 따로 저장한다(가져오기와 저장 실패에도 남게)
 if(S.statsOff&&!HK_OFF){ HK_OFF=true; try{localStorage.setItem("kkuk.statsOff","1");}catch(e){} }   // 기록에만 끄기가 있던 사용자를 따로 저장으로 옮긴다
 function statsOffNow(){ return !!S.statsOff||HK_OFF; }
 function statsOn(){ return !!HACKLE_KEY&&!statsOffNow(); }
+/* 0.5.0: 처리방침 15절(처리 항목이 늘면 30일 전에 알림)을 코드로 지킨다.
+   새 통계 항목(산책 끝 신호, 새 길 권하기)은 이 폰에 바뀐 방침을 알린 날부터 30일 뒤에 보낸다.
+   새로 시작한 사용자는 첫 화면에서 지금 방침에 동의하므로 바로 보낸다(at:0).
+   PRIV_VER는 privacy/index.html의 판 번호와 같게 둔다(지금 3판). */
+var PRIV_VER=3, PRIV_WAIT=30*864e5, PRIV_NEW={walk_endsig:1,newroute_nudge:1};
+function privNewOk(){ var p=S.priv; return !!(p&&p.v>=PRIV_VER&&(p.at===0||Date.now()-p.at>=PRIV_WAIT)); }
 function hkHost(u){ try{return /(^|\.)hackle\.io$/i.test(new URL(String((u&&u.url)||u),location.href).hostname);}catch(e){return false;} }
 /* 끈 동안 핵클로 가는 요청은 여기서 막는다. SDK는 끄는 순간 대기열을 보내고 못 보낸 것을 다시 보내려 해서 SDK 설정만 믿지 않는다. */
 (function(){
@@ -2350,6 +2640,7 @@ function hkLoad(){
 function hkSend(ev){ if(!HK.c||!statsOn())return; try{HK.c.track(ev);}catch(e){} }
 function hk(key,props){
   if(!statsOn())return;
+  if(PRIV_NEW[key]&&!privNewOk())return;   // 0.5.0: 새 항목은 알린 지 30일 뒤부터
   var ev={key:key,properties:props||{}};
   if(HK.c){hkSend(ev);return;}
   if(HK.q.length<50)HK.q.push(ev);
@@ -2369,7 +2660,7 @@ window.addEventListener("storage",function(e){
   var off=e.newValue==="1"; try{ if(localStorage.getItem("kkuk.statsOff")==="1")off=true; }catch(x){}
   if(off)hkTurnOff();
 });
-function hkWhere(){ return NATIVE?"android_app":(/iPhone|iPad/.test(navigator.userAgent)?"ios_web":"web"); }
+function hkWhere(){ return NATIVE?(IOS?"ios_app":"android_app"):(/iPhone|iPad/.test(navigator.userAgent)?"ios_web":"web"); }
 function statsRender(){
   var b=$("statsopt"),n=$("statsnote"); if(!b)return;
   b.hidden=n.hidden=!HACKLE_KEY;
@@ -2392,7 +2683,7 @@ function betaText(){
       return (n||id)+" "+B[k];}).join(", ");
   var gs=S.walks.filter(function(w){return w.gauge!=null;}).slice(0,14).map(function(w){return w.gauge;});
   return ["꾹꾹이 베타 기록 · "+d.getFullYear()+"."+(d.getMonth()+1)+"."+d.getDate(),
-    "쓰는 곳: "+(NATIVE?"안드로이드 앱"+(S.app?" v"+S.app.v:""):(/iPhone|iPad/.test(navigator.userAgent)?"아이폰 웹":"웹")),
+    "쓰는 곳: "+(NATIVE?(IOS?"아이폰 앱":"안드로이드 앱")+(S.app?" v"+S.app.v:""):(/iPhone|iPad/.test(navigator.userAgent)?"아이폰 웹":"웹")),
     "알게 된 곳: "+(S.src||"안 고름")+(S.ref?" ("+S.ref+")":""),
     "산책 "+n+"회 · 산책당 탭 "+(n?((B.walkTaps||0)/n).toFixed(1):"-")+"회",
     "주머니 모드 "+(B.pocket||0)+"회",
@@ -2477,7 +2768,7 @@ function roadTemp(air,sw,wind,shade,soil0){
 }
 function sizeClass(kg){return kg<10?"small":(kg<=25?"medium":"large");}
 /* 발바닥 임계, Moritz & Henriques 접촉시간 곡선(사람 피부) 기반.
-   44°C 6시간 / 50°C 15분 / 55°C 30초.
+   44°C 6시간 / 50°C 15분 / 55°C 30초(2차 정리표에서 옮긴 값이고 원문 표와 대조하지 못했다. 화면에는 이 숫자를 쓰지 않는다).
    개 육구 표피는 사람 발바닥보다 약 3.3배 두껍지만(1800μm vs 550μm)
    열저항을 정량화한 연구가 없어 사람 기준을 그대로 쓰되 체급으로만 보정한다. */
 function pawTh(){
@@ -2487,7 +2778,7 @@ function pawTh(){
 function pawGrade(t){var th=pawTh();return t<th.warn?0:(t<th.dang?1:2);}
 /* 열사병, 미국 기상청 Heat Index 카테고리를 빌려온 것(개 검증 아님).
    체중 50kg 초과 3.42배 / 단두종 2.10배 → 한 단계 올린다.
-   출처: O'Neill et al., Scientific Reports 2020 (VetCompass) */
+   출처: Hall, Carter, O'Neill, Scientific Reports 2020;10:9128 (VetCompass). 2.10배는 같은 연구진 BSAVA 2020 초록에서도 확인(95% CI 1.68~2.64) */
 function heatGrade(air){
   var g=air<27?0:(air<32?1:2);
   var d=S.dog;
@@ -2664,11 +2955,11 @@ function renderPick(){
     '<div class="n">'+esc(x.r.name)+'<span>'+(x.far!=null?(x.far<100?'바로 여기':farLabel(x.far)+' 거리')+' · ':'')+x.km.toFixed(2)+'km</span></div>'+
     '<div class="why">'+whyPicked(x,all)+'</div>'+
     '<div class="meta">'+(x.alt<3?"해 없음":"그늘 "+Math.round(x.sh*100)+"%")+' · 노면 '+x.t+'°C'+
-      (x.pr!=null?' · 똥 성공률 '+Math.round(x.pr*100)+'%':'')+
-      (x.sp?' · 꾹자리 '+x.sp+'곳':'')+
+      (x.pr!=null?', 똥 성공률 '+Math.round(x.pr*100)+'%':'')+
+      (x.sp?', 꾹자리 '+x.sp+'곳':'')+
       (all.length>1?'<br>내 꾹꾹로 '+all.length+'개 중에서 골랐어요':'')+
     '</div>'+
-    '<button class="go" data-goid="'+x.r.id+'">이 길로 산책 시작</button></div>';
+    '<button class="go" data-goid="'+esc(x.r.id)+'">이 길로 산책 시작</button></div>';
   setStartBtn(true);
 }
 $("pickcard").addEventListener("click",function(e){
@@ -2733,7 +3024,7 @@ function tickSeason(){
   var peak=(m===5)?"5월은 <b>약충</b>이 가장 많은 달이에요"
         :(m===6)?"약충 피크(5월)와 성충 피크(7월) 사이, 여름 내내 활발해요"
         :(m===7)?"7월은 <b>성충</b>이 가장 많은 달이에요"
-        :(m===8||m===9)?"지금은 <b>유충 피크</b>예요. 가을 채집 진드기의 86%가 유충입니다"
+        :(m===8||m===9)?"지금은 <b>유충 피크</b>예요. 9월에 잡힌 진드기의 86%가 유충이었어요"
         :null;
   return {alert:alert,peak:peak};
 }
@@ -2756,20 +3047,20 @@ function renderWinter(c){
       '<div class="h">풀밭으로 들어가지 마세요</div>'+
       '<ul>'+
         '<li>'+tk.peak+'</li>'+
-        '<li>진드기의 <b>절반이 풀밭</b>에서 잡혀요 (초지 48% · 산길 12%), <b>길 가운데</b>로 걸으세요</li>'+
-        '<li>다녀와서 귀 뒤 · 겨드랑이 · 발가락 사이를 훑어주세요</li>'+
+        '<li>진드기의 <b>절반이 풀밭</b>에서 잡혀요(풀밭 48%, 산길 13%). <b>길 가운데</b>로 걸으세요</li>'+
+        '<li>다녀와서 귀 뒤, 겨드랑이, 발가락 사이를 훑어주세요</li>'+
         '<li>붙어 있으면 손으로 떼지 말고 핀셋으로 머리 쪽을 잡아 빼거나 병원으로</li>'+
       '</ul>'+
-      '<div class="why">SFTS(사람도 감염)는 4~11월에 몰립니다. 국내 강아지 바베시아 감염률은 PCR 기준 5.2%.<br>'+
-      '질병관리청 참진드기 감시(2023) · Suh 외 2017 · "길 가운데로"는 CDC 권고.'+
+      '<div class="why">SFTS(사람도 감염)는 4~11월에 몰립니다. 국내 실외견 440마리 조사에서 바베시아 양성은 5.2%였어요.<br>'+
+      '질병관리청 참진드기 감시(2023), Suh 외 2017. "길 가운데로"는 미국 CDC 권고.'+
       ' 위험 점수가 아니라 계절 안내입니다.</div>'+
       '</div>';
     return;
   }
   var d=S.dog, kg=d?d.kg:null;
   var saltLine = kg
-    ? "제설제를 핥으면 <b>"+d.name+"("+kg+"kg)</b> 기준 약 <b>"+(kg*2).toFixed(0)+"g</b>부터 중독 증상이 보고돼요 · 돌아와서 발을 닦아주세요"
-    : "제설제를 핥으면 중독될 수 있어요 · 돌아와서 발을 닦아주세요";
+    ? "제설제를 핥으면 중독될 수 있어요. 소금 성분은 <b>"+esc(d.name)+"("+(+kg)+"kg)</b> 기준 약 <b>"+(kg*2).toFixed(0)+"g</b>부터 증상이 보고돼요. 돌아와서 발을 닦아주세요"
+    : "제설제를 핥으면 중독될 수 있어요. 돌아와서 발을 닦아주세요";
   el.innerHTML='<div class="winter">'+
     '<div class="k">겨울 안내</div>'+
     '<div class="h">오늘은 바닥이 얼 수 있어요</div>'+
@@ -2781,17 +3072,20 @@ function renderWinter(c){
     '<div class="why"><b>겨울은 점수를 매기지 않습니다.</b> 강아지가 몇 도부터 위험한지에 대한 '+
     '숫자 근거를 찾지 못했어요. 수의사회 권고도 "추운 날"이라고만 합니다. '+
     '없는 숫자를 만들지 않으려고 안내만 둡니다.<br>'+
-    '섭취 독성 수치는 Osweiler 외 2011(수의독성학 참고서) 기준이고 동료심사 원저는 아닙니다.</div>'+
+    '소금 섭취 수치(체중 1kg에 2~3g부터 증상)는 Osweiler 외 2011과 머크 수의 매뉴얼 기준이고 동료심사 원저는 아닙니다.</div>'+
     '</div>';
 }
 function renderTip(c){
-  var t=$("l-tip"), d=S.dog;
-  if(!d){t.style.display="none";return;}
+  var t=$("l-tip"), d=S.dog||{};
   var msg=null;
   if(d.age!=null&&d.age>=12&&c.gHeat>=1){
     msg="<b>"+d.age+"살</b>이면 더운 날 <b>세워두는 것</b>이 걷는 것보다 위험해요 · 그늘 없는 데 묶어두거나 차에 두지 마세요";
   } else if(d.joint){
     msg="다리가 불편하면 한 번에 길게보다 <b>짧게 여러 번</b>이 좋아요";
+  }
+  if(!msg){   // 0.4.5: 진드기 철(4~11월)은 접힌 안전 정보에만 있던 안내를 홈 첫 카드에 한 줄로
+    var tk=tickSeason();
+    if(tk)msg=tk.alert?"진드기 많은 철이에요 · 풀밭 말고 <b>길 가운데</b>로 걸어요":"진드기 철(4~11월)이에요 · 다녀오면 귀 뒤와 발가락 사이를 훑어 주세요";
   }
   if(!msg){t.style.display="none";return;}
   t.style.display="";t.innerHTML=msg;
@@ -2799,26 +3093,58 @@ function renderTip(c){
 
 /* ── 오늘 카드: 마지막 산책의 게이지 + 카드 만들기. 홈의 주인공. ── */
 function renderToday(){
+  renderEndSig(); renderNewNudge();
   var el=$("todaycard"); if(!el)return;
-  var w=null; for(var i=0;i<S.walks.length;i++){ if(S.walks[i].end){w=S.walks[i];break;} }
+  var w=lastWalk();
   if(!w){ el.className="today empty"; el.innerHTML='<div class="tx"><div class="k">첫 산책</div><div class="s" style="font-size:13px;opacity:.85">첫 산책부터 게이지가 떠요. 끝내면 PWC 기록 카드가 바로 떠요.</div></div>'; return; }
-  var d=new Date(w.start), today=new Date(), same=(d.toDateString()===today.toDateString());
-  var yday=new Date(today); yday.setDate(today.getDate()-1);
-  var lab=same?"오늘":(d.toDateString()===yday.toDateString()?"어제":(d.getMonth()+1)+"."+d.getDate());
-  var g=(w.gauge==null?(gaugeDetail(w).score||0):w.gauge), mins=Math.round((w.end-w.start)/60000), km=((w.dist||0)/1000).toFixed(1);
-  var C=2*Math.PI*36, off=C*(1-Math.max(.02,g/100));
+  /* 0.4.4: 오늘 다녀왔으면 링은 '오늘 하루'(하루 합계)를 보여 준다. 아직이면 링 대신 발자국(나가고 싶어요)을 보여 준다 */
+  var now=Date.now(), D=dayScore(dayOf(now)), ws=wishState(now), wc=wishCopy(ws), G=gapCfg();
+  function j2(a,b){ return a&&b?a+' · '+b:(a||b||''); }
+  var wishLine=wc&&ws&&!ws.off&&!ws.quiet?'<div class="wish">'+(G.copy==="B"?wc.t:G.copy==="C"?j2(wc.t,wc.s):j2(wc.t,wc.m))+'</div>':'';
   el.className="today";
-  el.innerHTML='<div class="ring"><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="36" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="7"/>'+
-    '<circle cx="42" cy="42" r="36" fill="none" stroke="#EFB02F" stroke-width="7" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 42 42)"/></svg><div class="n">'+g+'</div></div>'+
-    '<div class="tx"><div class="k">'+lab+' '+(SLOTS[w.slot||slotOf(w.start)]?SLOTS[w.slot||slotOf(w.start)]+' ':'')+'꾹게이지</div>'+
-    '<div class="v">'+km+'<small>km</small>'+mins+'<small>분</small></div>'+
-    '<div class="s">'+(g>=80?"평소만큼 걸었어요":g>=60?"평소보다 조금 짧았어요":"짧았지만 나갔어요")+'</div></div>'+
-    '<button class="btn" data-card="'+w.start+'">PWC 기록</button>';
+  if(D.n){
+    var g=D.score, C=2*Math.PI*36, off=C*(1-Math.max(.02,g/100));
+    var km=(D.sum.dist/1000).toFixed(1), mins=Math.round(D.sum.ms/60000);
+    var lastToday=dayOf(w.start)===dayOf(now);
+    el.innerHTML='<div class="ring"><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="36" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="7"/>'+
+      '<circle cx="42" cy="42" r="36" fill="none" stroke="#EFB02F" stroke-width="7" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 42 42)"/></svg><div class="n">'+g+'</div></div>'+
+      '<div class="tx"><div class="k">오늘 꾹게이지 · '+D.n+'번</div>'+
+      '<div class="v">'+km+'<small>km</small>'+mins+'<small>분</small></div>'+
+      '<div class="s">'+dayMsg(D)+(D.B.prov>0.01?' · 임시 기준':'')+'</div>'+
+      (ws&&(G.copy==="B"||ws.stage>0||ws.night||ws.rest)?wishLine:'')+'</div>'+
+      (lastToday?'<button class="btn" data-card="'+w.start+'">PWC 기록</button>':'');
+  } else if(!ws||ws.off){
+    // 산책 간격을 끈 경우: 시간 대신 오늘 하루 링이 비어 있다는 사실만
+    el.innerHTML='<div class="ring paws">'+wishPawsSvg(0,1,true)+'</div>'+
+      '<div class="tx"><div class="k">오늘 꾹게이지</div><div class="wt">아직 산책 전이에요</div>'+
+      '<div class="s">짧게 여러 번이든 길게 한 번이든 하루로 더해요</div></div>';
+  } else {
+    var st=ws.stage, showRest=G.copy!=="B"&&!ws.night&&!ws.rest&&!ws.quiet&&st>=1;   // B안은 권하는 말이 없으니 쉬어요도 없다
+    var pst=!G.paws||ws.quiet?0:(ws.rest||ws.night)?Math.min(st,1):st;
+    el.innerHTML='<div class="ring paws">'+wishPawsSvg(pst,ws.max,pst===0&&(!G.paws||ws.quiet))+'</div>'+
+      '<div class="tx"><div class="k">'+G.title+'</div>'+
+      '<div class="wt">'+(wc?wc.t:'')+'</div>'+
+      '<div class="s">'+(wc?j2(wc.s,wc.m):'')+'</div></div>'+
+      (showRest?'<button class="btn ghost" data-rest="1">오늘은 쉬어요</button>':'')+
+      (ws.rest&&!ws.quiet?'<button class="btn ghost" data-rest="0">다시 세기</button>':'');
+  }
 }
 $("todaycard").addEventListener("click",function(e){
+  var r=e.target.closest("[data-rest]");
+  if(r){ var had=S.rest, on=r.dataset.rest==="1", rest=on?{day:dayOf(Date.now()),at:Date.now()}:null;
+    // 0.5.0: 값 하나만 바꾸니 저장소의 최신 기록에 그 값만 넣는다(다른 탭에서 한 산책을 덮지 않게, Codex 11/10)
+    // 저장이 안 되면 화면도 되돌린다(다시 켜면 예전 값으로 돌아가므로, Codex 11/8)
+    if(!patchSaved(function(s){ if(rest)s.rest=rest; else delete s.rest; })){ if(had)S.rest=had; else delete S.rest; toast("저장 못 했어요. 저장 공간을 확인해 주세요"); renderToday(); return; }
+    if(on)toast(gapCfg().copy==="B"?"오늘은 쉬어요":pottyHabit()==="in"?"오늘은 쉬어요 · 집에서 냄새 찾기 놀이도 좋아요":"오늘은 쉬어요 · 쉬만 짧게 다녀와도 돼요");
+    renderToday(); return; }
   var b=e.target.closest("[data-card]"); if(!b)return;
   var w=S.walks.filter(function(x){return x.start===+b.dataset.card;})[0]; if(w)pwcOpen(w);
 });
+/* 0.4.4: 나가고 싶어요는 시간이 지나며 바뀌니 홈에 있을 때 1분마다, 앱으로 돌아올 때 다시 그린다 */
+setInterval(function(){ var el=$("todaycard");
+  if(W||!$("v-home")||!$("v-home").classList.contains("on")||(el&&el.contains(document.activeElement)))return;   // 버튼에 포커스가 있으면 건드리지 않는다
+  renderToday(); },60000);
+document.addEventListener("visibilitychange",function(){ if(!document.hidden&&!W)renderToday(); });
 
 function renderHome(){
   resumeRender();renderToday();
@@ -2827,6 +3153,13 @@ function renderHome(){
   // 위치가 없으면 바닥 온도를 계산할 수 없다. 숫자도 안전 판정도 내지 않는다.
   if(!loc){
     el.className="light none";
+    if(LOCWAIT){   // 받아오는 중: '켜주세요'와 단추를 보여 주지 않는다
+      $("l-dot").innerHTML=IC.clock; $("l-h").textContent="확인 중"; $("l-why").textContent="위치와 날씨를 받아오고 있어요";
+      $("l-side").style.display="none"; $("l-when").style.display="none"; $("l-when").innerHTML="";
+      $("l-tip").style.display="none"; $("wintercard").innerHTML=""; $("share").style.display="none"; $("sig").style.display="";
+      $("pickcard").innerHTML=""; setStartBtn(false); $("homenote").innerHTML="";
+      return;
+    }
     $("l-dot").innerHTML=IC.pin;
     $("l-h").textContent="위치를 켜주세요";
     $("l-why").textContent="지금 있는 자리를 알아야 바닥 온도를 계산할 수 있어요";
@@ -2837,7 +3170,14 @@ function renderHome(){
       '<br><button type="button" class="lk-txt" id="diag">왜 안 되는지 보기</button>';
     var fx=$("fixloc");
     if(fx)fx.addEventListener("click",function(){delete S.locDefer;
-      getLoc(function(p){if(p){loc=p;delete S.manual;save();loadWeather();}
+      LOCWAIT=true;renderHome();                    // 기다리는 동안 '확인 중'
+      getLoc(function(p){LOCWAIT=false;
+        if(p){loc=p;delete S.manual;save();loadWeather();return;}
+        renderHome();                               // 못 받았으면 단추를 다시 보여 준다
+        if(IOS&&LOCERR==="권한 거부됨"&&NP.BackgroundGeolocation){   // 아이폰은 한 번 거절하면 다시 묻지 않는다. 설정으로 보낸다
+          if(confirm("위치 권한이 꺼져 있어요.\n설정에서 위치를 '앱을 사용하는 동안'으로 바꿀까요?"))
+            NP.BackgroundGeolocation.openSettings().catch(function(){});
+        }
         else toast("위치를 켤 수 없어요 · 동네를 직접 골라보세요");});});
     var mn=$("manloc");
     if(mn)mn.addEventListener("click",openCity);
@@ -2892,16 +3232,16 @@ function renderHome(){
   $("sig").style.display=c.g>0?"":"none";
   renderPick();
   $("homenote").innerHTML=(S.manual
-      ? "<b>"+(S.manual.label||"직접 넣은 좌표")+"</b> 기준이에요(GPS 아님). 경로와 꾹자리는 기록되지 않아요. "+
+      ? "<b>"+esc(S.manual.label||"직접 넣은 좌표")+"</b> 기준이에요(GPS 아님). 경로와 꾹자리는 기록되지 않아요. "+
         "<b id=\"chgloc\" style=\"cursor:pointer;text-decoration:underline\">동네 바꾸기</b> · "+
         "<b id=\"regps\" style=\"cursor:pointer;text-decoration:underline\">GPS 다시</b><br>"
       : "")+
     (WXLIVE
-    ? "기온·일사량 자동 연동 (Open-Meteo). "
-    : "날씨 서버에 연결 못 해 계절·시간으로 <b>추정</b>했어요. ")+
+    ? "기온과 일사량 자동 연동(Open-Meteo). "
+    : "날씨 서버에 연결 못 해 계절과 시간으로 <b>추정</b>했어요. ")+
     "바닥 온도는 <b>추정값</b>이에요. 나가기 전 손등을 바닥에 5초 대보세요."+
     ((S.dog&&S.dog.age==null&&!S.dog.joint)
-      ? "<br>위의 <b>이름을 누르면</b> "+S.dog.name+" 나이·관절을 더 적을 수 있어요 (선택)" : "");
+      ? "<br>위의 <b>이름을 누르면</b> "+esc(S.dog.name)+" 나이와 관절을 더 적을 수 있어요 (선택)" : "");
   var cg=$("chgloc"); if(cg)cg.addEventListener("click",openCity);
   var rg=$("regps");  if(rg)rg.addEventListener("click",function(){
     toast("위치 확인 중…");
@@ -2918,7 +3258,9 @@ function dist(a,b){var R=6371000,p=Math.PI/180;
   var x=Math.sin(dl/2)*Math.sin(dl/2)+Math.cos(la)*Math.cos(lb)*Math.sin(dg/2)*Math.sin(dg/2);
   return 2*R*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 var LOCERR=null;   // 왜 위치를 못 받았는지
+var LOCWAIT=false;  // 0.5.0: 위치를 받아오는 중(앱을 열 때, 위치 허용하기를 눌렀을 때). 이 동안 홈 카드는 '확인 중'이다
 function diagText(){
+  if(IOS)return (LOCERR||"위치를 아직 못 받았어요")+" · 설정의 꾹꾹이에서 위치를 '앱을 사용하는 동안'으로 골라 주세요";
   var inIframe=false; try{inIframe=(window.self!==window.top);}catch(e){inIframe=true;}
   var parts=[];
   parts.push(inIframe?"이 앱이 다른 페이지 안에 들어가 있어요(iframe)":"단독 페이지");
@@ -2928,7 +3270,26 @@ function diagText(){
   if(inIframe)parts.push("→ 이 경우 아이폰 설정을 켜도 위치가 전달되지 않습니다");
   return parts.join(" · ");
 }
+/* 아이폰 앱: 위치 한 점을 플러그인으로 받는다. 권한 창은 '앱을 사용하는 동안' 하나만 뜬다.
+   backgroundMessage를 주지 않으므로 화면에 있을 때만 받는 감시이고, 한 점 받으면 바로 걷어낸다. */
+function iosLoc(ms,cb){
+  var P=NP.BackgroundGeolocation, done=false, id=null, to=null;
+  function off(i){ try{ P.removeWatcher({id:i}).catch(function(){}); }catch(e){} }
+  function fin(v,why){ if(done)return; done=true; clearTimeout(to); if(id!=null)off(id); if(!v&&why)LOCERR=why; cb(v); }
+  if(!P){ LOCERR="위치 기능 없음"; cb(null); return; }
+  to=setTimeout(function(){ fin(null,"응답 없음(위치를 아직 못 받음)"); },ms);
+  try{
+    P.addWatcher({requestPermissions:true,stale:true,distanceFilter:0},function(l,err){
+      if(err){ fin(null,err.code==="NOT_AUTHORIZED"?"권한 거부됨":"위치를 못 잡음"); return; }
+      if(l&&isFinite(l.latitude)&&isFinite(l.longitude)){
+        if(!S.locOK){S.locOK=1;save();}
+        fin({lat:+l.latitude,lng:+l.longitude,acc:l.accuracy,t:Date.now()});
+      }
+    }).then(function(i){ id=i; if(done)off(i); },function(){ fin(null,"위치를 못 잡음"); });
+  }catch(e){ fin(null,"위치를 못 잡음"); }
+}
 function getLoc(cb){
+  if(IOS){ iosLoc(10000,function(p){ cb(p?{lat:p.lat,lng:p.lng}:null); }); return; }
   // 브라우저가 성공도 실패도 응답하지 않는 경우가 있다(권한 프롬프트가 안 뜨는 iframe 등).
   // 그대로 두면 온보딩에서 영영 멈춘다. 우리 쪽 시계로도 끊는다.
   if(!navigator.geolocation){cb(null);return;}
@@ -2953,9 +3314,18 @@ function step(n){document.querySelectorAll(".step").forEach(function(s){s.classL
   $("st"+n).classList.add("on");window.scrollTo(0,0);}
 document.querySelectorAll("[data-go]").forEach(function(b){b.addEventListener("click",function(){step(+b.dataset.go);});});
 document.querySelectorAll("[data-sso]").forEach(function(b){b.addEventListener("click",function(){
-  S.user={via:b.dataset.sso,at:Date.now()};save();step(2);});});
+  S.user={via:b.dataset.sso,at:Date.now()};S.priv={v:PRIV_VER,at:0,ok:1};save();step(2);});});
 var avaSel="🐕";
 press($("avapick"),function(b){avaSel=b.textContent;});
+/* 0.4.4 배변 습관: 하나만 고르고, 다시 누르면 고르지 않은 상태로 */
+function pottyPick(box){ box.addEventListener("click",function(e){ var b=e.target.closest("button"); if(!b)return;
+  var on=b.getAttribute("aria-pressed")==="true";
+  Array.prototype.forEach.call(box.querySelectorAll("button"),function(x){x.setAttribute("aria-pressed","false");});
+  if(!on)b.setAttribute("aria-pressed","true"); }); }
+function pottyVal(box){ var b=box.querySelector('button[aria-pressed="true"]'); return b?b.dataset.v:""; }
+function pottySet(box,v){ Array.prototype.forEach.call(box.querySelectorAll("button"),function(x){
+  x.setAttribute("aria-pressed",x.dataset.v===v?"true":"false"); }); }
+pottyPick($("f-potty")); pottyPick($("d-potty")); pottyPick($("d-gap")); pottyPick($("d-quiet")); pottyPick($("d-bsize"));
 $("f-brachy").addEventListener("click",function(){
   this.setAttribute("aria-pressed",this.getAttribute("aria-pressed")==="true"?"false":"true");checkDog();});
 function checkDog(){
@@ -2992,7 +3362,8 @@ $("dogNext").addEventListener("click",function(){
   S.dog={ava:avaSel,name:$("f-name").value.trim(),kg:parseFloat($("f-weight").value),
     brachy:$("f-brachy").getAttribute("aria-pressed")==="true",
     age:(a>=0&&a<=25)?a:null,
-    joint:$("f-joint").getAttribute("aria-pressed")==="true"};
+    joint:$("f-joint").getAttribute("aria-pressed")==="true",
+    potty:pottyVal($("f-potty"))};
   S.locDefer=1;save();enterMain();loadWeather();});   // 왜 바닥 온도, 위치 허락 화면은 건너뛴다(위치는 첫 산책 때)
 $("askperm").addEventListener("click",function(){
   var btn=this; btn.disabled=true; btn.textContent="위치 확인 중…";
@@ -3007,8 +3378,15 @@ $("askperm").addEventListener("click",function(){
 $("skipperm").addEventListener("click",function(){enterMain();loadWeather();});
 
 /* ══ 진입 ══ */
+function privNotice(){
+  var bar=$("privbar"); if(!bar)return;
+  if(!S.priv||!(S.priv.v>=PRIV_VER)){ var t=Date.now(); patchSaved(function(s){ s.priv={v:PRIV_VER,at:t}; }); }   // 처음 알린 때를 적어 둔다(30일을 여기서 센다)
+  bar.hidden=!!(S.priv&&(S.priv.at===0||S.priv.ok));
+}
+$("privok").addEventListener("click",function(){ patchSaved(function(s){ if(s.priv)s.priv.ok=1; }); $("privbar").hidden=true; });
 function enterMain(){
   $("onb").classList.remove("on");$("main").classList.add("on");$("tabs").classList.add("on");
+  privNotice();
   var d=new Date();
   $("today").textContent=(d.getMonth()+1)+"월 "+d.getDate()+"일 "+"일월화수목금토"[d.getDay()];
   $("hdr").textContent=S.dog?S.dog.name:"꾹꾹이";
@@ -3069,7 +3447,7 @@ function boot(){
   hk("app_open",{where:hkWhere(),src:String(S.src||""),ref:String(S.ref||"")});
   if(typeof S.K==="number"&&S.K>0&&S.K<0.12)K_ROAD=S.K;
   if(S.manual&&S.manual.lat!=null)loc={lat:S.manual.lat,lng:S.manual.lng};
-  if(S.user&&S.dog){enterMain();if(!S.locDefer)getLoc(function(p){loc=p;loadWeather();});else loadWeather();}
+  if(S.user&&S.dog){LOCWAIT=!S.locDefer&&!loc;enterMain();if(!S.locDefer)getLoc(function(p){LOCWAIT=false;loc=p;loadWeather();});else loadWeather();}
   else $("onb").classList.add("on");
 }
 
@@ -3083,7 +3461,7 @@ var W=null,watchId=null,lastFix=null,timer=null;
 var SLOTS={morning:"아침",day:"낮",evening:"저녁"};
 function slotOf(t){
   var h=new Date(t).getHours();
-  return (h>=4&&h<11)?"morning":(h<17?"day":"evening");
+  return (h>=4&&h<11)?"morning":((h>=11&&h<17)?"day":"evening");   // 0.4.4: 밤 0~4시 산책은 저녁(예전엔 낮으로 잡혔다)
 }
 function median(a){
   if(!a.length)return 0;
@@ -3107,7 +3485,7 @@ function baseline(slot,excludeStart){
     return w.end&&slotOf(w.start)===slot&&w.start!==excludeStart;}).slice(0,14);
   var P=provBase();
   if(!ws.length)return {n:0,ready:true,prov:1,drift:false,
-    dist:P.dist,kkuk:P.kkuk,sniff:P.sniff,poopRate:0,poopCounts:false};
+    dist:P.dist,kkuk:P.kkuk,sniff:P.sniff,poopRate:0,poopCounts:pottyHabit()==="out"};
   var mix=Math.min(1,ws.length/5);
   function bl(v,p){return v*mix+p*(1-mix);}
   var poopRate=ws.filter(function(w){return (w.poops||[]).length>0;}).length/ws.length;
@@ -3124,7 +3502,9 @@ function baseline(slot,excludeStart){
   }
   return {n:ws.length,ready:true,prov:1-mix,drift:drift,
     dist:bl(D,P.dist), kkuk:bl(K,P.kkuk), sniff:bl(N,P.sniff),
-    poopRate:poopRate, poopCounts:(ws.length>=5&&poopRate>=0.5)};
+    poopRate:poopRate,
+    // 0.4.4: 배변 습관을 고르면 그걸 따른다. 밖에서만이면 첫날부터 똥을 채점, 집 안이면 채점하지 않는다. 모르면 예전처럼 기록을 보고 정한다
+    poopCounts:pottyHabit()==="out"?true:pottyHabit()==="in"?false:(ws.length>=5&&poopRate>=0.5)};
 }
 function gauge(w){
   var g=gaugeDetail(w);
@@ -3134,8 +3514,8 @@ function gaugeDetail(w){
   var slot=slotOf(w.start), B=baseline(slot,w.start);
   if(!B.ready)return {ready:false,n:B.n,slot:slot};
   var parts=[],raw=[];
-  function add(k,v){parts.push({k:k,r:Math.min(1.2,v)});raw.push(Math.min(1.5,v));}
-  add("꾹",(w.kkuks||[]).length/B.kkuk);
+  function add(k,v,cap){parts.push({k:k,r:Math.min(cap||1.2,v)});raw.push(Math.min(cap||1.5,v));}
+  add("꾹",(w.kkuks||[]).length/B.kkuk,1);   // 0.4.5: 꾹은 마킹 횟수라 평소보다 많아도 점수를 더 주지 않는다(1.0에서 자름)
   add("킁킁",(w.sniff||0)/B.sniff);
   add("거리",(w.dist||0)/B.dist);
   if(B.poopCounts){var pv=(w.poops||[]).length>0?1:0;parts.push({k:"똥",r:pv});raw.push(pv);}
@@ -3149,6 +3529,241 @@ function gaugeDetail(w){
 function gmsgOf(t,gd){var n=S.dog?S.dog.name:"우리 아이";
   return (t>=100&&gd&&gd.avgRaw>=1.10)?"평소보다 넉넉했어요":t>=85?"평소만큼 했어요":t>=60?"조금만 더?":
          t>=30?n+" 아직 안 끝났대요":"이제 막 나왔네요";}
+/* ══ 0.4.4 하루 산책량 ════════════════════════════════════════
+   짧게 여러 번이든 길게 한 번이든 같은 하루로 본다. 하루는 새벽 4시에 바뀐다(밤 산책이 다음 날로 넘어가지 않게).
+   하루 합계(꾹 수, 킁킁 시간, 거리, 똥)를 그 강아지의 평소 하루(최근 14일 중 산책한 날들의 가운데 값)와 비교한다.
+   산책 안 한 날은 평소 하루 계산에 넣지 않는다(쉬는 날이 기준을 끌어내리지 않게). 처음 5일은 임시 기준과 섞는다. */
+function pottyHabit(){ return (S.dog&&S.dog.potty)||""; }   // "out" 밖에서만, "in" 주로 집 안, "both" 둘 다, "" 모름
+function dayOf(t){ var d=new Date(t-4*3600e3); return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate(); }
+function sumWalks(ws){
+  var o={n:ws.length,dist:0,sniff:0,kkuk:0,poop:0,ms:0};
+  ws.forEach(function(w){o.dist+=w.dist||0;o.sniff+=w.sniff||0;o.kkuk+=(w.kkuks||[]).length;
+    o.poop+=(w.poops||[]).length;o.ms+=Math.max(0,(w.end||w.start)-w.start);});
+  return o;
+}
+function dayStart(t){ var d=new Date(t-4*3600e3); d.setHours(4,0,0,0); return d.getTime(); }   // 그날 새벽 4시
+function dayWalks(dk){ return S.walks.filter(function(w){ return w.end&&dayOf(w.start)===dk; }); }
+function dayBaseline(skipDk,refT){
+  // 기준 = 이날 앞의 14일(달력 기준) 안에서 산책한 날들. 오래된 기록이 임시 기준을 밀어내지 않게 날짜로 자른다(Codex 11/8)
+  var ds=dayStart(refT||Date.now()), from=ds-14*864e5;
+  var by={},keys=[];
+  S.walks.forEach(function(w){ if(!w.end||w.start<from||w.start>=ds)return; var k=dayOf(w.start); if(k===skipDk)return;
+    if(!by[k]){by[k]=[];keys.push(k);} by[k].push(w); });
+  keys.sort(function(a,b){return b-a;}); keys=keys.slice(0,14);
+  var days=keys.map(function(k){return sumWalks(by[k]);});
+  var P=provBase(), n=days.length, mix=Math.min(1,n/5);
+  function bl(v,p){return v*mix+p*(1-mix);}
+  if(!n) return {n:0,prov:1,dist:P.dist,sniff:P.sniff,kkuk:P.kkuk,poopRate:0,walks:1};
+  return {n:n,prov:1-mix,
+    dist:bl(Math.max(150,median(days.map(function(d){return d.dist;}))),P.dist),
+    sniff:bl(Math.max(30000,median(days.map(function(d){return d.sniff;}))),P.sniff),
+    kkuk:bl(Math.max(1,median(days.map(function(d){return d.kkuk;}))),P.kkuk),
+    poopRate:days.filter(function(d){return d.poop>0;}).length/n,
+    walks:median(days.map(function(d){return d.n;}))};
+}
+function dayScore(dk,liveWalk,refT){
+  var ws=dayWalks(dk); if(liveWalk&&dayOf(liveWalk.start)===dk) ws=ws.concat([liveWalk]);
+  var B=dayBaseline(dk,refT||(liveWalk?liveWalk.start:Date.now())), T=sumWalks(ws);
+  if(!ws.length) return {n:0,score:0,sum:T,B:B,avgRaw:0};
+  var ph=pottyHabit(), parts=[], raw=[];
+  function add(v,cap){parts.push(Math.min(cap||1.2,v));raw.push(Math.min(cap||1.5,v));}
+  // 0.4.5: 꾹 상한 1.0(마킹이 많다고 넉넉해지지 않게)
+  if(RING_KKUK)add(T.kkuk/B.kkuk,1); add(T.sniff/B.sniff); add(T.dist/B.dist);
+  var poopCounts=ph==="out"||(ph!=="in"&&B.n>=5&&B.poopRate>=0.5);
+  if(poopCounts){var pv=T.poop>0?1:0;parts.push(pv);raw.push(pv);}
+  var sc=Math.round(parts.reduce(function(a,b){return a+b;},0)/parts.length*100);
+  return {n:ws.length,score:Math.max(0,Math.min(100,sc)),sum:T,B:B,poopCounts:poopCounts,
+    avgRaw:raw.reduce(function(a,b){return a+b;},0)/raw.length};
+}
+function dayMsg(D){
+  if(D.score>=100&&D.avgRaw>=1.10)return "오늘은 평소보다 넉넉했어요";
+  if(D.score>=85)return "오늘 평소만큼 했어요";
+  if(D.score>=50)return "오늘 평소의 절반은 넘었어요";
+  return "오늘은 가볍게 걸었어요";
+}
+
+/* 0.4.5: 이 탭의 기록(S)이 다른 탭보다 오래됐을 수 있다. 끝 신호와 '그냥 걸을게요'처럼 값 하나만 바꿀 때는
+   저장소의 최신 기록을 읽어 그 값만 고쳐 넣고, 이 탭의 S에도 같은 값을 넣는다. S를 통째로 바꾸지는 않는다(Codex 11/9) */
+function patchSaved(fn){
+  if(RV_DEAD)return false;
+  fn(S);
+  var old=rvRead()>RV;   // 이 탭이 오래됐다(다른 탭이 더 새 기록을 썼다). 값은 최신 기록에 넣고, 이 탭은 오래된 채로 표시해 둔다
+  var n=null; try{ var r=localStorage.getItem(KEY); n=r?JSON.parse(r):null; }catch(e){ n=null; }
+  if(!n||typeof n!=="object"||!Array.isArray(n.walks))return save();   // 저장된 기록이 없으면 예전처럼
+  fn(n);
+  try{ localStorage.setItem(KEY,JSON.stringify(n)); rvBump(old); if(old&&!W)rvReload(); return true; }catch(e){}
+  try{ glDrop(); localStorage.setItem(KEY,JSON.stringify(n)); rvBump(old); if(old&&!W)rvReload(); return true; }catch(e2){}
+  return false;
+}
+
+/* ══ 0.4.5 산책 끝 신호 ══════════════════════════════════════
+   '평소만큼'이 그 강아지에게 충분한지 맞추려고(계획서 2R 충분선), 산책 끝에 강아지가 어땠는지 한 번만 묻는다.
+   더 가려 했는지, 집 쪽으로 먼저 향했는지, 더위나 놀람으로 돌아왔는지. 폰 안에 산책마다 남기고 아직 점수에는 쓰지 않는다.
+   끝난 지 3시간이 지나면 기억이 흐려지니 묻지 않고, 3분이 안 된 산책도 묻지 않는다. */
+var ENDSIG={more:"더 가려 했어요",home:"집 쪽으로 먼저 갔어요",unk:"모르겠어요",cut:"더위나 놀람으로 돌아왔어요"};
+function endSigWalk(now){
+  var w=lastWalk(); if(!w||W||S.live||w.endSig)return null;
+  if(now-w.end>3*3600e3||now<w.end)return null;
+  if(w.end-w.start<3*60e3)return null;
+  return w;
+}
+function renderEndSig(){
+  var el=$("endsig"); if(!el)return;
+  var w=endSigWalk(Date.now());
+  if(!w){ if(!el.hidden){el.innerHTML="";el.hidden=true;} return; }
+  if(el.contains(document.activeElement)&&el.dataset.w===String(w.start))return;   // 누르는 중에는 다시 그리지 않는다
+  var nm=kmDog();
+  el.dataset.w=String(w.start); el.hidden=false;
+  el.innerHTML='<div class="esig" role="group" aria-label="산책 끝 신호">'+
+    '<div class="k">산책 끝에 '+esc(kmJosa(nm,"은","는"))+'요?</div>'+
+    '<div class="b3">'+["more","home","unk"].map(function(k){return '<button type="button" data-esig="'+k+'">'+ENDSIG[k]+'</button>';}).join("")+'</div>'+
+    '<button type="button" class="lk" data-esig="cut">'+ENDSIG.cut+'</button>'+
+    '<div class="s">한 번만 누르면 돼요. 모아 두었다가 '+esc(nm)+'에게 충분한 양을 맞추는 데 써요</div></div>';
+}
+$("endsig").addEventListener("click",function(e){
+  var b=e.target.closest("[data-esig]"); if(!b)return;
+  var w=endSigWalk(Date.now()); if(!w||String(w.start)!==this.dataset.w){renderEndSig();return;}
+  var v=b.dataset.esig, at=Date.now(), st=w.start;
+  var ok=patchSaved(function(X){ (X.walks||[]).forEach(function(x){ if(x&&x.start===st){x.endSig=v;x.endSigAt=at;} }); });
+  if(!ok){ delete w.endSig; delete w.endSigAt; toast("저장 못 했어요. 저장 공간을 확인해 주세요"); return; }
+  hk("walk_endsig",{v:w.endSig,nk:Math.round((w.nk||0)*10)/10,sniff:Math.round((w.sniff||0)/60000)});
+  renderEndSig(); toast("기록했어요");
+});
+
+/* ══ 0.4.5 새 길 권하기 ══════════════════════════════════════
+   새로 밝힌 길(산책마다 잰 새 길 km, w.nk)이 거의 없는 산책일이 5일 이어지면 다음 산책 전에 새 길을 한 번 권한다.
+   강아지는 반복된 냄새보다 새 냄새를 더 오래 맡는다(Wang, Horowitz 2026, 43마리)는 간접 근거라 권하기만 하고 점수는 바꾸지 않는다.
+   경로가 없는 산책(GPS 없음)은 판단하지 않고 건너뛴다. 새 길을 잴 수 없던 옛 기록(nk 없음)이 섞인 날에서 센다기를 멈춘다.
+   마지막 산책일이 사흘 넘게 지났거나 오늘 '그냥 걸을게요'를 눌렀으면 띄우지 않는다. */
+var NN_DAYS=5, NN_KM=0.1, NN_SHOWN=0;
+function sameRouteDays(now){
+  // 새 길 길이는 미터 정수로 더한다(0.09+0.01이 0.1보다 작게 나오는 소수 오차를 피하려고, Codex 11/9)
+  var by={},keys=[],from=dayStart(now)-21*864e5,last=0;
+  S.walks.forEach(function(w){
+    if(!w||!w.end||w.start>now)return;
+    if(w.start>last)last=w.start;                    // 마지막 산책은 경로가 없어도 센다(Codex 11/9)
+    if(w.start<from||!w.pts||w.pts.length<2)return;
+    var k=dayOf(w.start); if(!by[k]){by[k]={m:0,unk:false};keys.push(k);}
+    if(w.nk==null)by[k].unk=true; else by[k].m+=Math.round(w.nk*1000);
+  });
+  keys.sort(function(a,b){return b-a;});
+  var n=0; for(var i=0;i<keys.length;i++){ var d=by[keys[i]]; if(d.unk||d.m>=NN_KM*1000)break; n++; }
+  return {n:n,last:last};
+}
+function newNudgeOn(now){
+  if(W||S.live||!S.dog)return null;
+  if(S.newNudgeOff===dayOf(now))return null;
+  var r=sameRouteDays(now);
+  if(r.n<NN_DAYS||!r.last||now-r.last>3*864e5)return null;
+  return r;
+}
+function renderNewNudge(){
+  var el=$("newnudge"); if(!el)return;
+  var now=Date.now(), r=newNudgeOn(now);
+  if(!r){ if(!el.hidden){el.innerHTML="";el.hidden=true;} return; }
+  if(el.contains(document.activeElement))return;
+  el.hidden=false;
+  el.innerHTML='<div class="nudge"><div class="k">오늘은 새로운 곳으로 가 볼까요?</div>'+
+    '<div class="s">'+r.n+'일째 비슷한 길이에요. 안 걸어 본 골목에는 새 냄새가 있어요</div>'+
+    '<div class="b2"><button type="button" class="go" data-nn="go">새 길 보기</button><button type="button" data-nn="off">오늘은 그냥 걸을게요</button></div></div>';
+  // 본 것만 센다: 홈이 보일 때 하루 한 번. 그리기 중에는 저장하지 않는다(다른 탭의 새 기록을 덮지 않게, Codex 11/9)
+  if(NN_SHOWN!==dayOf(now)&&!document.hidden&&$("v-home").classList.contains("on")){ NN_SHOWN=dayOf(now); hk("newroute_nudge",{a:"show",days:r.n}); }
+}
+$("newnudge").addEventListener("click",function(e){
+  var b=e.target.closest("[data-nn]"); if(!b)return;
+  var r=newNudgeOn(Date.now());
+  if(b.dataset.nn==="go"){ hk("newroute_nudge",{a:"go",days:r?r.n:0}); kmRecoOpen({prefer:"new"}); return; }
+  var dk=dayOf(Date.now());
+  if(!patchSaved(function(X){X.newNudgeOff=dk;})){ delete S.newNudgeOff; toast("저장 못 했어요. 저장 공간을 확인해 주세요"); return; }
+  hk("newroute_nudge",{a:"off",days:r?r.n:0});
+  renderNewNudge(); toast("오늘은 그냥 걸어요");
+});
+
+/* ══ 0.4.4 나가고 싶어요 ══════════════════════════════════════
+   마지막 산책이 끝난 뒤 지난 시간. 밤 11시부터 아침 6시까지는 세지 않는다(자는 시간).
+   4, 6, 8시간은 쉬할 기회를 주라는 안내(GoodRx 수의사 검토 2024-08: 4시간마다, PetSafe 2024-06: 6~8시간마다)에서 왔다.
+   강아지 마음을 잰 숫자가 아니라서 문구는 제안으로만 쓰고, 8시간이 넘어도 더 다급해지지 않는다. */
+/* 0.4.4 설정 한곳(11/8): 계산법 v3 회의와 06 원안이 갈려 06이 아침에 고르면 GAP_PLAN과 RING_KKUK만 바꾼다.
+   A: 원안. 4, 6, 8시간 단계, 습관과 상관없이 켜짐, 강아지 쪽 말투
+   C+: 3, 6시간 두 단계(6시간은 스웨덴 농업청 일반 권고), 밖에서만 배변하면 기본 켜짐, 강아지 마음을 말하는 문구 없음
+   B: v3안. 기본 꺼짐, 발자국 없이 '마지막 산책 뒤 낮 시간'만
+   RING_KKUK: false면 꾹 수를 하루 링 점수에서 빼고 기록으로만 둔다(v3, Codex 의견) */
+var GAP_PLAN="A";
+var RING_KKUK=true;
+var GAP_CFG={
+  "A":{title:"나가고 싶어요",hours:[4,6,8],paws:true,def:{out:true,both:true,"in":true,"":true},copy:"A"},
+  "C+":{title:"산책 간격",hours:[3,6],paws:true,def:{out:true,both:false,"in":false,"":false},copy:"C"},
+  "B":{title:"산책 간격",hours:[6],paws:false,def:{out:false,both:false,"in":false,"":false},copy:"B"}
+};
+function gapCfg(){ return GAP_CFG[GAP_PLAN]||GAP_CFG.A; }
+// 보호자가 켬, 끔을 고르지 않았으면 배변 습관에 따른 기본값
+function gapOn(){ var g=S.dog&&S.dog.gap; if(g==="on")return true; if(g==="off")return false; return !!gapCfg().def[pottyHabit()]; }
+// 숨길 시간: 평일(월~금) 정한 시간에는 홈에서 숨긴다. 계산은 계속한다(끝나면 실제 지난 시간을 보여 준다)
+function quietNow(now){ var m=/^wd(\d+)-(\d+)$/.exec((S.dog&&S.dog.quiet)||""); if(!m)return null;
+  var d=new Date(now), wd=d.getDay(), h=d.getHours(); if(wd===0||wd===6)return null;
+  return (h>=+m[1]&&h<+m[2])?{from:+m[1],to:+m[2]}:null; }
+function durTxt(h){ var m=Math.max(0,Math.round(h*60)); return m<60?m+"분":Math.floor(m/60)+"시간"+(m%60?" "+(m%60)+"분":""); }
+function awakeMs(a,b){
+  a=Math.max(a,b-72*3600e3);   // 단계는 8시간이면 끝이라 72시간 넘게 거슬러 셀 필요가 없다(긴 공백에서 반복이 잘리지 않게)
+  var t=a, ms=0, guard=0;
+  while(t<b&&guard++<800){
+    var d=new Date(t), h=d.getHours(), nx=new Date(d.getTime()); nx.setMinutes(0,0,0); nx.setHours(h+1);
+    var e=Math.min(b,nx.getTime());
+    if(!(h>=23||h<6)) ms+=e-t;
+    t=e;
+  }
+  return ms;
+}
+// 기록 순서에 기대지 않고 가장 늦게 끝난 산책을 찾는다(가져온 백업은 순서가 섞일 수 있다, Codex 11/8)
+function lastWalk(){ var b=null; S.walks.forEach(function(w){ if(w.end&&(!b||w.end>b.end))b=w; }); return b; }
+function lastWalkEnd(){ var w=lastWalk(); return w?w.end:0; }
+function wishState(now){
+  now=now||Date.now();
+  var end=lastWalkEnd(); if(!end)return null;
+  var C=gapCfg(), H=C.hours, h=new Date(now).getHours(), awake=awakeMs(end,now)/3600e3, st=0;
+  H.forEach(function(x){ if(awake>=x)st++; });
+  // 밤을 안 세면 아침 7시에 '편히 쉬어요'가 뜬다. 오늘 새벽 4시 뒤로 나간 적이 없으면 밤새 참은 아침이라 적어도 한 단계(실외배변)
+  var morning=h>=6&&h<11&&end<dayStart(now)&&pottyHabit()!=="in";
+  if(morning&&C.copy!=="B")st=Math.max(st,1);
+  // 쉬어요를 누른 뒤 다녀왔으면 쉬는 날은 끝난 것으로 본다
+  var rest=!!(S.rest&&S.rest.day===dayOf(now)&&!(end>S.rest.at));
+  return {stage:st, max:H.length, awake:awake, real:(now-end)/3600e3, night:(h>=23||h<6), morning:morning, rest:rest, end:end,
+    off:!gapOn(), quiet:quietNow(now)};
+}
+var WISH_COPY=[["잘 다녀왔어요","지금은 편히 쉬어요"],["슬슬 나가 볼까요","가볍게 바깥바람 쐬어요"],
+  ["문밖이 궁금해요","가까이 한 바퀴 어때요"],["잠깐 다녀올까요","쉬만 하고 와도 좋아요"]];
+function wishCopy(ws){
+  if(!ws)return null;
+  var cp=gapCfg().copy, H=gapCfg().hours;
+  var ago=ws.real<1?"방금 다녀왔어요":ws.real<48?Math.floor(ws.real)+"시간 전 다녀왔어요":Math.floor(ws.real/24)+"일 전 다녀왔어요";
+  // 숨길 시간이 먼저다: 쉬는 날이어도 숨긴 시간에는 지난 시간과 권하는 말을 보이지 않는다(Codex 11/8)
+  if(ws.quiet) return {t:"지금은 숨긴 시간이에요", s:ws.quiet.to+"시부터 다시 보여요", m:""};
+  if(ws.rest) return {t:"오늘은 쉬어요", s:cp==="B"?"":pottyHabit()==="in"?"집에서 냄새 찾기 놀이도 좋아요":"쉬만 짧게 다녀와요", m:ago};
+  if(ws.night) return {t:"지금은 밤이에요", s:"아침 6시부터 다시 세요", m:"마지막 산책 "+pad(new Date(ws.end).getHours())+":"+pad(new Date(ws.end).getMinutes())};
+  // B안은 사실만. 낮 시간 계산은 72시간까지만 거슬러 세므로, 하루 넘게 기록이 없으면 숫자 대신 그 사실을 말한다(v3 6-5절)
+  if(cp==="B") return ws.real>=24?{t:"하루 넘게 산책 기록이 없어요", s:"", m:ago}:{t:"마지막 산책 뒤 낮 "+durTxt(ws.awake), s:"밤 11시~아침 6시는 세지 않아요", m:ago};
+  if(cp==="C"){
+    // 시간을 사실로 말하고, 6시간(스웨덴 농업청 일반 권고)이 지나면 한 번만 권한다. 강아지 마음은 말하지 않는다
+    if(ws.morning&&ws.stage<=1) return {t:"좋은 아침이에요", s:"오늘 첫 산책 전이에요", m:ago};
+    if(ws.stage>=H.length) return {t:"낮 "+H[H.length-1]+"시간이 지났어요", s:"짧게라도 다녀오면 좋아요", m:ago};
+    if(ws.stage>=1) return {t:"마지막 산책 뒤 "+Math.floor(ws.real)+"시간", s:"낮 "+H[H.length-1]+"시간 안에 한 번 나가면 좋아요", m:""};
+    return {t:"잘 다녀왔어요", s:"마지막 산책 뒤 "+durTxt(ws.real), m:""};
+  }
+  var c=WISH_COPY[Math.min(ws.stage,3)];
+  if(ws.morning&&ws.stage<=1) c=["좋은 아침이에요","아침 쉬하러 나가 볼까요"];
+  if(pottyHabit()==="in"&&ws.stage===3) c=["잠깐 다녀올까요","가까이 한 바퀴 어때요"];
+  return {t:c[0], s:c[1], m:ago};
+}
+/* 발자국 12개: 버튼(오른쪽 아래) 쪽으로 다가와 서성인다. 단계마다 4개씩, 오래된 것부터 옅게 */
+var WISH_PAWS=[[12,72,40],[24,64,62],[20,50,30],[34,44,60],[32,30,26],[46,26,72],[48,12,24],[60,16,96],[62,30,150],[72,38,104],[76,24,30],[78,52,168]];
+function wishPawsSvg(stage,max,ring){
+  var n=Math.min(12,Math.round(12*stage/(max||3))), o=ring?'<circle cx="42" cy="42" r="36" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="7"/>':'';
+  for(var i=0;i<n;i++){ var p=WISH_PAWS[i], op=n>4?(i<n-8?.32:i<n-4?.6:1):1;
+    o+='<use href="#pawf" x="-6" y="-6.6" width="12" height="13.2" transform="translate('+p[0]+' '+p[1]+') rotate('+p[2]+')" opacity="'+op+'"/>'; }
+  return '<svg viewBox="0 0 84 84" aria-hidden="true"><defs><symbol id="pawf" viewBox="0 0 100 110"><path d="M50 58 C59 58 67 63 71 71 C74 78 73 86 68 90 C64 92 61 91 59 89 C56 93 44 93 41 89 C39 91 36 92 32 90 C27 86 26 78 29 71 C33 63 41 58 50 58 Z"/><ellipse cx="22" cy="52" rx="8.5" ry="11.5" transform="rotate(-32 22 52)"/><ellipse cx="39.5" cy="31" rx="9.6" ry="12.8" transform="rotate(-12 39.5 31)"/><ellipse cx="60.5" cy="30" rx="9.6" ry="12.8" transform="rotate(11 60.5 30)"/><ellipse cx="78" cy="51" rx="8.5" ry="11.5" transform="rotate(31 78 51)"/></symbol></defs>'+
+    '<g fill="#F3EDE2">'+o+'</g></svg>';   // ring: 발자국이 없을 때 빈 링 자리를 옅게 남긴다
+}
+
 function tick(){
   if(!W)return;
   var wn=$("gwarn");
@@ -3176,7 +3791,9 @@ function tick(){
     if(gd.B&&gd.B.prov>0.01)tail=" · 임시 기준 ("+gd.B.n+"/5회 학습)";
     else if(gd.B&&gd.B.drift)tail=" · 기준선이 내려가는 중이에요";
     $("gmsg").textContent=gmsgOf(g,gd);
-    $("gsub").textContent=[gd.bonusPoop?"똥 보너스":"",gd.bonusSpot?"새 꾹자리":"",tail.replace(/^ · /,"")].filter(Boolean).join(" · ");
+    // 0.4.4: 오늘 앞서 다녀온 산책이 있으면 하루 합계도 한 줄에 보여 준다(나눠 걸어도 손해가 없게)
+    var dk0=dayOf(W.start), dsc=(dk0===dayOf(Date.now())&&dayWalks(dk0).length)?dayScore(dk0,W).score:null;
+    $("gsub").textContent=[dsc!=null?"오늘 전체 "+dsc:"",gd.bonusPoop?"똥 보너스":"",gd.bonusSpot?"새 꾹자리":"",tail.replace(/^ · /,"")].filter(Boolean).join(", ");   // 0.4.4: 항목이 늘어 가운뎃점 대신 쉼표
   }
   $("w-time").textContent=ms2t(Date.now()-W.start);
   $("w-km").textContent=((W.dist||0)/1000).toFixed(2)+" km";
@@ -3242,7 +3859,7 @@ var bgId=null,bgPending=false,bgAsked=false;
 /* 권한부터 받고 서비스를 건다. 권한 없이 먼저 걸면 안드로이드 14+에서 "포그라운드" 승격이 실패해
    화면을 끈 뒤 몇 분 만에 위치가 끊긴다(플러그인이 권한을 받은 뒤 다시 승격하지 않음). */
 function bgPreflight(cb){
-  if(!navigator.geolocation){cb();return;}
+  if(IOS||!navigator.geolocation){cb();return;}   // 아이폰 앱은 플러그인이 권한을 직접 묻는다
   var done=false;function fin(){if(!done){done=true;cb();}}
   setTimeout(fin,30000);
   try{navigator.geolocation.getCurrentPosition(function(){S.locOK=1;save();fin();},fin,
@@ -3276,7 +3893,7 @@ function bgFail(err,tries){
     gpsDenied=/disabled/i.test(m)?"off":"perm";tick();
     if(gpsDenied==="perm"&&!bgAsked){bgAsked=true;
       setTimeout(function(){
-        if(confirm("위치 권한이 없어서 경로를 못 그려요.\n설정에서 위치를 '앱 사용 중에만 허용'으로 바꿀까요?"))
+        if(confirm("위치 권한이 없어서 경로를 못 그려요.\n설정에서 위치를 "+(IOS?"'앱을 사용하는 동안'":"'앱 사용 중에만 허용'")+"으로 바꿀까요?"))
           NP.BackgroundGeolocation.openSettings().catch(function(){});
       },300);}
   }
@@ -3471,9 +4088,9 @@ function endWalk(){
     if(e&&e.pointerId!=null){try{el.setPointerCapture(e.pointerId);}catch(_){}}   // 어디를 눌러도 움직임이 이 단추로 오게. 밖으로 나가는지는 pointermove로 본다
     t0=Date.now(); el.classList.add("hold"); lab("계속 누르세요");
     (function step(){ if(!t0)return; var p=Math.min(1,(Date.now()-t0)/1500); el.style.setProperty("--hp",p.toFixed(3));
-      if(p>=1){reset();endWalk();return;} raf=requestAnimationFrame(step); })();
+      if(p>=1){reset();stopWalk();return;} raf=requestAnimationFrame(step); })();
   }
-  function up(){ if(!t0)return; var held=Date.now()-t0; reset(); if(held>=1500)endWalk(); else toast("1.5초 누르면 끝나요 · 놓으면 계속 걸어요"); }
+  function up(){ if(!t0)return; var held=Date.now()-t0; reset(); if(held>=1500)stopWalk(); else toast("1.5초 누르면 끝나요 · 놓으면 계속 걸어요"); }
   el.addEventListener("pointerdown",down);
   el.addEventListener("pointerup",up);
   el.addEventListener("pointercancel",reset);
@@ -3488,7 +4105,7 @@ function endWalk(){
   var arm=0;
   el.addEventListener("click",function(e){
     if(e.detail!==0||!W||t0||Date.now()-kbAt<600)return;
-    if(Date.now()-arm<3000){arm=0;endWalk();}
+    if(Date.now()-arm<3000){arm=0;stopWalk();}
     else{arm=Date.now();toast("한 번 더 누르면 끝나요");}
   });
 })();
@@ -3508,7 +4125,7 @@ function resumeWalk(){
   if(W||!r||!w||w.start!==r.start||Date.now()>r.until){S.resume=null;save();resumeRender();return;}
   S.walks.shift(); S.resume=null;
   w.resumedAt=Date.now(); w.segNext=1;          // 5시간 정리 기준은 이어 걸은 때부터, 다음 GPS 점은 새 구간으로
-  delete w.end; delete w.gauge; delete w.slot; delete w.air;
+  delete w.end; delete w.gauge; delete w.slot; delete w.air; delete w.endSig; delete w.endSigAt;   // 0.4.5: 끝 신호도 다시 묻는다
   beta("walks",-1); beta("walkTaps",-(w.taps||1)); if(NATIVE)beta("walksApp",-1);
   clearTimeout(RZ.pwc); if($("pwc").classList.contains("on"))$("pwc-close").click();
   gpsResume=true; lastFix=null;
@@ -3530,7 +4147,7 @@ function routeName(){
 function withFreshFix(cb){
   // 다른 앱을 보다 돌아와 버튼을 누르면 lastFix가 낡아 있다. 그 자리에서 한 번 더 잡는다.
   if(lastFix&&(Date.now()-lastFix.t)<30000){cb(lastFix);return;}
-  if(!navigator.geolocation){cb(lastFix);return;}
+  if(IOS||!navigator.geolocation){cb(lastFix);return;}   // 아이폰 앱은 산책 중 플러그인이 계속 받고 있다
   var done=false;
   var to=setTimeout(function(){if(!done){done=true;cb(lastFix);}},4000);
   navigator.geolocation.getCurrentPosition(function(pp){
@@ -3696,17 +4313,17 @@ function renderRoutes(){
   }
   el.innerHTML=S.routes.map(function(r){
     var b=routeBest(r),isMain=mr&&mr.id===r.id;
-    return '<button class="rcard'+(isMain?' main':'')+'" data-rid="'+r.id+'">'+
+    return '<button class="rcard'+(isMain?' main':'')+'" data-rid="'+esc(r.id)+'">'+
       '<div class="rtop"><span class="n">'+esc(r.name)+'</span>'+
       (isMain?'<span class="pill p-brand">기본</span>':'<span class="mono" style="font-size:12px;color:var(--ink-3)">'+(r.dist/1000).toFixed(2)+'km</span>')+
       '</div><div class="mini" style="height:76px;margin-bottom:10px">'+pathSVG(r.pts,76)+'</div>'+
       (b?'<div style="font-size:13.5px;color:var(--ink-2)">이 길은 <b>'+b.h+'시</b>가 가장 시원해요 · '+
         (b.alt<3?'해 없음':'그늘 '+Math.round(b.sh*100)+'%')+'</div>':
         '<div style="font-size:13px;color:var(--ink-3)">날씨를 받으면 시원한 시각이 나와요</div>')+
-      '<div class="src" style="margin-top:7px">'+(r.dist/1000).toFixed(2)+'km · '+r.segs.length+'구간'+
+      '<div class="src" style="margin-top:7px">'+(r.dist/1000).toFixed(2)+'km, '+(r.segs||[]).length+'구간'+
         (function(){var pr=poopRate(r),sp=spotsOn(r),fa=distToRoute(r);
-          return (fa!=null?' · '+(fa<100?'바로 여기':farLabel(fa)+' 거리'):'')+
-                 (pr!=null?' · 똥 '+Math.round(pr*100)+'%':'')+(sp?' · 꾹자리 '+sp+'곳':'');})()+
+          return (fa!=null?', '+(fa<100?'바로 여기':farLabel(fa)+' 거리'):'')+
+                 (pr!=null?', 똥 '+Math.round(pr*100)+'%':'')+(sp?', 꾹자리 '+sp+'곳':'');})()+
         ' · 눌러서 이름 바꾸기</div>'+
       '</button>';
   }).join("");
@@ -3722,16 +4339,16 @@ function renderWalks(){
     if(!B.n)return;
     rows.push('<div class="row"><div class="ic g">'+({morning:IC.sunrise,day:IC.sun,evening:IC.moon})[sl]+'</div>'+
       '<div class="tx"><div class="a">'+SLOTS[sl]+' 산책</div><div class="b">'+
-      (B.ready? (B.dist/1000).toFixed(2)+'km · 꾹 '+(Math.round(B.kkuk*10)/10)+'회 · 멈춤 '+ms2t(B.sniff)+
+      (B.ready? (B.dist/1000).toFixed(2)+'km, 꾹 '+(Math.round(B.kkuk*10)/10)+'회, 멈춤 '+ms2t(B.sniff)+
                 (B.poopCounts?' · 똥 채점':' · 똥 보너스')
               : '기준 학습 중')+
       '</div></div><div class="rt">'+B.n+'회</div></div>');
   });
   bc.innerHTML = rows.length
     ? '<div class="lbl" style="margin-bottom:6px">내 기준선</div>'+rows.join("")+
-      '<div class="src" style="margin-top:9px">꾹게이지 100점은 <b>'+(S.dog?S.dog.name:"우리 아이")+
-      '가 그 시간대에 평소 하던 만큼</b>이에요. 논문 배점이 아니라 자기 기록이 기준입니다.<br>'+
-      '같은 시간대 5회부터 점수가 나오고, 똥은 평소 절반 이상 싸는 시간대에만 채점에 넣어요.</div>'
+      '<div class="src" style="margin-top:9px">꾹게이지 100점은 <b>'+esc(kmJosa(S.dog&&S.dog.name?S.dog.name:"우리 아이","이","가"))+
+      ' 그 시간대에 평소 하던 만큼</b>이에요. 논문 배점이 아니라 자기 기록이 기준입니다.<br>'+
+      '처음 5번은 몸무게와 나이로 만든 임시 기준과 섞어요. 똥은 배변 습관이 밖에서만이면 넣고 주로 집 안이면 빼요. 그 밖에는 평소 절반 이상 싸는 시간대에만 넣어요.</div>'
     : '<div class="empty">산책을 하면 시간대별 기준이 생겨요</div>';
   var wl=$("walklist");
   wl.innerHTML=!S.walks.length?'<div class="empty">아직 기록이 없어요</div>':
@@ -3786,13 +4403,13 @@ function renderLog(){
     "발바닥 기준 "+th.warn+"°C 주의 / "+th.dang+"°C 위험, Moritz &amp; Henriques 접촉시간 곡선(사람 피부) 기반. "+
     "열사병 기준은 미국 기상청 Heat Index를 빌려온 것으로 강아지 대상 검증값이 아닙니다.";
   $("method").innerHTML+=
-    "<br><br><b>산책이 실제로 바꾸는 것</b>: 하루 산책 10분 미만인 강아지는 1시간 넘는 강아지보다 "+
-    "과체중 위험이 <b>2.2배</b>였습니다 (영국 11,154마리, German 외 2017). "+
-    "래브라도 24쌍 14년 실험에서는 마른 몸을 유지한 쪽이 <b>1.8년</b> 더 살았어요 (Kealy 외 2002).<br>"+
-    "<b>킁킁이 중요한 이유</b>: 목줄을 느슨하게 잡으면 냄새 맡는 시간이 4%→16%로 "+
-    "<b>4배</b> 늘고 (Westgarth 외 2010, 산책 286회 관찰), 2주 노즈워크만으로 "+
-    "낙관적 판단 편향이 유의하게 늘었습니다 (Duranton & Horowitz 2019). "+
-    "그래서 꾹게이지는 멈춰 선 시간도 함께 봅니다.";
+    "<br><br><b>산책과 몸무게</b>: 한 번에 10분 이하로 걷는 강아지는 1시간 넘게 걷는 강아지보다 "+
+    "과체중인 경우가 <b>2.2배</b> 많았습니다(영국 11,154마리 설문, German 외 2017. 무엇이 원인인지는 가리지 못한 조사). "+
+    "먹이를 25% 줄여 마른 몸을 유지한 래브라도는 <b>1.8년</b> 더 살았어요(24쌍, Kealy 외 2002).<br>"+
+    "<b>킁킁이 중요한 이유</b>: 목줄을 풀었을 때는 시간의 16%, 목줄을 했을 때는 4%를 냄새 맡는 데 썼고"+
+    "(영국 공원 관찰 286회, Westgarth 외 2010), 2주 노즈워크를 한 강아지들은 "+
+    "낙관적인 판단이 늘었습니다(10마리씩 비교, Duranton &amp; Horowitz 2019). "+
+    "한국은 목줄이 의무라 보호자가 멈춰 줘야 냄새를 맡을 수 있어요. 그래서 꾹게이지는 멈춰 선 시간도 함께 봅니다.";
 }
 
 /* ── 기록 탭 안의 세 칸 ── */
@@ -3818,7 +4435,7 @@ function openWalk(id){
     (SLOTS[w.slot||slotOf(w.start)]||'')+'</span></h3>'+
     '<div style="font-size:12.5px;color:var(--ink-3);margin-top:4px">'+
     (w.gauge==null?'기준 학습 중':'꾹게이지 '+w.gauge)+
-    ' · '+(w.dist/1000).toFixed(2)+'km · '+mins+'분</div><div class="cnts" style="margin-top:10px">'+cnts(w)+'</div>';
+    ' · '+(w.dist/1000).toFixed(2)+'km, '+mins+'분</div><div class="cnts" style="margin-top:10px">'+cnts(w)+'</div>';
   var body="", ks=w.kkuks||[], ps=w.poops||[], ns=w.sniffs;
   function hm(t){var tt=new Date(t);return pad(tt.getHours())+':'+pad(tt.getMinutes());}
   function where(k){if(k.lat==null)return '위치 없음';var sp=kmSpotNear([k.lat,k.lng],10);return sp?esc(kmSpotName(sp)):'지도에 표시';}
@@ -3969,7 +4586,7 @@ function drawMap(){
   MMARK.forEach(function(x){m.removeLayer(x);}); MMARK=[];
   if(!pts||pts.length<2)return true;
   var latlngs=pts.map(function(p){return [p[0],p[1]];});
-  MLINE=L.polyline(latlngs,{color:"#A9713F",weight:6,opacity:.95,lineCap:"round",lineJoin:"round"}).addTo(m);
+  MLINE=L.polyline(latlngs,{color:"#1B1712",weight:6,opacity:.92,lineCap:"round",lineJoin:"round"}).addTo(m);
   if(!EBASE){ m.fitBounds(MLINE.getBounds(),{padding:[26,26]}); EBASE=true; }
   pts.forEach(function(p,i){
     var cls="kmark"+(i===0?" start":(i===pts.length-1?" end":""));
@@ -4016,8 +4633,8 @@ function updateStat(keep){
   var segs=segsOf(keep),km=pathLen(keep)/1000;
   var b=routeBest({segs:segs});
   var brk=keep.filter(function(p){return p[2]===1;}).length;
-  $("e-stat").innerHTML="남는 길 <b>"+km.toFixed(2)+"km</b> · 핀 "+keep.length+"개 · 구간 "+segs.length+"개"+
-    (brk?" · <span style=\"color:var(--amber)\">끊김 "+brk+"곳</span>":"")+
+  $("e-stat").innerHTML="남는 길 <b>"+km.toFixed(2)+"km</b> · 핀 "+keep.length+"개, 구간 "+segs.length+"개"+
+    (brk?", <span style=\"color:var(--amber)\">끊김 "+brk+"곳</span>":"")+
     (b?"<br>이 길은 <b>"+b.h+"시</b>가 가장 시원해요 · "+(b.alt<3?"해 없음":"그늘 "+Math.round(b.sh*100)+"%"):
         "<br>날씨를 받으면 시원한 시각이 나와요")+
     "<br><span style=\"color:var(--ink-3)\">초록이 출발, 빨강이 도착. 집 앞은 잘라내는 게 좋아요</span>";
@@ -4156,7 +4773,7 @@ function dAgeHint(){
 }
 function dSizeHint(){
   var kg=parseFloat($("d-weight").value);
-  if(!(kg>0)){$("d-sizehint").textContent="10kg 미만 소형 · 10~25kg 중형 · 25kg 초과 대형";return;}
+  if(!(kg>0)){$("d-sizehint").textContent="10kg 미만 소형, 10~25kg 중형, 25kg 초과 대형";return;}
   var cl=sizeClass(kg),nm={small:"소형견",medium:"중형견",large:"대형견"}[cl];
   var th=cl==="small"?{w:48,d:54}:cl==="large"?{w:44,d:50}:{w:46,d:52};
   var br=$("d-brachy").getAttribute("aria-pressed")==="true";
@@ -4171,6 +4788,8 @@ function openProfile(){
   $("d-age").value=d.age!=null?d.age:"";
   $("d-brachy").setAttribute("aria-pressed",d.brachy?"true":"false");
   $("d-joint").setAttribute("aria-pressed",d.joint?"true":"false");
+  pottySet($("d-potty"),d.potty||"");
+  pottySet($("d-gap"),d.gap||"auto"); pottySet($("d-quiet"),d.quiet||"none"); pottySet($("d-bsize"),d.bsize||"");
   dSizeHint();dAgeHint();
   $("dsheet").classList.add("on");
 }
@@ -4187,12 +4806,18 @@ $("dsheet").addEventListener("click",function(e){if(e.target===this)this.classLi
 $("d-save").addEventListener("click",function(){
   var nm=$("d-name").value.trim(), kg=parseFloat($("d-weight").value), a=parseInt($("d-age").value,10);
   if(!nm||!(kg>0)){toast("이름과 체중은 있어야 해요");return;}
+  var before=S.dog?JSON.parse(JSON.stringify(S.dog)):null;
   if(!S.dog)S.dog={ava:"🐕"};
   S.dog.name=nm.slice(0,12); S.dog.kg=kg;
   S.dog.brachy=$("d-brachy").getAttribute("aria-pressed")==="true";
   S.dog.joint=$("d-joint").getAttribute("aria-pressed")==="true";
+  S.dog.potty=pottyVal($("d-potty"));
+  var gv=pottyVal($("d-gap")); S.dog.gap=(gv==="on"||gv==="off")?gv:"";
+  var qv=pottyVal($("d-quiet")); S.dog.quiet=/^wd\d+-\d+$/.test(qv)?qv:"";
+  var bv=pottyVal($("d-bsize")); S.dog.bsize=/^[sml]$/.test(bv)?bv:(bv==="x"?"x":"");   // 0.4.5 견종 크기: 기록만
   S.dog.age=(a>=0&&a<=25)?a:null;
-  save();$("dsheet").classList.remove("on");
+  if(!save()){ S.dog=before; toast("저장 못 했어요. 저장 공간을 확인해 주세요"); return; }   // 0.4.4: 실패를 '저장했어요'로 덮지 않는다
+  $("dsheet").classList.remove("on");
   $("hdr").textContent=S.dog.name;
   renderHome();renderLog();toast("저장했어요");
 });
@@ -4262,11 +4887,11 @@ function renderCalib(){
     $("c-fit").innerHTML="아직 기록이 없어요. 같은 코스에서 <b>시간대를 바꿔가며 8~15번</b> 재면 계수가 잡힙니다.";
   } else if(!f.ready){
     $("c-fit").innerHTML="아스팔트, 양지, 낮 기록 <b>"+f.n+"</b>개. 최소 3개는 있어야 계수가 나와요"+
-      (other?"<br><span style=\"opacity:.7\">그 밖의 기록 "+other+"개는 적합에서 뺐어요 (아스팔트·양지·낮만 씁니다)</span>":"");
+      (other?"<br><span style=\"opacity:.7\">그 밖의 기록 "+other+"개는 적합에서 뺐어요(아스팔트, 양지, 낮만 씁니다)</span>":"");
   } else {
     var better=f.mae<f.maeNow;
     $("c-fit").innerHTML=
-      "아스팔트·양지·낮 기록 <b>"+f.n+"</b>개 → 내 동네 계수 <b>K = "+f.k.toFixed(4)+"</b>"+
+      "아스팔트, 양지, 낮 기록 <b>"+f.n+"</b>개 → 내 동네 계수 <b>K = "+f.k.toFixed(4)+"</b>"+
       "<br>평균 오차, 새 계수 <b>"+f.mae.toFixed(1)+"°C</b> · 지금 쓰는 계수("+K_ROAD.toFixed(4)+") <b>"+f.maeNow.toFixed(1)+"°C</b>"+
       "<br><span style=\"opacity:.8\">"+
       (f.n<8 ? "8개는 넘겨야 믿을 만해요. 지금 적용하면 몇 번의 우연에 끌려갑니다."
@@ -4324,7 +4949,7 @@ $("c-clear").addEventListener("click",function(){
 /* ══ 숨 세기 (안정 시 호흡수) ═══════════════════════════════════
    보이지 않는 심장 상태를 집에서 숫자로 바꾸는, 이 앱에서 두 번째 "측정"이다.
    근거는 드물게 튼튼하다:
-   · Rishniw 외 2012 (Res Vet Sci 93:965-969), 건강견 안정 시 평균 14회/분, 상한 ~25
+   · Rishniw 외 2012 (Res Vet Sci 93:965-969), 건강한 강아지 114마리, 잘 때 평균 13회/분(11/10 초록 대조. 예전 주석의 14는 틀렸다), 25를 넘는 일은 드묾
    · Ohad 외 2013 (JAVMA 243:839-843), 무증상 심장질환견도 대부분 25 미만
    · Keene 외 2019 ACVIM 합의, "안정 시 호흡수 증가가 임상 악화 예측력이 가장 높다"
    널리 도는 "30회/분" 컷은 제약사 교육자료의 단순화 값이라 쓰지 않고,
@@ -4344,7 +4969,7 @@ function srrHist(){
       return '<div title="'+r.rpm+'회" style="flex:1;height:'+pct+'%;border-radius:4px 4px 2px 2px;background:'+c+'"></div>';
     }).join("")+'</div>'+
     '<div class="src" style="margin-top:5px">최근 '+xs.length+'회 · 마지막 <b>'+
-    xs[xs.length-1].rpm+'회/분</b> · <span style="color:var(--moss)">초록 ≤25</span> · <span style="color:var(--amber)">노랑 &gt;25</span></div>';
+    xs[xs.length-1].rpm+'회/분</b> · <span style="color:var(--moss)">초록 25 이하</span>, <span style="color:var(--amber)">노랑 25 초과</span></div>';
 }
 $("srr-tap").addEventListener("click",function(){
   var btn=this;
@@ -4364,7 +4989,7 @@ $("srr-tap").addEventListener("click",function(){
         S.srr.push({t:Date.now(),rpm:rpm}); S.srr=S.srr.slice(-60); save();
         var over=S.srr.slice(-2).filter(function(r){return r.rpm>25;}).length;
         $("srr-result").innerHTML="<b>"+rpm+"회/분</b> · "+
-          (rpm<=25?"정상 범위예요 (상한 ~25)":
+          (rpm<=25?"25회 이하예요. 건강한 강아지 대부분이 이 안이에요":
            over>=2?"두 번 연속 25회를 넘었어요. <b>이 기록을 병원에 보여주세요</b>":
                    "25회를 넘었어요. 얕게 잘 때는 높게 나올 수 있어요. 내일 다시 재보세요");
         srrHist();
@@ -5466,7 +6091,7 @@ function facesFor(){
 }
 
 /* ---------- 공유: 1080 폭 한 장. 사진 빼기면 투명 PNG ---------- */
-var DL_LINK='https://062-sibi.github.io/kkukkkukkkuk/download.html';
+var DL_LINK=IOS?'https://062-sibi.github.io/kkukkkukkkuk/about/':'https://062-sibi.github.io/kkukkkukkkuk/download.html';   // 아이폰 앱은 받기 페이지(안드로이드 설치 안내) 대신 소개 페이지
 function outCanvas(){ var g=geo(), out=document.createElement('canvas'); out.width=CW; out.height=g.H; var sel=E.sel; E.sel=null; render(out.getContext('2d'),false); E.sel=sel; return out; }
 function prepare(){
   clearTimeout(E._pt); if(E.bkey===String(E.ver)&&E.blob) return;
@@ -5516,6 +6141,18 @@ window.__pwc={get E(){return E;}, render:function(){ return outCanvas(); }, segR
    서버가 없으니 브라우저 저장소가 유일한 정본이다. 폰을 바꾸거나
    사파리가 저장소를 비우면 1년치가 사라진다. 가져오기가 없으면
    내보내기는 반쪽이라 같이 만든다. */
+function scrubIn(v,d,key){
+  if(typeof v==="string"){
+    if(key==="name"||key==="nm")return v;   // 보호자가 적은 이름은 그대로(화면에서 esc로 막는다)
+    return /^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(v)?v:v.replace(/[<>"]/g,"");
+  }
+  if(d>40)return null;
+  if(Array.isArray(v)){for(var i=0;i<v.length;i++)v[i]=scrubIn(v[i],d+1);return v;}
+  if(v&&typeof v==="object"){Object.keys(v).forEach(function(k){
+    if(/[<>"]/.test(k)||k==="__proto__"){delete v[k];return;}
+    v[k]=scrubIn(v[k],d+1,k);});return v;}
+  return v;
+}
 $("import").addEventListener("click",function(){ $("importfile").click(); });
 $("importfile").addEventListener("change",function(){
   var f=this.files&&this.files[0]; this.value="";
@@ -5531,10 +6168,19 @@ $("importfile").addEventListener("change",function(){
     var okShape=Array.isArray(j.walks)&&j.walks.every(function(w){return !!w&&typeof w==="object"&&typeof w.start==="number";})
       &&["routes","spots","parties"].every(function(k){return !(k in j)||Array.isArray(j[k]);})
       &&(!("dog" in j)||j.dog===null||typeof j.dog==="object");
-    if(!okShape){ toast("백업 파일이 손상돼서 가져오지 않았어요 · 지금 기록은 그대로예요",4000); return; }
+    // 0.5.0: 꾹꾹로 모양도 본다. 구간 정보가 빠진 길 하나가 기록 탭 전체를 비우던 것
+    if(okShape&&Array.isArray(j.routes))okShape=j.routes.every(function(r){return !!r&&typeof r==="object"&&Array.isArray(r.pts)&&r.pts.every(function(p){return Array.isArray(p)&&typeof p[0]==="number"&&typeof p[1]==="number";});});
+    if(!okShape){ toast("백업 파일이 손상돼서 가져오지 않았어요. 지금 기록은 그대로예요",4000); return; }
+    // 0.5.0: 남이 만든 파일의 글자가 화면에서 코드로 돌지 않게 꺾쇠와 큰따옴표를 뺀다(사진은 data:image만 남긴다).
+    // 보호자가 적은 이름(강아지, 꾹꾹로, 꾹자리)은 글자를 빼지 않고 그대로 둔다. 이름은 화면에서 esc나 textContent로만 그린다
+    j=scrubIn(j,0);
+    if(j.dog&&typeof j.dog==="object"&&typeof j.dog.name!=="string")j.dog.name=j.dog.name==null?"":String(j.dog.name);   // 이름이 글자가 아니면 홈이 멈춘다
+    if(j.dog&&j.dog.photo!=null&&!okPhoto(j.dog.photo))delete j.dog.photo;
+    (j.routes||[]).forEach(function(r){ if(!Array.isArray(r.segs))r.segs=segsOf(r.pts); if(typeof r.dist!=="number")r.dist=pathLen(r.pts); });
     var nw=(j.walks||[]).length, nr=(j.routes||[]).length;
     if(!confirm("산책 "+nw+"개 · 꾹꾹로 "+nr+"개를 가져옵니다.\n지금 이 기기의 기록은 덮어써집니다. 계속할까요?"))return;
     try{ localStorage.setItem(KEY,JSON.stringify(j)); }catch(e){ toast("저장 공간이 부족해요"); return; }
+    rvBump();   // 다른 탭이 옛 기록으로 덮어쓰지 않게 알린다
     location.reload();
   };
   r.readAsText(f);
@@ -5565,7 +6211,10 @@ $("gpsexport").addEventListener("click",function(){
   var t=JSON.stringify({app:"kkukkkuki",type:"gps",v:1,made:d.toISOString(),cols:["sec","lat","lng","acc_m","speed_mps"],walks:all});
   saveShare(new Blob([t],{type:"application/json"}),nm,"","꾹꾹이 GPS 기록");
 });
-$("reset").addEventListener("click",function(){try{localStorage.removeItem(KEY);glDrop();}catch(e){}location.reload();});
+$("reset").addEventListener("click",function(){
+  // 0.5.0: 한 번 누르면 묻지 않고 모든 기록이 지워졌다. 지우기 전에 묻는다(가져오기와 같은 방식)
+  if(!confirm("산책 기록과 꾹꾹로, 강아지 정보를 이 기기에서 모두 지워요. 되돌릴 수 없어요.\n먼저 기록 내보내기로 저장해 두셨나요? 정말 지울까요?"))return;
+  try{localStorage.removeItem(KEY);glDrop();}catch(e){}rvBump();location.reload();});
 
 /* ══ 탭 ══ */
 
@@ -6225,11 +6874,12 @@ function kmPace(){
 /* ══ 강아지 사진(프로필) ══════════════════════════════════════════
    고른 사진은 가운데를 정사각으로 잘라 320px JPEG로 줄여 이 폰(S.dog.photo)에만 저장한다. 서버로 보내지 않는다. */
 var KM_AVA={src:null,img:null};
-function kmAvaImg(){var src=S.dog&&S.dog.photo;if(!src)return null;
+function okPhoto(p){return typeof p==="string"&&/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(p);}
+function kmAvaImg(){var src=S.dog&&S.dog.photo;if(!okPhoto(src))return null;
   if(KM_AVA.src!==src){KM_AVA.src=src;KM_AVA.img=new Image();KM_AVA.img.onload=function(){[KMA,KMW,KML,KMR].forEach(function(k){if(k)k.draw();});};KM_AVA.img.src=src;}
   return KM_AVA.img.complete&&KM_AVA.img.naturalWidth?KM_AVA.img:null;}
 function kmAvaHtml(){var p=S.dog&&S.dog.photo;
-  return p?'<img src="'+p+'" alt="">':'<svg viewBox="0 0 24 18" aria-hidden="true"><ellipse cx="6" cy="11" rx="3.2" ry="4" transform="rotate(-22 6 11)" fill="#FF6B57"/><ellipse cx="12" cy="6.5" rx="3.2" ry="4" fill="#EFB02F"/><ellipse cx="18" cy="11" rx="3.2" ry="4" transform="rotate(22 18 11)" fill="#3B9DF5"/></svg>';}
+  return okPhoto(p)?'<img src="'+p+'" alt="">':'<svg viewBox="0 0 24 18" aria-hidden="true"><ellipse cx="6" cy="11" rx="3.2" ry="4" transform="rotate(-22 6 11)" fill="#FF6B57"/><ellipse cx="12" cy="6.5" rx="3.2" ry="4" fill="#EFB02F"/><ellipse cx="18" cy="11" rx="3.2" ry="4" transform="rotate(22 18 11)" fill="#3B9DF5"/></svg>';}
 function kmAvaRender(){
   var has=!!(S.dog&&S.dog.photo);
   ["hdr-ava","d-ava","ka-ava"].forEach(function(id){var el=$(id);if(el){el.innerHTML=kmAvaHtml();el.classList.toggle("ph",has);}});
@@ -6342,7 +6992,7 @@ function kmAreaPickUI(){
   var el=$("ka-pick"),s=KMA_SEL==null?null:S.spots.filter(function(x){return kmSpotId(x)===KMA_SEL;})[0];
   if(!s){el.hidden=true;KMA_SEL=null;return;}
   el.hidden=false;
-  el.innerHTML='<div class="t"><b>'+esc(kmSpotName(s))+'</b><span>'+s.n+'번 마킹 · 처음 '+kmAgo(s.first)+' · 마지막 '+kmAgo(s.last)+'</span></div>'+
+  el.innerHTML='<div class="t"><b>'+esc(kmSpotName(s))+'</b><span>'+s.n+'번 마킹 · 처음 '+kmAgo(s.first)+', 마지막 '+kmAgo(s.last)+'</span></div>'+
     '<button type="button" id="ka-ren">이름 바꾸기</button>';
 }
 $("ka-rank").addEventListener("click",function(e){
@@ -6531,14 +7181,15 @@ function kmRecos(pins){
     var np=kmNewPoint(G,h,typ);if(np)add("new","새 길 한 바퀴",[{p:np}],"safe");
   }
   var st=S.recoStat||{},od={spots:0,safe:0,green:1,new:2,short:2};   // 자주 고른 종류를 앞으로
-  out.sort(function(a,b){return ((st[b.kind]||0)-(st[a.kind]||0))||(od[a.kind]-od[b.kind]);});
+  var pf=KMR_PREF;
+  out.sort(function(a,b){return (pf?((b.kind===pf)-(a.kind===pf)):0)||((st[b.kind]||0)-(st[a.kind]||0))||(od[a.kind]-od[b.kind]);});
   out.miss=miss;return out;
 }
 
 /* ── 추천 길 화면: 열면 길 3개, 지도를 누르면 핀(3개까지), 끌면 옮기고 누르면 지운다 ── */
-var KMR=null,KMR_PINS=[],KMR_LIST=[],KMR_SEL=0,KMR_WAIT=false;
-function kmRecoOpen(){
-  KMR_PINS=[];KMR_LIST=[];KMR_SEL=0;
+var KMR=null,KMR_PINS=[],KMR_LIST=[],KMR_SEL=0,KMR_WAIT=false,KMR_PREF=null;
+function kmRecoOpen(o){
+  KMR_PINS=[];KMR_LIST=[];KMR_SEL=0;KMR_PREF=(o&&o.prefer)||null;   // 0.4.5: 새 길 권하기에서 열면 새 길을 맨 앞에
   $("krsheet").classList.add("on");
   if(!KMR)KMR=new KMap($("r-map"),{onTap:kmRecoTap,onDrag:kmRecoDrag,onIdle:function(k){if(KMR_WAIT&&k.map&&k.map.getZoom()>=13.9){KMR_WAIT=false;kmRecoBuild();}},
     onFlat:function(){if(KMR_WAIT){KMR_WAIT=false;kmRecoBuild();}}});
@@ -6547,7 +7198,7 @@ function kmRecoOpen(){
   $("r-cards").innerHTML='<div class="km-wait">길을 찾는 중</div>';$("r-note").textContent="";
   $("kr-save").disabled=true;$("r-go").disabled=true;
   KMR.set({fog:true,home:h,stamps:kmRank().map(function(s){return {la:s.lat,ln:s.lng,n:s.n,id:kmSpotId(s)};}),cluster:false,pins:KMR_PINS});
-  KMR.ui.innerHTML='<span class="km-chip" id="r-hint">지도를 누르면 핀이 찍혀요</span>';
+  KMR.ui.innerHTML='<span class="km-chip" id="r-hint">'+(KMR_PREF==="new"?"안개 낀 곳을 누르면 그쪽으로 길을 이어요":"지도를 누르면 핀이 찍혀요")+'</span>';
   if(KMR.mode==="flat"||!h){kmRecoBuild();return;}
   KMR_WAIT=true;KMR.view(h,14.2);                  // 집 둘레 지도 조각(14단계)을 받은 뒤 길을 만든다
   setTimeout(function(){if(KMR_WAIT){KMR_WAIT=false;kmRecoBuild();}},9000);
@@ -6581,10 +7232,11 @@ function kmRecoShow(refit){
     "지도를 누르면 가고 싶은 곳에 핀이 찍혀요. 큰길 옆은 피하고 인도와 공원, 강가를 먼저 골라요.";
   if(m>=4&&m<=11)note+=" 봄부터 가을까지는 풀숲 길을 줄여요.";
   if(m===12||m<=2)note+=" 겨울엔 제설제가 있을 수 있으니 산책 뒤 발을 닦아 주세요.";
-  if(KMR.fallback)note="지도를 받지 못해 "+kmJosa(kmDog(),"이","가")+" 걸어 본 길로만 이었어요.";
+  if(KMR_PREF==="new"&&!KMR_PINS.length&&!(L[0]&&L[0].kind==="new"))note="집 둘레에서 새 길 한 바퀴를 찾지 못했어요. 안개 낀 곳을 눌러 핀을 찍으면 그쪽으로 이어요. "+note;   // 0.4.5
+  if(KMR.fallback)note="지도를 받지 못해 "+kmJosa(kmDog(),"이","가")+" 걸어 본 길로만 이었어요."+(KMR_PREF==="new"?" 안개 낀 곳을 눌러 핀을 찍어 보세요.":"");
   if(L.miss&&L.miss.length)note="핀 "+L.miss.length+"곳은 길에서 너무 멀어 뺐어요. "+note;
   $("r-note").textContent=note;
-  var h=$("r-hint");if(h)h.textContent=KMR_PINS.length?"끌면 옮기고 누르면 지워요":"지도를 누르면 핀이 찍혀요";
+  var h=$("r-hint");if(h)h.textContent=KMR_PINS.length?"끌면 옮기고 누르면 지워요":(KMR_PREF==="new"?"안개 낀 곳을 누르면 그쪽으로 길을 이어요":"지도를 누르면 핀이 찍혀요");
   $("kr-save").disabled=!cur;$("r-go").disabled=!cur||!!W;
   var stamps=kmRank().map(function(s){return {la:s.lat,ln:s.lng,n:s.n,id:kmSpotId(s)};});
   KMR.set({fog:true,guide:cur?cur.pts:null,guideNew:cur?cur.nw:null,alts:L.filter(function(r,i){return i!==KMR_SEL;}).map(function(r){return r.pts;}),
@@ -6686,7 +7338,8 @@ document.querySelectorAll("#tabs button").forEach(function(b){
    저장되는 값은 전부 이 기기 localStorage 안에 있고 새로 노출되는 비밀은 없다. */
 window.__kk={get S(){return S;},get HK(){return HK;},hk:function(k,p){hk(k,p);},get KM(){return {A:KMA,W:KMW,L:KML,R:KMR,reco:kmReco,recos:kmRecos,net:kmNet,theme:kmTheme,pal:kmPal,cleared:kmCleared,home:kmHome,name:kmSpotName,fogWalk:kmFogWalk,lib:KM,pins:KMR_PINS,list:function(){return KMR_LIST;}};},get W(){return W;},widgetDrain:widgetDrain,widgetPush:widgetPush,gpsFix:gpsFix,placeParse:placeParse,betaText:betaText,pwcOpen:function(w){pwcOpen(w);},
   baseline:baseline,gaugeDetail:gaugeDetail,gmsgOf:gmsgOf,slimWalks:slimWalks,glAll:glAll,glPut:glPut,glForget:glForget,glFinish:glFinish,
-  slotOf:slotOf,gradeAt:gradeAt,roadTemp:roadTemp,solar:solar,renderHome:renderHome};
+  slotOf:slotOf,gradeAt:gradeAt,roadTemp:roadTemp,solar:solar,renderHome:renderHome,
+  get ios(){return {IOS:IOS,NATIVE:NATIVE,plugins:Object.keys(NP),wg:WG.on,where:hkWhere(),key:!!HACKLE_KEY,stats:statsOn(),loc:loc,err:LOCERR};}};
 boot();
 })();
 </script>

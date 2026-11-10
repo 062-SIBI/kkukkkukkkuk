@@ -655,11 +655,12 @@ function kmPace(){
 /* ══ 강아지 사진(프로필) ══════════════════════════════════════════
    고른 사진은 가운데를 정사각으로 잘라 320px JPEG로 줄여 이 폰(S.dog.photo)에만 저장한다. 서버로 보내지 않는다. */
 var KM_AVA={src:null,img:null};
-function kmAvaImg(){var src=S.dog&&S.dog.photo;if(!src)return null;
+function okPhoto(p){return typeof p==="string"&&/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(p);}
+function kmAvaImg(){var src=S.dog&&S.dog.photo;if(!okPhoto(src))return null;
   if(KM_AVA.src!==src){KM_AVA.src=src;KM_AVA.img=new Image();KM_AVA.img.onload=function(){[KMA,KMW,KML,KMR].forEach(function(k){if(k)k.draw();});};KM_AVA.img.src=src;}
   return KM_AVA.img.complete&&KM_AVA.img.naturalWidth?KM_AVA.img:null;}
 function kmAvaHtml(){var p=S.dog&&S.dog.photo;
-  return p?'<img src="'+p+'" alt="">':'<svg viewBox="0 0 24 18" aria-hidden="true"><ellipse cx="6" cy="11" rx="3.2" ry="4" transform="rotate(-22 6 11)" fill="#FF6B57"/><ellipse cx="12" cy="6.5" rx="3.2" ry="4" fill="#EFB02F"/><ellipse cx="18" cy="11" rx="3.2" ry="4" transform="rotate(22 18 11)" fill="#3B9DF5"/></svg>';}
+  return okPhoto(p)?'<img src="'+p+'" alt="">':'<svg viewBox="0 0 24 18" aria-hidden="true"><ellipse cx="6" cy="11" rx="3.2" ry="4" transform="rotate(-22 6 11)" fill="#FF6B57"/><ellipse cx="12" cy="6.5" rx="3.2" ry="4" fill="#EFB02F"/><ellipse cx="18" cy="11" rx="3.2" ry="4" transform="rotate(22 18 11)" fill="#3B9DF5"/></svg>';}
 function kmAvaRender(){
   var has=!!(S.dog&&S.dog.photo);
   ["hdr-ava","d-ava","ka-ava"].forEach(function(id){var el=$(id);if(el){el.innerHTML=kmAvaHtml();el.classList.toggle("ph",has);}});
@@ -772,7 +773,7 @@ function kmAreaPickUI(){
   var el=$("ka-pick"),s=KMA_SEL==null?null:S.spots.filter(function(x){return kmSpotId(x)===KMA_SEL;})[0];
   if(!s){el.hidden=true;KMA_SEL=null;return;}
   el.hidden=false;
-  el.innerHTML='<div class="t"><b>'+esc(kmSpotName(s))+'</b><span>'+s.n+'번 마킹 · 처음 '+kmAgo(s.first)+' · 마지막 '+kmAgo(s.last)+'</span></div>'+
+  el.innerHTML='<div class="t"><b>'+esc(kmSpotName(s))+'</b><span>'+s.n+'번 마킹 · 처음 '+kmAgo(s.first)+', 마지막 '+kmAgo(s.last)+'</span></div>'+
     '<button type="button" id="ka-ren">이름 바꾸기</button>';
 }
 $("ka-rank").addEventListener("click",function(e){
@@ -961,14 +962,15 @@ function kmRecos(pins){
     var np=kmNewPoint(G,h,typ);if(np)add("new","새 길 한 바퀴",[{p:np}],"safe");
   }
   var st=S.recoStat||{},od={spots:0,safe:0,green:1,new:2,short:2};   // 자주 고른 종류를 앞으로
-  out.sort(function(a,b){return ((st[b.kind]||0)-(st[a.kind]||0))||(od[a.kind]-od[b.kind]);});
+  var pf=KMR_PREF;
+  out.sort(function(a,b){return (pf?((b.kind===pf)-(a.kind===pf)):0)||((st[b.kind]||0)-(st[a.kind]||0))||(od[a.kind]-od[b.kind]);});
   out.miss=miss;return out;
 }
 
 /* ── 추천 길 화면: 열면 길 3개, 지도를 누르면 핀(3개까지), 끌면 옮기고 누르면 지운다 ── */
-var KMR=null,KMR_PINS=[],KMR_LIST=[],KMR_SEL=0,KMR_WAIT=false;
-function kmRecoOpen(){
-  KMR_PINS=[];KMR_LIST=[];KMR_SEL=0;
+var KMR=null,KMR_PINS=[],KMR_LIST=[],KMR_SEL=0,KMR_WAIT=false,KMR_PREF=null;
+function kmRecoOpen(o){
+  KMR_PINS=[];KMR_LIST=[];KMR_SEL=0;KMR_PREF=(o&&o.prefer)||null;   // 0.4.5: 새 길 권하기에서 열면 새 길을 맨 앞에
   $("krsheet").classList.add("on");
   if(!KMR)KMR=new KMap($("r-map"),{onTap:kmRecoTap,onDrag:kmRecoDrag,onIdle:function(k){if(KMR_WAIT&&k.map&&k.map.getZoom()>=13.9){KMR_WAIT=false;kmRecoBuild();}},
     onFlat:function(){if(KMR_WAIT){KMR_WAIT=false;kmRecoBuild();}}});
@@ -977,7 +979,7 @@ function kmRecoOpen(){
   $("r-cards").innerHTML='<div class="km-wait">길을 찾는 중</div>';$("r-note").textContent="";
   $("kr-save").disabled=true;$("r-go").disabled=true;
   KMR.set({fog:true,home:h,stamps:kmRank().map(function(s){return {la:s.lat,ln:s.lng,n:s.n,id:kmSpotId(s)};}),cluster:false,pins:KMR_PINS});
-  KMR.ui.innerHTML='<span class="km-chip" id="r-hint">지도를 누르면 핀이 찍혀요</span>';
+  KMR.ui.innerHTML='<span class="km-chip" id="r-hint">'+(KMR_PREF==="new"?"안개 낀 곳을 누르면 그쪽으로 길을 이어요":"지도를 누르면 핀이 찍혀요")+'</span>';
   if(KMR.mode==="flat"||!h){kmRecoBuild();return;}
   KMR_WAIT=true;KMR.view(h,14.2);                  // 집 둘레 지도 조각(14단계)을 받은 뒤 길을 만든다
   setTimeout(function(){if(KMR_WAIT){KMR_WAIT=false;kmRecoBuild();}},9000);
@@ -1011,10 +1013,11 @@ function kmRecoShow(refit){
     "지도를 누르면 가고 싶은 곳에 핀이 찍혀요. 큰길 옆은 피하고 인도와 공원, 강가를 먼저 골라요.";
   if(m>=4&&m<=11)note+=" 봄부터 가을까지는 풀숲 길을 줄여요.";
   if(m===12||m<=2)note+=" 겨울엔 제설제가 있을 수 있으니 산책 뒤 발을 닦아 주세요.";
-  if(KMR.fallback)note="지도를 받지 못해 "+kmJosa(kmDog(),"이","가")+" 걸어 본 길로만 이었어요.";
+  if(KMR_PREF==="new"&&!KMR_PINS.length&&!(L[0]&&L[0].kind==="new"))note="집 둘레에서 새 길 한 바퀴를 찾지 못했어요. 안개 낀 곳을 눌러 핀을 찍으면 그쪽으로 이어요. "+note;   // 0.4.5
+  if(KMR.fallback)note="지도를 받지 못해 "+kmJosa(kmDog(),"이","가")+" 걸어 본 길로만 이었어요."+(KMR_PREF==="new"?" 안개 낀 곳을 눌러 핀을 찍어 보세요.":"");
   if(L.miss&&L.miss.length)note="핀 "+L.miss.length+"곳은 길에서 너무 멀어 뺐어요. "+note;
   $("r-note").textContent=note;
-  var h=$("r-hint");if(h)h.textContent=KMR_PINS.length?"끌면 옮기고 누르면 지워요":"지도를 누르면 핀이 찍혀요";
+  var h=$("r-hint");if(h)h.textContent=KMR_PINS.length?"끌면 옮기고 누르면 지워요":(KMR_PREF==="new"?"안개 낀 곳을 누르면 그쪽으로 길을 이어요":"지도를 누르면 핀이 찍혀요");
   $("kr-save").disabled=!cur;$("r-go").disabled=!cur||!!W;
   var stamps=kmRank().map(function(s){return {la:s.lat,ln:s.lng,n:s.n,id:kmSpotId(s)};});
   KMR.set({fog:true,guide:cur?cur.pts:null,guideNew:cur?cur.nw:null,alts:L.filter(function(r,i){return i!==KMR_SEL;}).map(function(r){return r.pts;}),
