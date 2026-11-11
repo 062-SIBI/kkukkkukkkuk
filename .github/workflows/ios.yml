@@ -92,7 +92,7 @@ jobs:
           mkdir -p shots
           # 앱이 찍는 글(웹 콘솔 포함)을 파일로 받는다. 화면은 2초 쉬고 한 장씩 찍는다
           xcrun simctl launch --console-pty "$DEV" app.padd.walk > shots/console_light.txt 2>&1 &
-          END=$((SECONDS+330)); i=0
+          END=$((SECONDS+390)); i=0
           while [ $SECONDS -lt $END ]; do sleep 2; xcrun simctl io "$DEV" screenshot "shots/light_$(printf %03d $i).png" >/dev/null 2>&1 || true; i=$((i+1)); done
           xcrun simctl terminate "$DEV" app.padd.walk || true
           xcrun simctl ui "$DEV" appearance dark || true
