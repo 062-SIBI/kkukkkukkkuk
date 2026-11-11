@@ -4,7 +4,9 @@
    사용 통계는 꺼 둔다(시험이 통계에 섞이지 않게).
    진단(11/11): 첫 실행에서 산책을 끝낸 직후 화면이 다시 불러와지는 일이 있었다. 원인을 가르려고
    - 몇 번째로 불러왔는지, 단계, 오류, 지도와 카메라 상태를 저장소에 이어 적고 화면 위쪽과 콘솔에 보인다
-   - 불러올 때마다 순서를 바꾼다: 1 전체, 2 지도 안 엶, 3 카메라 막음, 4 지도를 오래 열어 둠, 5부터 가만히 둠 */
+   - 불러올 때마다 순서를 바꾼다: 1 전체, 2 지도 안 엶, 3 카메라 막음, 4 앱 안 지도 파일과 일꾼으로 지도를 오래 열어 둠,
+     5 CDN 지도 파일에 일꾼만 앱 안 파일로 알려 주고 전체, 6부터 가만히 둠
+   - 지도 일꾼(워커): 아이폰 앱(capacitor:// 주소)에서 지도 조각이 안 그려지는 까닭이 일꾼이 안 떠서인지, 주소를 직접 알려 주면 그려지는지 본다 */
 (function(){
   var now=Date.now(), D=864e5, M=6e4, C=[37.5663,126.9779];
   function loop(n,r,ph){ var p=[]; for(var i=0;i<=n;i++){ var t=i/n*2*Math.PI+ph; p.push([+(C[0]+r*Math.sin(t)).toFixed(6), +(C[1]+r*1.25*Math.cos(t)).toFixed(6)]); } return p; }
@@ -70,7 +72,7 @@
     var s="none"; try{ var k=window.__kk&&window.__kk.KM, M=k&&k[which||"L"];
       if(M){ s=M.mode; if(M.map){ s+=" loaded="+M.map.loaded()+" tiles="+(M.map.areTilesLoaded?M.map.areTilesLoaded():"?")+" z="+M.map.getZoom().toFixed(1); }
         if(M.err)s+=" err="+M.err+" "+String(M.errMsg).slice(0,70); }
-      s+=" lib="+((k&&k.lib&&k.lib.lib)?"y":"n"); }catch(e){ s="x "+String(e&&e.message).slice(0,40); }
+      var lib=k&&k.lib&&k.lib.lib; s+=" lib="+(lib?"y":"n"); if(lib&&lib.getWorkerUrl)s+=" wurl="+JSON.stringify(String(lib.getWorkerUrl()||"").slice(-30)); }catch(e){ s="x "+String(e&&e.message).slice(0,40); }
     lg(tag+" map"+(which||"L")+"="+s);
   }
   function camSt(tag){
@@ -79,6 +81,17 @@
     lg(tag+" "+s);
   }
   function noCam(){ try{ if(navigator.mediaDevices)navigator.mediaDevices.getUserMedia=function(){ var e=new Error("demo"); e.name="NotFoundError"; return Promise.reject(e); }; lg("camera blocked"); }catch(e){ lg("camera block failed"); } }
+  /* 지도 일꾼 주소 알려 주기. how="local": 앱 안의 지도 파일을 쓰게 하고 일꾼도 앱 안 파일로. how="cdn": 앱이 지금 쓰는 CDN 지도 파일은 그대로, 일꾼만 앱 안 파일로.
+     (앱 코드는 "maplibre-gl.mjs"를 ./ 없이 불러 늘 실패하고 CDN 파일을 쓴다. 11/11에 진단하다 찾음) */
+  function fixWorker(how){ try{ var imp=new Function("u","return import(u)");
+    var src=how==="local"?"./maplibre-gl.mjs":"https://cdn.jsdelivr.net/npm/maplibre-gl@6.14.0/dist/maplibre-gl.mjs";
+    imp(src).then(function(m){
+      var u=new URL("maplibre-gl-worker.mjs",location.href).href, o2="?"; try{ o2=new URL(u).origin; }catch(e){}
+      if(!(m&&m.Map&&m.setWorkerUrl)){ lg("fixWorker "+how+": no Map or setWorkerUrl"); return; }
+      m.setWorkerUrl(u);
+      if(how==="local"){ try{ window.__kk.KM.lib.lib=m; }catch(e){ lg("fixWorker: KM.lib set failed"); } }
+      lg("fixWorker "+how+" ok worker="+u.slice(-34)+" origin="+location.origin+" / "+o2);
+    },function(e){ lg("fixWorker "+how+" import ERR "+String(e&&e.message).slice(0,70)); }); }catch(e){ lg("fixWorker ERR "+String(e&&e.message).slice(0,50)); } }
   function st(ms,name,fn){ return [ms,function(){ lg(name); fn(); }]; }
   function next(ms){ return [ms,function(){ lg("END v"+N+" reload"); try{ location.reload(); }catch(e){} }]; }
   function startAt(ms){ return [st(ms,"start",function(){ click("#start"); }), st(ms+2000,"feed pee sniff",function(){ feed(60); click("#b-pee"); click("#b-sniff"); })]; }
@@ -89,17 +102,19 @@
     st(ms+4000,"walk detail",function(){ click("#walklist [data-wid]"); }), [ms+12000,function(){ mapSt("detail+8s","W"); }],
     st(ms+13000,"dong map",function(){ click("#w-close"); click('#logtab [data-v="poop"]'); }), [ms+21000,function(){ mapSt("dong+8s","A"); }],
     st(ms+22000,"party",function(){ click('#tabs button[data-v="party"]'); }), st(ms+26000,"home",function(){ click('#tabs button[data-v="home"]'); })]; }
-  var T=[], V=N>5?5:N;
+  var T=[], V=N>6?6:N;
   if(V===1){          // 전체: 산책, 지도, 끝내기(카메라), 기록
     T=T.concat(startAt(9000),[st(17000,"map tab",function(){ click('#wseg [data-v="m"]'); }),[22000,function(){ mapSt("map+5s"); }]],stopAt(25000),tourAt(38000),[next(66000)]);
   } else if(V===2){   // 지도를 열지 않고 끝내기(카메라)
     T=T.concat(startAt(9000),stopAt(20000),[next(36000)]);
   } else if(V===3){   // 지도는 열고 카메라는 막고 끝내기
     T=T.concat(startAt(9000),[st(15000,"map tab",function(){ click('#wseg [data-v="m"]'); }),[19000,function(){ noCam(); }]],stopAt(20000),[next(36000)]);
-  } else if(V===4){   // 지도를 40초 열어 두고 조각이 오는지 본다. 그다음 카메라 없이 끝내고 한 바퀴
-    T=T.concat(startAt(9000),[st(13000,"map tab",function(){ click('#wseg [data-v="m"]'); })]);
-    [18000,23000,28000,33000,38000,43000,48000,53000].forEach(function(ms){ T.push([ms,function(){ mapSt("map+"+Math.round((ms-13000)/1000)+"s"); }]); });
-    T=T.concat([[54000,function(){ noCam(); }]],stopAt(55000),tourAt(68000),[next(98000)]);
+  } else if(V===4){   // 앱 안 지도 파일과 일꾼을 쓰게 하고 지도를 25초 열어 둔다. 그다음 카메라 없이 끝내고 한 바퀴
+    T=T.concat([[2000,function(){ fixWorker("local"); }]],startAt(9000),[st(13000,"map tab",function(){ click('#wseg [data-v="m"]'); })]);
+    [18000,23000,28000,33000,38000].forEach(function(ms){ T.push([ms,function(){ mapSt("map+"+Math.round((ms-13000)/1000)+"s"); }]); });
+    T=T.concat([[39000,function(){ noCam(); }]],stopAt(40000),tourAt(53000),[next(83000)]);
+  } else if(V===5){   // CDN 지도 파일은 그대로, 일꾼만 앱 안 파일로 알려 주고 전체(카메라 포함)
+    T=T.concat([[2000,function(){ fixWorker("cdn"); }]],startAt(9000),[st(17000,"map tab",function(){ click('#wseg [data-v="m"]'); }),[22000,function(){ mapSt("map+5s"); }]],stopAt(25000),tourAt(38000),[next(66000)]);
   } else {            // 가만히 둔다(저절로 다시 불러와지는지)
     [15000,30000,45000,60000,75000,90000].forEach(function(ms){ T.push([ms,function(){ lg("idle "+Math.round(ms/1000)+"s"); }]); });
   }
