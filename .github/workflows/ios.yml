@@ -90,24 +90,30 @@ jobs:
           xcrun simctl privacy "$DEV" grant location app.padd.walk || true
           xcrun simctl location "$DEV" set 37.5663,126.9779 || true
           mkdir -p shots
-          # 앱이 찍는 글(웹 콘솔 포함)을 파일로 받는다. 화면은 2초 쉬고 한 장씩 찍는다
-          xcrun simctl launch --console-pty "$DEV" app.padd.walk > shots/console_light.txt 2>&1 &
-          END=$((SECONDS+390)); i=0
-          while [ $SECONDS -lt $END ]; do sleep 2; xcrun simctl io "$DEV" screenshot "shots/light_$(printf %03d $i).png" >/dev/null 2>&1 || true; i=$((i+1)); done
-          xcrun simctl terminate "$DEV" app.padd.walk || true
-          xcrun simctl ui "$DEV" appearance dark || true
-          xcrun simctl launch --console-pty "$DEV" app.padd.walk > shots/console_dark.txt 2>&1 &
-          END=$((SECONDS+110)); i=0
-          while [ $SECONDS -lt $END ]; do sleep 2; xcrun simctl io "$DEV" screenshot "shots/dark_$(printf %03d $i).png" >/dev/null 2>&1 || true; i=$((i+1)); done
-          xcrun simctl terminate "$DEV" app.padd.walk || true
-          # 진단: 웹 화면을 그리는 프로세스가 죽었는지 볼 기록(없으면 빈 파일)
-          xcrun simctl spawn "$DEV" log show --last 12m --style compact --predicate '(eventMessage CONTAINS[c] "WebContent" OR eventMessage CONTAINS[c] "terminated" OR eventMessage CONTAINS[c] "crash" OR eventMessage CONTAINS[c] "jetsam") AND (process == "App" OR process CONTAINS "WebKit" OR process == "runningboardd" OR process == "ReportCrash")' 2>/dev/null | tail -400 > shots/sim_log.txt || true
+          APPDIR=$(xcrun simctl get_app_container "$DEV" app.padd.walk app 2>/dev/null || true)
+          PRED='(process CONTAINS "WebKit" OR process == "App" OR process == "runningboardd" OR process == "ReportCrash") AND (eventMessage CONTAINS[c] "GPU" OR eventMessage CONTAINS[c] "terminat" OR eventMessage CONTAINS[c] "crash" OR eventMessage CONTAINS[c] "jetsam" OR eventMessage CONTAINS[c] "timed out" OR eventMessage CONTAINS[c] "timeout" OR eventMessage CONTAINS[c] "context lost" OR eventMessage CONTAINS[c] "unresponsive" OR eventMessage CONTAINS[c] "exited")'
+          # 진단 3판: 순서 1~4를 따로 켠다. 순서마다 시뮬레이터를 껐다 켠다(앞 순서에서 그래픽이 멈춘 것이 다음 순서에 묻지 않게).
+          # 순서 번호는 앱 안 public/kkv.txt에 적어 준다(시험용 스크립트가 읽는다). 화면은 3초 쉬고 한 장씩 찍는다
+          for v in 1 2 3 4; do
+            xcrun simctl boot "$DEV" 2>/dev/null || true
+            xcrun simctl bootstatus "$DEV" -b >/dev/null 2>&1 || true
+            xcrun simctl location "$DEV" set 37.5663,126.9779 || true
+            [ -n "$APPDIR" ] && [ -d "$APPDIR/public" ] && echo "$v" > "$APPDIR/public/kkv.txt" || echo "kkv.txt를 못 적음(불러온 횟수로 순서를 정함)"
+            xcrun simctl launch --console-pty "$DEV" app.padd.walk > "shots/console_v$v.txt" 2>&1 &
+            END=$((SECONDS+95)); i=0
+            while [ $SECONDS -lt $END ]; do sleep 3; xcrun simctl io "$DEV" screenshot "shots/v${v}_$(printf %03d $i).png" >/dev/null 2>&1 || true; i=$((i+1)); done
+            xcrun simctl terminate "$DEV" app.padd.walk || true
+            xcrun simctl spawn "$DEV" log show --last 3m --style compact --predicate "$PRED" 2>/dev/null | tail -600 > "shots/sim_log_v$v.txt" || true
+            xcrun simctl shutdown "$DEV" || true
+          done
           ls -la ~/Library/Logs/DiagnosticReports/ > shots/crash_reports.txt 2>&1 || true
           cp ~/Library/Logs/DiagnosticReports/*WebKit* ~/Library/Logs/DiagnosticReports/App-* shots/ 2>/dev/null || true
-          xcrun simctl shutdown "$DEV" || true
           echo "찍은 파일 수: $(ls shots | wc -l)"; ls -la shots/*.txt || true
-          echo "--- 콘솔(밝은 화면) 끝 60줄"; tail -60 shots/console_light.txt || true
-          echo "--- 콘솔에서 [demo] 줄"; grep -h "\[demo\]" shots/console_light.txt shots/console_dark.txt | tail -150 || true
+          echo "--- 콘솔에서 [demo] 줄"; grep -h "\[demo\]" shots/console_v*.txt | tail -260 || true
+          echo "--- 콘솔의 오류와 경고"; grep -hE "\[(error|warn)\]" shots/console_v*.txt | head -20 | cut -c1-260 || true
+          for v in 1 2 3 4; do echo "--- 시스템 기록 v$v: $(wc -l < "shots/sim_log_v$v.txt") 줄"; grep -iE "crash|jetsam|timed out|timeout|lost|unresponsive|exited|terminat" "shots/sim_log_v$v.txt" | head -25 | cut -c1-280 || true; done
+          echo "--- 충돌 보고서 목록"; cat shots/crash_reports.txt || true
+          for f in ~/Library/Logs/DiagnosticReports/*WebKit* ~/Library/Logs/DiagnosticReports/App-*; do [ -f "$f" ] || continue; echo "## $(basename "$f")"; head -c 700 "$f" | tr '\n' ' ' || true; echo; grep -oE '"(exception|termination)" ?: ?\{[^}]*\}' "$f" | head -3 | cut -c1-400 || true; done
 
       - name: 찍은 화면 보관
         if: always()
