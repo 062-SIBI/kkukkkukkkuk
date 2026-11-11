@@ -1,0 +1,206 @@
+# 꾹꾹이 아이폰 앱 빌드
+# - Actions 탭에서 "Run workflow"로 직접 돌린다. ios-kit 폴더나 이 파일을 고친 PR에서는 빌드 확인만 돈다.
+# - 하는 일
+#   ① 앱 껍데기 만들기(Capacitor). 웹 파일(index.html)을 앱 안에 넣는다. 서버 주소로 받아 오지 않는다.
+#   ② 시뮬레이터용 빌드와 화면 찍기. 애플 계정이 없어도 된다. 찍은 화면은 실행 화면 아래 Artifacts에 14일 보관한다.
+#   ③ 출시용 보관 빌드(서명 없이). 코드가 출시 설정으로 빌드되는지 본다.
+#   ④ "테스트플라이트에 올리기"를 켜고 돌리면 서명해서 App Store Connect에 올린다.
+# - ④에 필요한 비밀값 4개(저장소 Settings → Secrets and variables → Actions)
+#   APPLE_TEAM_ID(팀 아이디 10자), ASC_KEY_ID(키 아이디), ASC_ISSUER_ID(발급자 아이디), ASC_KEY_P8(.p8 파일 내용 전체)
+# - 안드로이드 빌드(android.yml)와 따로 돈다. native 폴더의 파일은 고치지 않는다(빌드 기계 안에서만 바꾼다).
+# - 아이폰 앱의 버전은 ios-kit/version.json에 있다(안드로이드는 native/app-version.json). 빌드 번호는 '앞자리.실행 번호'로 저절로 올라간다.
+name: iOS 앱
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload:
+        description: '테스트플라이트에 올리기 (애플 키 4개를 넣은 뒤에만 켜기)'
+        type: boolean
+        default: false
+  pull_request:
+    paths:
+      - 'ios-kit/**'
+      - '.github/workflows/ios.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-app-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: native/package-lock.json
+
+      - name: Xcode 확인 (26 이상. 빌드 기계에 기본으로 깔린 것을 쓴다)
+        run: |
+          # 기본 Xcode는 깃허브가 시뮬레이터까지 맞춰 둔 판이다. 26보다 낮을 때만 26 가운데 가장 새 정식판으로 바꾼다
+          V=$(xcodebuild -version | awk 'NR==1{print $2}')
+          if [ "${V%%.*}" -lt 26 ]; then
+            X=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | grep -viE 'beta|candidate' | sort -V | tail -1 || true)
+            if [ -z "$X" ]; then echo "::error::Xcode 26 이상을 못 찾았어요(애플은 Xcode 26 이상으로 만든 앱만 받습니다)"; exit 1; fi
+            sudo xcode-select -s "$X"
+          fi
+          xcodebuild -version
+
+      - name: 앱 껍데기 만들기 (Capacitor, 시뮬레이터 확인용 웹 파일)
+        working-directory: native
+        run: |
+          CODE=$(node -p "require('../ios-kit/version.json').code")
+          export IOS_BUILD="$CODE.${{ github.run_number }}"
+          echo "IOS_BUILD=$IOS_BUILD" >> "$GITHUB_ENV"
+          npm ci
+          npm install --no-save @capacitor/ios@8.5.2
+          node ../ios-kit/patch-ios.js pre demo
+          npx cap add ios
+          node ../ios-kit/patch-ios.js post
+          plutil -lint ios/App/App/Info.plist ios/App/App/PrivacyInfo.xcprivacy
+
+      - name: 시뮬레이터용 빌드 (서명 없이)
+        working-directory: native/ios/App
+        run: |
+          set -o pipefail
+          xcodebuild -project App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' -derivedDataPath build/dd \
+            CODE_SIGNING_ALLOWED=NO build | tail -60
+
+      - name: 시뮬레이터에서 켜서 화면 찍기 (가짜 기록으로 홈, 산책, 기록 카드, 기록 탭)
+        continue-on-error: true
+        timeout-minutes: 25
+        working-directory: native/ios/App
+        run: |
+          APP=$(find build/dd/Build/Products -maxdepth 2 -name 'App.app' | head -1)
+          pick() { xcrun simctl list devices available | grep -E "$1" | tail -1 | sed -E 's/.*\(([0-9A-Fa-f-]{36})\).*/\1/'; }
+          DEV=$(pick 'iPhone .*Pro Max'); [ -n "$DEV" ] || DEV=$(pick 'iPhone')
+          echo "앱: $APP / 시뮬레이터: $DEV"
+          xcrun simctl boot "$DEV"
+          xcrun simctl bootstatus "$DEV" -b
+          xcrun simctl install "$DEV" "$APP"
+          xcrun simctl privacy "$DEV" grant location app.padd.walk || true
+          xcrun simctl location "$DEV" set 37.5663,126.9779 || true
+          mkdir -p shots
+          # 앱이 찍는 글(웹 콘솔 포함)을 파일로 받는다. 화면은 3초 쉬고 한 장씩 찍는다.
+          # 지도는 시험용 스크립트가 WebGL을 꺼서 '지도 없는 그림'으로 나온다(까닭은 ios-kit/demo.js 머리말). 진짜 지도는 실제 기기에서 본다
+          xcrun simctl launch --console-pty "$DEV" app.padd.walk > shots/console_light.txt 2>&1 &
+          for i in $(seq -w 0 24); do sleep 3; xcrun simctl io "$DEV" screenshot "shots/light_$i.png" >/dev/null 2>&1 || true; done
+          xcrun simctl terminate "$DEV" app.padd.walk || true
+          xcrun simctl ui "$DEV" appearance dark || true
+          xcrun simctl launch --console-pty "$DEV" app.padd.walk > shots/console_dark.txt 2>&1 &
+          for i in 0 1 2 3 4 5 6 7; do sleep 3; xcrun simctl io "$DEV" screenshot "shots/dark_$i.png" >/dev/null 2>&1 || true; done
+          xcrun simctl terminate "$DEV" app.padd.walk || true
+          ls ~/Library/Logs/DiagnosticReports/ > shots/crash_reports.txt 2>&1 || true
+          xcrun simctl shutdown "$DEV" || true
+          echo "찍은 파일 수: $(ls shots | wc -l)"
+          echo "--- 콘솔에서 [demo] 줄"; grep -h "\[demo\]" shots/console_light.txt shots/console_dark.txt | tail -80 || true
+          echo "--- 콘솔의 오류와 경고"; grep -hE "\[(error|warn)\]" shots/console_light.txt shots/console_dark.txt | head -10 | cut -c1-260 || true
+          echo "--- 충돌 보고서(웹킷, 그래픽 중계, 앱만. 없으면 빈칸)"; grep -E "WebKit|SimMetalHost|^App" shots/crash_reports.txt | head -20 || true
+
+      - name: 찍은 화면 보관
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator-screens
+          path: native/ios/App/shots
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: 출시용 웹 파일로 바꾸고 보관 빌드 (서명 없이)
+        working-directory: native
+        run: |
+          set -o pipefail
+          node ../ios-kit/patch-ios.js pre
+          npx cap copy ios
+          node ../ios-kit/patch-ios.js check-release
+          cd ios/App
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath build/App.xcarchive -derivedDataPath build/dd \
+            CODE_SIGNING_ALLOWED=NO archive | tail -40
+          ls build/App.xcarchive/Products/Applications
+
+      - name: 서명하고 테스트플라이트에 올리기
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload }}
+        working-directory: native/ios/App
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          set -eo pipefail
+          for v in APPLE_TEAM_ID ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_P8; do
+            if [ -z "${!v}" ]; then
+              echo "::error::저장소 Settings → Secrets and variables → Actions 에 $v 를 먼저 넣어 주세요"
+              exit 1
+            fi
+          done
+          # 붙여 넣을 때 딸려 온 빈칸과 줄바꿈을 뗀다(값은 화면에 찍지 않는다)
+          APPLE_TEAM_ID=$(printf '%s' "$APPLE_TEAM_ID" | tr -d '[:space:]')
+          ASC_KEY_ID=$(printf '%s' "$ASC_KEY_ID" | tr -d '[:space:]')
+          ASC_ISSUER_ID=$(printf '%s' "$ASC_ISSUER_ID" | tr -d '[:space:]')
+          if ! [[ "$APPLE_TEAM_ID" =~ ^[A-Z0-9]{10}$ ]]; then
+            echo "::error::APPLE_TEAM_ID 모양이 달라요. 영문 대문자와 숫자 10자입니다(developer.apple.com 계정의 멤버십 정보에 있는 팀 ID)"
+            exit 1
+          fi
+          if ! [[ "$ASC_ISSUER_ID" =~ ^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$ ]]; then
+            echo "::warning::ASC_ISSUER_ID 모양이 보통과 달라요(보통은 8-4-4-4-12 모양의 36자). 팀 키 화면 위쪽의 Issuer ID인지 확인해 주세요"
+          fi
+          KEYDIR="$HOME/.appstoreconnect/private_keys"; mkdir -p "$KEYDIR"
+          KEY="$KEYDIR/AuthKey_${ASC_KEY_ID}.p8"
+          printf '%s\n' "$ASC_KEY_P8" | tr -d '\r' > "$KEY"; chmod 600 "$KEY"
+          trap 'rm -f "$KEY"' EXIT
+          export API_PRIVATE_KEYS_DIR="$KEYDIR"
+          if ! grep -q 'BEGIN PRIVATE KEY' "$KEY"; then
+            echo "::error::ASC_KEY_P8에는 .p8 파일 내용 전체를 넣어 주세요(-----BEGIN PRIVATE KEY----- 줄부터 -----END PRIVATE KEY----- 줄까지)"
+            exit 1
+          fi
+          sed "s/__TEAM_ID__/${APPLE_TEAM_ID}/" "$GITHUB_WORKSPACE/ios-kit/ExportOptions.plist" > build/ExportOptions.plist
+          plutil -lint build/ExportOptions.plist
+          # 보관 빌드는 서명 없이 만들었다. 내보낼 때 애플의 클라우드 서명으로 배포용 서명을 붙인다(키 역할이 Admin이어야 한다)
+          xcodebuild -exportArchive -archivePath build/App.xcarchive -exportPath build/ipa \
+            -exportOptionsPlist build/ExportOptions.plist -allowProvisioningUpdates \
+            -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" | tail -40
+          IPA=$(ls build/ipa/*.ipa | head -1)
+          ls -la "$IPA"
+          # 올리기: altool을 먼저 쓰고, 안 되면 xcodebuild로 한 번 더 올려 본다(같은 빌드 번호가 두 번 올라가지는 않는다)
+          set +e
+          xcrun altool --upload-app --type ios -f "$IPA" --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID" 2>&1 | tee build/altool.log
+          RC=${PIPESTATUS[0]}
+          set -e
+          # altool은 실패해도 0으로 끝난 적이 있어서 글도 같이 본다
+          if [ "$RC" -eq 0 ] && ! grep -qE '(\*\*\* Error|UPLOAD FAILED|ERROR ITMS)' build/altool.log; then
+            echo "올리기 끝(altool)"
+          else
+            echo "::warning::altool로 올리지 못했어요. xcodebuild로 한 번 더 올려 봅니다"
+            sed -e "s/__TEAM_ID__/${APPLE_TEAM_ID}/" -e 's#<string>export</string>#<string>upload</string>#' \
+              "$GITHUB_WORKSPACE/ios-kit/ExportOptions.plist" > build/ExportUpload.plist
+            grep -q '<string>upload</string>' build/ExportUpload.plist
+            xcodebuild -exportArchive -archivePath build/App.xcarchive -exportPath build/ipa-upload \
+              -exportOptionsPlist build/ExportUpload.plist -allowProvisioningUpdates \
+              -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" | tail -40
+            echo "올리기 끝(xcodebuild)"
+          fi
+
+      - name: 요약
+        if: always()
+        run: |
+          {
+            echo "### 꾹꾹이 아이폰 앱"
+            echo "버전 $(node -p "require('./ios-kit/version.json').name"), 빌드 번호 ${IOS_BUILD:-?}"
+            echo "시뮬레이터 화면: 이 실행 화면 아래 Artifacts의 ios-simulator-screens"
+            if [ "${{ github.event_name == 'workflow_dispatch' && inputs.upload }}" = "true" ]; then
+              echo "테스트플라이트: 올리기까지 끝났다면 10~30분 뒤 App Store Connect의 TestFlight 탭에 빌드가 보입니다"
+            else
+              echo "테스트플라이트에는 올리지 않았습니다(빌드 확인만)"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
