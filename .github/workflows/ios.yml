@@ -77,6 +77,7 @@ jobs:
 
       - name: 시뮬레이터에서 켜서 화면 찍기 (가짜 기록으로 홈, 산책, 기록 카드, 기록 탭)
         continue-on-error: true
+        timeout-minutes: 25
         working-directory: native/ios/App
         run: |
           APP=$(find build/dd/Build/Products -maxdepth 2 -name 'App.app' | head -1)
@@ -89,14 +90,24 @@ jobs:
           xcrun simctl privacy "$DEV" grant location app.padd.walk || true
           xcrun simctl location "$DEV" set 37.5663,126.9779 || true
           mkdir -p shots
-          xcrun simctl launch "$DEV" app.padd.walk
-          for i in $(seq -w 0 22); do sleep 3; xcrun simctl io "$DEV" screenshot "shots/light_$i.png" >/dev/null 2>&1 || true; done
+          # 앱이 찍는 글(웹 콘솔 포함)을 파일로 받는다. 화면은 2초 쉬고 한 장씩 찍는다
+          xcrun simctl launch --console-pty "$DEV" app.padd.walk > shots/console_light.txt 2>&1 &
+          END=$((SECONDS+330)); i=0
+          while [ $SECONDS -lt $END ]; do sleep 2; xcrun simctl io "$DEV" screenshot "shots/light_$(printf %03d $i).png" >/dev/null 2>&1 || true; i=$((i+1)); done
           xcrun simctl terminate "$DEV" app.padd.walk || true
           xcrun simctl ui "$DEV" appearance dark || true
-          xcrun simctl launch "$DEV" app.padd.walk
-          for i in 0 1 2 3 4; do sleep 3; xcrun simctl io "$DEV" screenshot "shots/dark_$i.png" >/dev/null 2>&1 || true; done
+          xcrun simctl launch --console-pty "$DEV" app.padd.walk > shots/console_dark.txt 2>&1 &
+          END=$((SECONDS+110)); i=0
+          while [ $SECONDS -lt $END ]; do sleep 2; xcrun simctl io "$DEV" screenshot "shots/dark_$(printf %03d $i).png" >/dev/null 2>&1 || true; i=$((i+1)); done
+          xcrun simctl terminate "$DEV" app.padd.walk || true
+          # 진단: 웹 화면을 그리는 프로세스가 죽었는지 볼 기록(없으면 빈 파일)
+          xcrun simctl spawn "$DEV" log show --last 12m --style compact --predicate '(eventMessage CONTAINS[c] "WebContent" OR eventMessage CONTAINS[c] "terminated" OR eventMessage CONTAINS[c] "crash" OR eventMessage CONTAINS[c] "jetsam") AND (process == "App" OR process CONTAINS "WebKit" OR process == "runningboardd" OR process == "ReportCrash")' 2>/dev/null | tail -400 > shots/sim_log.txt || true
+          ls -la ~/Library/Logs/DiagnosticReports/ > shots/crash_reports.txt 2>&1 || true
+          cp ~/Library/Logs/DiagnosticReports/*WebKit* ~/Library/Logs/DiagnosticReports/App-* shots/ 2>/dev/null || true
           xcrun simctl shutdown "$DEV" || true
-          ls -la shots | head -40
+          echo "찍은 파일 수: $(ls shots | wc -l)"; ls -la shots/*.txt || true
+          echo "--- 콘솔(밝은 화면) 끝 60줄"; tail -60 shots/console_light.txt || true
+          echo "--- 콘솔에서 [demo] 줄"; grep -h "\[demo\]" shots/console_light.txt shots/console_dark.txt | tail -150 || true
 
       - name: 찍은 화면 보관
         if: always()
