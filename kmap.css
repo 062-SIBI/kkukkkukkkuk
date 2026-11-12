@@ -14,6 +14,18 @@
   display:none;place-items:center;box-shadow:0 1px 3px rgba(60,40,20,.2),0 6px 16px -8px rgba(60,40,20,.35)}
 .km-ui.moved .km-me{display:grid}
 .km-me:active{transform:scale(.95)}
+.km-pal{position:absolute;left:10px;bottom:40px;display:flex;align-items:center;gap:6px;pointer-events:auto}
+.km-palb{width:44px;height:44px;border-radius:50%;border:0;padding:0;background:#FFFFFF;display:grid;place-items:center;
+  box-shadow:0 1px 3px rgba(60,40,20,.2),0 6px 16px -8px rgba(60,40,20,.35)}
+.km-palb i{display:block;width:22px;height:22px;border-radius:50%;box-shadow:0 0 0 1px rgba(27,23,18,.14)}
+.km-palb:active{transform:scale(.95)}
+.km-pals{display:none;padding:4px;border-radius:26px;background:#FFFFFF;
+  box-shadow:0 1px 3px rgba(60,40,20,.2),0 6px 16px -8px rgba(60,40,20,.35)}
+.km-pal.open .km-pals{display:flex}
+.km-ui.pal-open .km-me{visibility:hidden}
+.km-pals button{width:44px;height:44px;border-radius:50%;border:0;padding:0;background:transparent;display:grid;place-items:center}
+.km-pals button i{display:block;width:26px;height:26px;border-radius:50%;box-shadow:0 0 0 1px rgba(27,23,18,.14)}
+.km-pals button[aria-pressed="true"] i{box-shadow:0 0 0 3px #FFFFFF,0 0 0 5px #1B1712}
 .km .maplibregl-ctrl-attrib{font-size:9.5px;line-height:1.45;padding:1px 6px;margin:0;background:rgba(255,255,255,.7);border-radius:8px 0 0 0}
 .km .maplibregl-ctrl-attrib a{color:#5C5246}
 .km .maplibregl-cooperative-gesture-screen{font-family:var(--pui);font-size:15px}
