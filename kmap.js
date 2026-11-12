@@ -369,17 +369,21 @@ KMap.prototype.drawGuide=function(x,G,px,py,dash,NW){
   }
   x.restore();
 };
-/* 로고 점 길: 확대 단계마다 20px 간격으로 지리 위치를 정해 두고(움직여도 점이 미끄러지지 않게) 세 색을 돌린다 */
-KMap.prototype.drawDots=function(x,T,px,py,W,H){   // 걸은 길: 이어진 세 색 띠(10/31, 점은 너무 점점이라는 피드백)
-  var me=this,G=me.d.trailM,k=me.d.trailK||1.1,lw=3.6*k,seg=16;
+/* 걸은 길 색(고침 12, 06 11/12 산책 피드백: 로고 세 색으로 알록달록한 것보다 한 가지 색으로, 색은 고를 수 있게).
+   06이 말한 다섯 색: 주황, 검정, 로고 세 색. 기본은 주황(기록 카드의 주황과 같은 값). 고른 색은 S.trailC에 이름으로만 남긴다.
+   저장된 값이 이 목록에 없으면 주황으로 본다(가져온 파일의 글자가 화면이나 그림에 그대로 들어가지 않게). */
+var KM_TRAIL=[["orange","주황","#F0952A"],["ink","검정","#1B1712"],["coral","빨강","#FF6B57"],["sun","노랑","#EFB02F"],["sky","파랑","#3B9DF5"]];
+function kmTrailKey(){var k=(typeof S!=="undefined"&&S&&S.trailC)||"orange";return KM_TRAIL.some(function(c){return c[0]===k;})?k:"orange";}
+function kmTrailCol(){var k=kmTrailKey();return KM_TRAIL.filter(function(c){return c[0]===k;})[0][2];}
+KMap.prototype.drawDots=function(x,T,px,py,W,H){   // 걸은 길: 흰 테두리 위에 고른 한 가지 색 띠
+  var me=this,G=me.d.trailM,k=me.d.trailK||1.1,lw=3.6*k;
   x.save();x.lineCap="round";x.lineJoin="round";
   x.beginPath();var on=false;
   for(var i=1;i<G.n;i++){if(G.g[i]){on=false;continue;}
     if(!on){x.moveTo(px(G.xs[i-1]),py(G.ys[i-1]));on=true;}x.lineTo(px(G.xs[i]),py(G.ys[i]));}
   x.strokeStyle="rgba(255,255,255,.92)";x.lineWidth=lw+3.6;x.stroke();
-  x.lineCap="butt";
-  [KMC.coral,KMC.sun,KMC.sky].forEach(function(c,j){x.strokeStyle=c;x.lineWidth=lw;x.setLineDash([seg,seg*2]);x.lineDashOffset=-j*seg;x.stroke();});
-  x.setLineDash([]);x.restore();
+  x.strokeStyle=kmTrailCol();x.lineWidth=lw;x.stroke();
+  x.restore();
 };
 /* 꾹자리 도장: 자주 갈수록 크게, 1~3위 번호, 처음 마킹한 곳은 노란 반짝임. 멀리 보면 가까운 도장끼리 묶는다 */
 KMap.prototype.drawStamps=function(x,px,py){
@@ -457,12 +461,25 @@ function kmStamp(x,X,Y,w,neu,rank,sel){
   if(neu)kmSpark(x,X,Y,w*.62+6);
   if(rank)kmTag(x,X+w*.48,Y-w*.42,rank,false);
 }
+/* 킁킁 자리와 똥 자리 표시(고침 13, 06 11/12 산책 피드백: 노란 단추 모양은 무엇인지 바로 알기 어렵다).
+   산책 화면 단추와 같은 그림을 같은 색 동그라미에 넣는다: 킁킁은 노랑에 코, 똥은 빨강에 봉투. 그림은 단추의 24 단위 그림 그대로다. */
+var KM_NOSE_D="M12 19.6C9 19.6 2.8 16.4 2.8 10.8C2.8 7.2 6.6 4.8 12 4.8C17.4 4.8 21.2 7.2 21.2 10.8C21.2 16.4 15 19.6 12 19.6Z";
+var KM_BAG_D="M5.5 10.5h13l-1.2 9a2.2 2.2 0 0 1 -2.2 1.9h-6.2a2.2 2.2 0 0 1 -2.2 -1.9zM8.6 10.5l-1.8 -6l4.4 2.6M15.4 10.5l1.8 -6l-4.4 2.6";
+var KM_NOSE=null,KM_BAG=null;
 function kmMark(x,X,Y,k,s){
-  var c=k==="poop"?[KMC.coral,-22]:[KMC.sun,0],r=c[1]*Math.PI/180;
+  var poop=k==="poop",R=11.5*s,g=R*1.3/24;
   x.save();
-  x.fillStyle="rgba(0,0,0,.10)";x.beginPath();x.ellipse(X,Y+2.2,8.6*s,10.4*s,r,0,6.2832);x.fill();
-  x.fillStyle=c[0];x.strokeStyle="#FFFFFF";x.lineWidth=2.6;x.beginPath();x.ellipse(X,Y,8.2*s,10*s,r,0,6.2832);x.fill();x.stroke();
-  x.fillStyle="rgba(255,255,255,.75)";x.beginPath();x.ellipse(X-2.6*s,Y-3.4*s,2.1*s,2.8*s,r,0,6.2832);x.fill();
+  x.fillStyle="rgba(0,0,0,.10)";x.beginPath();x.arc(X,Y+2.2,R+.5,0,6.2832);x.fill();
+  x.fillStyle=poop?KMC.coral:KMC.sun;x.strokeStyle="#FFFFFF";x.lineWidth=2.6;x.beginPath();x.arc(X,Y,R,0,6.2832);x.fill();x.stroke();
+  x.translate(X-12*g,Y-(poop?12.9:12.2)*g);x.scale(g,g);
+  if(poop){
+    if(!KM_BAG)KM_BAG=new Path2D(KM_BAG_D);
+    x.strokeStyle=KMC.ink;x.lineWidth=2.4;x.lineCap="round";x.lineJoin="round";x.stroke(KM_BAG);
+  }else{
+    if(!KM_NOSE)KM_NOSE=new Path2D(KM_NOSE_D);
+    x.fillStyle=KMC.ink;x.fill(KM_NOSE);
+    x.fillStyle="#FFFFFF";x.beginPath();x.ellipse(7.6,8.6,2.3,1.25,-18*Math.PI/180,0,6.2832);x.fill();
+  }
   x.restore();
 }
 function kmRing(x,X,Y,label){
@@ -696,8 +713,10 @@ function kmStampSvg(s){
     o+='<ellipse cx="'+x+'" cy="'+y+'" rx="'+(13*k).toFixed(1)+'" ry="'+(16*k).toFixed(1)+'" transform="rotate('+q[2]+' '+x+' '+y+')" fill="currentColor"/>';});
   return '<svg class="km-st" width="'+s+'" height="'+Math.round(s*.72)+'" viewBox="0 0 '+s+' '+(s*.72).toFixed(1)+'" aria-hidden="true">'+o+'</svg>';
 }
-function kmDotSvg(k,s){var c=k==="poop"?[KMC.coral,-22]:[KMC.sun,0];
-  return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 20 20" aria-hidden="true"><ellipse cx="10" cy="10" rx="6.5" ry="8.2" transform="rotate('+c[1]+' 10 10)" fill="'+c[0]+'"/></svg>';}
+function kmDotSvg(k,s){var poop=k==="poop";   // 고침 13: 지도 표시와 같은 그림(동그라미 안에 코나 봉투)
+  return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11.5" fill="'+(poop?KMC.coral:KMC.sun)+'"/>'+
+    (poop?'<path transform="translate(3.6 3) scale(.7)" fill="none" stroke="'+KMC.ink+'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="'+KM_BAG_D+'"/>'
+         :'<path transform="translate(3.6 3.5) scale(.7)" fill="'+KMC.ink+'" d="'+KM_NOSE_D+'"/>')+'</svg>';}
 function kmAgo(t){if(!t)return "";var d=Math.floor((Date.now()-t)/864e5);return d<=0?"오늘":d===1?"어제":d<30?d+"일 전":Math.floor(d/30)+"달 전";}
 
 /* ── 산책 상세: 그날 걸은 길 ── */
@@ -1072,7 +1091,27 @@ function kmLiveMode(on){
   if(on){if(!KML){KML=new KMap($("w-livemap"),{onPick:null});KML.ui.innerHTML='<button type="button" class="km-me" id="km-me" aria-label="내 위치로">'+
       '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M12 12m-8 0a8 8 0 1 0 16 0a8 8 0 1 0 -16 0"/><path d="M12 2l0 2"/><path d="M12 20l0 2"/><path d="M20 12l2 0"/><path d="M2 12l2 0"/></svg></button>';
       $("km-me").addEventListener("click",function(){KML.follow=true;KML.ui.classList.remove("moved");var h=kmLiveHere();if(h)KML.go(h[0],h[1],Math.max(16.5,KML.map?KML.map.getZoom():17));});}
-    KML_SIG="";kmLiveTick();}
+    kmPalMake();KML_SIG="";kmLiveTick();}
+}
+/* 길 색 단추(고침 12): 산책 중 지도 왼쪽 아래. 누르면 다섯 색이 옆으로 펼쳐지고, 고르면 바로 바뀌고 접힌다 */
+function kmPalSync(){
+  var k=kmTrailKey(),i=$("km-pali");if(i)i.style.background=kmTrailCol();
+  Array.prototype.forEach.call(document.querySelectorAll("#km-pal .km-pals button"),function(b){b.setAttribute("aria-pressed",String(b.dataset.c===k));});
+}
+function kmPalOpen(o){var p=$("km-pal");if(!p)return;p.classList.toggle("open",o);$("km-palb").setAttribute("aria-expanded",String(o));if(KML)KML.ui.classList.toggle("pal-open",o);}   // 펼친 동안은 '내 위치로' 단추를 가린다(좁은 폰에서 겹친다)
+function kmPalMake(){
+  if(!KML||$("km-pal"))return;
+  var d=document.createElement("div");d.className="km-pal";d.id="km-pal";
+  d.innerHTML='<button type="button" class="km-palb" id="km-palb" aria-label="길 색 고르기" aria-expanded="false"><i id="km-pali"></i></button>'+
+    '<div class="km-pals" role="group" aria-label="길 색">'+KM_TRAIL.map(function(c){return '<button type="button" data-c="'+c[0]+'" aria-label="'+c[1]+'" aria-pressed="false"><i style="background:'+c[2]+'"></i></button>';}).join("")+'</div>';
+  KML.ui.appendChild(d);
+  $("km-palb").addEventListener("click",function(){kmPalOpen(!$("km-pal").classList.contains("open"));});
+  d.querySelector(".km-pals").addEventListener("click",function(e){
+    var b=e.target.closest("button");if(!b)return;
+    S.trailC=b.dataset.c;save();kmPalSync();kmPalOpen(false);
+    if(KML)KML.draw();
+  });
+  kmPalSync();
 }
 function kmLiveHere(){if(!W)return null;if(lastFix&&Date.now()-lastFix.t<120000)return [lastFix.lat,lastFix.lng];var p=W.pts||[];return p.length?p[p.length-1]:null;}
 function kmLiveTick(){
