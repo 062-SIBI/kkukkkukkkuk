@@ -1358,6 +1358,9 @@ p,.lead,.note,.src,.hint,.empty,.why,.gwarn,.gsub{text-wrap:pretty}
 .gmsg{font-size:17px;font-weight:700;color:var(--ink);text-wrap:balance;margin:12px auto 2px;max-width:24ch;min-height:25px}
 .gsub{text-align:center;font-size:13px;color:var(--ink-3);min-height:19px;max-width:32ch;margin:0 auto}
 .gwarn{font-size:12.5px;min-height:18px;margin:6px 0 4px}
+/* 0.5.0 고침 6: 그거 아세요? 한 줄. GPS 알림 줄이 비어 있을 때 그 자리에 뜬다(새 줄을 더하지 않는다) */
+.gtip{text-align:center;font-size:12.5px;line-height:1.45;color:var(--ink-3);max-width:34em;margin:8px auto 0;text-wrap:balance}
+.gtip b{display:block;font-size:12px;font-weight:700;color:var(--ink-2)}
 #v-walk .acts{margin-top:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:6px 0 4px}
 .act{position:relative;height:clamp(128px,36vw,158px);border:0;padding:0;margin:0;background:none;color:#1B1712;cursor:pointer;
   -webkit-tap-highlight-color:transparent;touch-action:manipulation;font-family:var(--pui)}
@@ -1697,7 +1700,7 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
 #wseg b{font-family:var(--pnum);font-weight:700;margin-left:4px}
 #w-livemap{display:none;flex:1 1 auto;min-height:250px;margin:6px 0 8px}
 #v-walk.km-on #w-livemap{display:block}
-#v-walk.km-on .ring,#v-walk.km-on #gmsg,#v-walk.km-on #gsub{display:none}
+#v-walk.km-on .ring,#v-walk.km-on #gmsg,#v-walk.km-on #gsub,#v-walk.km-on #gtip{display:none}
 
 /* 강아지 사진(프로필) */
 .km-hd{display:flex;align-items:center;gap:10px;align-self:center;min-width:0}
@@ -1716,6 +1719,62 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
 .km-prof .row button{min-height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;font-size:13.5px;font-weight:700}
 
 </style>
+<style id="fb1">
+/* ══ 0.5.0 웹 고침 3 (아이폰 첫 피드백 11/11): 줄바꿈과 한 화면 ══
+   F1 줄바꿈. 짧은 안내 글은 줄 길이를 고르게 나눈다(꼬리 한두 낱말만 다음 줄로 떨어지지 않게). 긴 설명 글은 예전처럼 pretty.
+      .sn 한 문장이 한 덩어리(줄은 문장 사이에서 먼저 바뀐다)  .nb 끊지 않는 덩어리  .l2 한 줄씩 */
+.lead,.hint,.empty,.why,.gsub,.gwarn,.lockline,.tiernote,.note,.src,.toast,.light .when,.today .s,.today .wish,.today .wt,.chk .t,.permrow .t,.km-prof .t{text-wrap:balance}
+#method,.calib .body .src,.sig .last,#compasscard .src,li{text-wrap:pretty}
+.sn{display:inline-block;max-width:100%;vertical-align:top;text-wrap:balance}
+.esig .s{text-wrap:balance}
+.nb{white-space:nowrap}
+.l2{display:block}
+.app-i{display:none}
+.native .app-i{display:inline}
+.native .web-i{display:none}
+.step .lead{max-width:none}
+/* F2 아이폰. 스크롤할 때 글이 상태 표시줄(시계) 밑으로 비치지 않게 그 자리를 바탕색으로 가린다(탭 줄과 시트보다는 아래) */
+.ios body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0px);background:var(--ground);z-index:19;pointer-events:none}
+/* F3 한 화면: 시작 2단계(강아지 정보). 간격을 줄이고, 고르지 않아도 되는 설명은 펼쳤을 때만 보인다. 시작 단추는 화면 아래에 붙는다 */
+@supports (height:1dvh){#onb,.step{min-height:100dvh}}
+.step{padding-bottom:max(16px,env(safe-area-inset-bottom,0px))}
+#st2{padding-top:calc(10px + env(safe-area-inset-top,0px))}
+#st2 .dots{padding:8px 0 18px}
+#st2 .lead{margin:8px 0 16px}
+#st2 .field{margin-bottom:12px}
+#st2 .srcq{margin-top:14px}
+#st2>.srcq:not(.potty){margin-bottom:16px}
+#st2 .pothint{display:none}
+#st2 .tier2{margin-top:12px;padding-top:10px}
+#st2 .tierhead[aria-expanded="false"]+.tiernote{display:none}
+#st2 #dogNext{margin-top:auto!important}
+#st2>div[style="height:24px"]{display:none}
+/* 낮은 화면(.h830은 높이 830px 이하, .h700은 700px 이하). 클래스는 hClass()가 붙인다: 글자를 넣는 중에는 다시 재지 않아서, 키보드가 올라와 화면이 낮아져도 배치가 흔들리지 않는다 */
+.h830 #st2 .dots{padding:6px 0 12px}
+.h830 #st2 .lead{margin:6px 0 12px}
+.h830 #st2 .field{margin-bottom:10px}
+.h830 #st2 .srcq{margin-top:12px}
+.h830 #st2>.srcq:not(.potty){margin-bottom:12px}
+.h830 #st2 .tier2{margin-top:10px;padding-top:8px}
+.h700 #st2{padding-top:calc(6px + env(safe-area-inset-top,0px))}
+.h700 #st2 .dots{padding:2px 0 10px}
+.h700 #st2 .lead{display:none}
+.h700 #st2 h2{margin-bottom:12px}
+.h700 #st2 .chk .t span{display:none}
+.h700 #st2 .field{margin-bottom:9px}
+.h700 #st2 .srcq{margin-top:10px}
+/* F4 한 화면: 홈. 산책 시작 단추 크기는 fitNow()가 남은 자리에 맞춘다(--sd를 직접 넣는다). 여기서는 안전 영역만큼만 미리 빼 둔다 */
+@supports (height:1dvh){
+  #start:not(.ghost){--sd:min(256px,66vw,max(148px,calc(100dvh - 484px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))))}
+  @media (min-width:520px){#start:not(.ghost){--sd:min(192px,max(148px,calc(100dvh - 484px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))))}}
+}
+.app{padding-bottom:calc(68px + env(safe-area-inset-bottom,0px))}
+#start.ghost{padding:14px 0}
+@supports (height:1dvh){.app{min-height:100dvh}}
+/* F5 한 화면: 산책 중. 탭 줄이 없는 화면인데 아래 여백이 남아 헛스크롤이 생겼다(아이폰 46px). 단추는 그만큼 아래로 내려온다 */
+body.walking .app{padding-bottom:16px}
+@supports (height:1dvh){body.walking #v-walk.on{min-height:calc(100dvh - 32px - env(safe-area-inset-top,0px))}}
+</style>
 </head>
 <body>
 
@@ -1729,7 +1788,7 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
       <h1>꾹꾹이</h1>
       <p>우리만의 산책 기준</p>
     </div></div>
-    <div class="lockline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z"/><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0"/><path d="M8 11v-4a4 4 0 1 1 8 0v4"/></svg><span>가입 없이 바로 써요. 기록은 이 폰에만 남고 기록 탭에서 파일로 옮길 수 있어요.</span></div>
+    <div class="lockline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z"/><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0"/><path d="M8 11v-4a4 4 0 1 1 8 0v4"/></svg><span><span class="sn">가입 없이 바로 써요.</span> <span class="sn">기록은 이 폰에만 남고 기록&nbsp;탭에서 파일로 옮길&nbsp;수&nbsp;있어요.</span></span></div>
     <button class="big" data-sso="local">시작하기</button>
     <p class="src" style="text-align:center;padding-top:10px">계속하면 <a href="privacy/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:3px">개인정보처리방침</a>에 동의하는 거예요</p>
   </div>
@@ -1753,7 +1812,7 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
   <div class="step" id="st2">
     <div class="dots"><i class="on"></i><i class="on"></i></div>
     <h2>누구랑 걷나요</h2>
-    <p class="lead">위험 기준을 정하는 데 <b>꼭 필요한 것만</b> 먼저 물어요. 나머지는 선택이에요.</p>
+    <p class="lead"><span class="sn">위험 기준을 정하는 데 <b>꼭 필요한 것만</b> 먼저&nbsp;물어요.</span> <span class="sn">나머지는 선택이에요.</span></p>
     <div class="avapick" id="avapick">
       <button aria-pressed="true">🐕</button><button aria-pressed="false">🐩</button>
       <button aria-pressed="false">🦮</button><button aria-pressed="false">🐕‍🦺</button>
@@ -1767,10 +1826,10 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
     <button class="chk" id="f-brachy" aria-pressed="false">
       <span class="bx">✓</span>
       <span class="t"><b>코가 납작한 편이에요</b>
-      <span>퍼그, 불독, 시추처럼 코가 납작한 아이는 열사병 위험이 2.1배 높아서 기준을 한 단계 올려요.</span></span>
+      <span>퍼그, 불독, 시추처럼 코가 납작한 아이는 열사병 위험이 2.1배&nbsp;높아서 기준을 한&nbsp;단계 올려요.</span></span>
     </button>
     <div class="srcq potty">
-      <div class="lbl2">배변은 어디서 해요? <span>안 골라도 돼요</span></div>
+      <div class="lbl2">배변은 어디서 해요? <span>고르면 안내가 더 정확해져요</span></div>
       <div class="chips" id="f-potty"><button aria-pressed="false" data-v="out">밖에서만</button><button aria-pressed="false" data-v="in">주로 집 안(패드)</button><button aria-pressed="false" data-v="both">둘 다</button></div>
       <p class="pothint">배변 습관을 알려 주시면 꾹게이지와 산책 안내가 더 정확해져요</p>
     </div>
@@ -1780,17 +1839,17 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
         <b>우리 아이에 대해 조금 더</b>
         <span class="ar">▾</span>
       </button>
-      <p class="tiernote" id="f-tiernote">안 적어도 돼요. 적으면 <b>경고 문구가 바뀌어요.</b>
-      산책 시간이나 거리를 계산해 주지는 않아요. 그걸 계산할 근거가 되는 연구가 아직 없거든요.</p>
+      <p class="tiernote" id="f-tiernote"><span class="sn">안 적어도 돼요.</span> <span class="sn">적으면 <b>경고 문구가 바뀌어요.</b></span>
+      <span class="sn">산책 시간이나 거리를 계산해&nbsp;주지는 않아요.</span> <span class="sn">그걸 계산할 근거가 되는 연구가 아직&nbsp;없거든요.</span></p>
       <div id="f-morebox" style="display:none">
         <div class="field"><label for="f-age">나이 (살)</label>
           <input id="f-age" type="number" inputmode="numeric" step="1" min="0" max="25" placeholder="7">
-          <div class="hint" id="agehint">12살이 넘으면 <b>더운 날 밖에 세워두는 것</b>에 대한 경고가 세져요.
-          산책량을 깎지는 않아요.</div></div>
+          <div class="hint" id="agehint"><span class="sn">12살이 넘으면 <b>더운 날 밖에 세워두는&nbsp;것</b>에&nbsp;대한 경고가 세져요.</span>
+          <span class="sn">산책량을 깎지는&nbsp;않아요.</span></div></div>
         <button class="chk" id="f-joint" aria-pressed="false">
           <span class="bx">✓</span>
           <span class="t"><b>다리·관절이 불편해요</b>
-          <span>관절염 진단을 받았거나 절뚝이는 편. 한 번에 길게보다 짧게 나누라는 안내가 붙어요.</span></span>
+          <span><span class="sn">관절염 진단을 받았거나 절뚝이는 편.</span> <span class="sn">한&nbsp;번에 길게보다 짧게 나누라는 안내가 붙어요.</span></span></span>
         </button>
       </div>
     </div>
@@ -1869,20 +1928,19 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
     <div id="pickcard"></div>
 
     <details class="more">
-      <summary>안전 정보, 공유, 설정</summary>
+      <summary>안전 정보, 설정</summary>
       <details class="sig" id="sig">
         <summary>더울 때 이 신호가 보이면 즉시 멈추세요</summary>
         <ol>
           <li><b>경증</b>: 격렬한 헐떡임, 처지거나 걷기 싫어함 <span class="g">생존 97.8%</span></li>
-          <li><b>중등증</b>: 토함, 설사, 침 심하게 흘림, 한 번 주저앉음, 발작 1회 <span class="g">94.5%</span></li>
-          <li><b>중증</b>: 비틀거림, 발작 2회 이상, 반응 없음, 피 섞인 구토나 설사 <span class="g">43.2%</span> → <b>바로 병원</b></li>
+          <li><b>중등증</b>: 토함, 설사, 침 심하게 흘림, 한&nbsp;번 주저앉음, 발작&nbsp;1회 <span class="g">94.5%</span></li>
+          <li><b>중증</b>: 비틀거림, 발작&nbsp;2회&nbsp;이상, 반응 없음, 피&nbsp;섞인 구토나 설사 <span class="g">43.2%</span> → <b>바로 병원</b></li>
         </ol>
         <div class="last">숫자는 등급별 생존율입니다. <b>발작을 한 번 했다고 43%가 되는 게 아니에요</b>.
         반복되거나 비틀거림, 무반응이 같이 올 때가 중증입니다.<br>
         Hall 외, Scientific Reports 2021;11:6828(영국 1차 진료 856건)</div>
       </details>
       <div id="wintercard"></div>
-      <button class="big ghost" id="share" style="margin-top:9px"><svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2"/><path d="M9 13a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/></svg><span>오늘 바닥 온도 공유하기</span></button>
       <p class="note" id="homenote"></p>
     </details>
   </div>
@@ -1906,6 +1964,7 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
     <div class="gmsg" id="gmsg">이제 막 나왔네요</div>
     <div class="gsub" id="gsub"></div>
     <div class="gwarn" id="gwarn"></div>
+    <div class="gtip" id="gtip" hidden></div>
     <div class="acts">
       <div class="undo" id="undo" role="status" aria-live="polite"><i class="ud"></i><span class="um" id="undo-m"></span><button type="button" id="undo-b">되돌리기</button><span class="up"></span></div>
       <button class="act a-poop" id="b-poop" aria-label="똥 기록"><span class="pad"></span><span class="ac"><svg class="gi brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 10.5h13l-1.2 9a2.2 2.2 0 0 1 -2.2 1.9h-6.2a2.2 2.2 0 0 1 -2.2 -1.9z"/><path d="M8.6 10.5l-1.8 -6l4.4 2.6"/><path d="M15.4 10.5l1.8 -6l-4.4 2.6"/><path d="M11.2 7.1h1.6"/></svg><b id="c-poop">0</b></span></button>
@@ -2006,9 +2065,9 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
     <p class="src" style="margin-top:6px">최근 산책의 GPS 원본 점이에요. 폰 안에만 있고, 누를 때만 파일로 만들어요.</p>
     <button class="big ghost" id="betarep" style="margin-top:9px">베타 기록 보내기</button>
     <button class="big ghost" id="statsopt" style="margin-top:9px" aria-pressed="true" hidden>사용 통계 보내기: 켜짐</button>
-    <p class="src" id="statsnote" style="margin-top:6px" hidden>앱을 고치려고 산책 수, 시간, 거리 같은 숫자와 기기 종류(브라우저, 화면 크기)를 핵클(분석 도구)로 보냅니다. 위치와 경로, 강아지 이름과 사진은 보내지 않고 끄면 바로 멈춰요. <a href="privacy/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:3px">처리방침 보기</a></p>
-    <p class="src" style="margin-top:9px">폰을 바꾸거나 브라우저 기록을 지우면 <b>산책 기록이 사라져요.</b>
-    가끔 내보내서 파일로 두세요. 기록을 받아 두는 서버가 없어서 이 기기에만 저장돼요.</p>
+    <p class="src" id="statsnote" style="margin-top:6px" hidden><span class="sn">앱을 고치려고 산책 수, 시간, 거리 같은 숫자와 기기 종류(브라우저, 화면&nbsp;<span class="nb">크기)를</span> 핵클(분석 도구)로 보냅니다.</span> <span class="sn">위치와 경로, 강아지 이름과 사진은 보내지&nbsp;않고 끄면 바로 멈춰요.</span> <a href="privacy/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:3px">처리방침 보기</a></p>
+    <p class="src" style="margin-top:9px"><span class="sn">폰을 바꾸거나 <span class="web-i">브라우저 기록을 지우면</span><span class="app-i">앱을 지우면</span> <b>산책 기록이 사라져요.</b></span>
+    <span class="sn">가끔 내보내서 파일로&nbsp;두세요.</span> <span class="sn">기록을 받아 두는 서버가 없어서 이 기기에만 저장돼요.</span></p>
     <button class="big ghost" id="reset" style="margin-top:13px;color:var(--clay)">처음부터 다시</button>
     <details class="calib" id="methodbox" style="margin-top:14px">
       <summary>꾹게이지와 바닥 온도 근거 보기</summary>
@@ -2286,7 +2345,7 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
   <div class="in">
     <div class="grab"></div>
     <h3 style="font-size:19px;margin-bottom:4px" id="d-title">프로필</h3>
-    <div class="km-prof"><button type="button" class="km-ava" id="d-photo" aria-label="강아지 사진 고르기"><span id="d-ava"></span></button><div class="t"><b>강아지 사진</b><span>얼굴이 잘 보이는 사진 한 장이면 돼요. 이 폰 안에만 저장돼요.</span><div class="row"><button type="button" id="d-photo-b">사진 넣기</button><button type="button" id="d-photo-x" hidden>지우기</button></div></div><input type="file" id="d-file" accept="image/*" hidden></div>
+    <div class="km-prof"><button type="button" class="km-ava" id="d-photo" aria-label="강아지 사진 고르기"><span id="d-ava"></span></button><div class="t"><b>강아지 사진</b><span><span class="sn">얼굴이 잘 보이는 사진 한&nbsp;장이면&nbsp;돼요.</span> <span class="sn">이 폰 안에만 저장돼요.</span></span><div class="row"><button type="button" id="d-photo-b">사진 넣기</button><button type="button" id="d-photo-x" hidden>지우기</button></div></div><input type="file" id="d-file" accept="image/*" hidden></div>
     <p class="tiernote" style="margin-bottom:13px">체중과 코 길이는 <b>위험 기준</b>을 정해요.
     나이와 관절은 <b>안내 문구</b>만 바꿔요.</p>
     <div class="field"><label for="d-name">이름</label>
@@ -2297,7 +2356,7 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
     <button class="chk" id="d-brachy" aria-pressed="false">
       <span class="bx">✓</span>
       <span class="t"><b>코가 납작한 편이에요</b>
-      <span>퍼그, 불독, 시추처럼 코가 납작한 아이는 열사병 위험이 2.1배 높아서 기준을 한 단계 올려요.</span></span>
+      <span>퍼그, 불독, 시추처럼 코가 납작한 아이는 열사병 위험이 2.1배&nbsp;높아서 기준을 한&nbsp;단계 올려요.</span></span>
     </button>
     <div class="srcq potty" style="margin-top:13px">
       <div class="lbl2">배변은 어디서 해요? <span>선택</span></div>
@@ -2460,6 +2519,11 @@ var NATIVE=!!(CAP&&typeof CAP.isNativePlatform==="function"&&CAP.isNativePlatfor
    ④ 처리방침처럼 앱 밖에 있는 페이지는 사파리로 연다.
    웹과 안드로이드 앱은 예전과 똑같이 돈다. 맥과 아이폰에서 돌려 보지는 못했다(시험은 다리 흉내로만 했다). */
 var IOS=false; try{ IOS=NATIVE&&typeof CAP.getPlatform==="function"&&CAP.getPlatform()==="ios"; }catch(e){}
+/* 0.5.0 고침 3: 화면 높이 등급. 낮은 화면에서는 시작 화면의 간격을 줄인다(CSS의 .h830, .h700).
+   글자를 넣는 중에는 다시 재지 않는다: 안드로이드 앱은 키보드가 올라오면 화면 높이가 줄어드는데, 그때 배치가 바뀌면 안 된다 */
+function hClass(){ try{ var a=document.activeElement; if(a&&(a.tagName==="INPUT"||a.tagName==="TEXTAREA"))return;
+  var h=window.innerHeight, de=document.documentElement; if(!h)return; de.classList.toggle("h830",h<=830); de.classList.toggle("h700",h<=700); }catch(e){} }
+hClass(); window.addEventListener("resize",hClass);
 var SITE="https://062-sibi.github.io/kkukkkukkkuk/";
 var NP={};
 if(NATIVE&&CAP.registerPlugin){
@@ -2806,7 +2870,7 @@ var WX=null,WXLIVE=false,loc=null;
 function wxURL(lat,lng){
   return "https://api.open-meteo.com/v1/forecast?latitude="+lat.toFixed(3)+"&longitude="+lng.toFixed(3)+
     "&current=temperature_2m,wind_speed_10m,shortwave_radiation"+
-    "&hourly=temperature_2m,shortwave_radiation,soil_temperature_0cm,wind_speed_10m"+
+    "&hourly=temperature_2m,shortwave_radiation,soil_temperature_0cm,wind_speed_10m,rain,showers,snowfall"+   // 고침 5: 비와 소나기(시간당 mm). 고침 7: 눈(시간당 cm)도 받는다. 등급이 아니라 한 줄 팁을 고를 때만 쓴다. 보내는 값은 그대로다
     "&timezone=auto&forecast_days=2";
 }
 function fallbackWx(){
@@ -2827,12 +2891,14 @@ function normWx(j){
   for(var i=0;i<H.time.length&&i<48;i++)h.push({
     air:H.temperature_2m[i], sw:H.shortwave_radiation?H.shortwave_radiation[i]:0,
     soil:H.soil_temperature_0cm?H.soil_temperature_0cm[i]:null,
-    wind:H.wind_speed_10m?H.wind_speed_10m[i]/3.6:1.5});
+    wind:H.wind_speed_10m?H.wind_speed_10m[i]/3.6:1.5,
+    rain:(H.rain?(+H.rain[i]||0):0)+(H.showers?(+H.showers[i]||0):0),   // 고침 5: 앞 1시간에 온 비(mm, 비와 소나기의 합). 눈은 넣지 않는다. 예전 응답에는 없다
+    snow:H.snowfall?(+H.snowfall[i]||0):0});   // 고침 7: 앞 1시간에 온 눈(cm). 비와 따로 둔다(등급에는 쓰지 않는다)
   var c=j.current||{},nh=new Date().getHours();
   var now={air:c.temperature_2m,sw:c.shortwave_radiation,
     wind:c.wind_speed_10m!=null?c.wind_speed_10m/3.6:1.5,soil:(h[nh]||{}).soil};
   if(now.air==null&&h[nh])now=h[nh];
-  return {hours:h,now:now};
+  return {hours:h,now:now,day0:String((H.time&&H.time[0])||"").slice(0,10)};   // 고침 5: 첫 시각의 날짜(그날 날씨인지 확인)
 }
 function loadWeather(){
   if(!loc){WX=fallbackWx();WXLIVE=false;renderHome();return;}
@@ -2840,7 +2906,7 @@ function loadWeather(){
   var to=setTimeout(function(){if(ctl)ctl.abort();},8000);
   (window.fetch?fetch(wxURL(loc.lat,loc.lng),ctl?{signal:ctl.signal}:{}):Promise.reject())
     .then(function(r){clearTimeout(to);if(!r.ok)throw 0;return r.json();})
-    .then(function(j){WX=normWx(j);WXLIVE=true;renderHome();try{if(typeof renderRoutes==="function")renderRoutes();}catch(e){}})
+    .then(function(j){WX=normWx(j);WXLIVE=true;try{hardSync();}catch(e){}renderHome();try{if(typeof renderRoutes==="function")renderRoutes();}catch(e){}})
     .catch(function(){WX=fallbackWx();WXLIVE=false;renderHome();try{if(typeof renderRoutes==="function")renderRoutes();}catch(e){}});
 }
 
@@ -3069,9 +3135,10 @@ function renderWinter(c){
       '<li>발가락 사이에 눈이 뭉치면 빼주세요</li>'+
       '<li>떨거나 발을 자꾸 들면 돌아오세요</li>'+
     '</ul>'+
-    '<div class="why"><b>겨울은 점수를 매기지 않습니다.</b> 강아지가 몇 도부터 위험한지에 대한 '+
+    '<div class="why"><b>겨울은 위험 점수를 매기지 않습니다.</b> 강아지가 몇 도부터 위험한지에 대한 '+
     '숫자 근거를 찾지 못했어요. 수의사회 권고도 "추운 날"이라고만 합니다. '+
-    '없는 숫자를 만들지 않으려고 안내만 둡니다.<br>'+
+    '없는 숫자를 만들지 않으려고 안내만 둡니다. 다만 한파특보 수준으로 추운 시간대(영하\u00a012도 이하)는 덜\u00a0걸어도 링이 차요. '+
+    '이\u00a0온도는 위험선이 아니라 기상청 한파주의보 기준을 빌린 값이에요.<br>'+
     '소금 섭취 수치(체중 1kg에 2~3g부터 증상)는 Osweiler 외 2011과 머크 수의 매뉴얼 기준이고 동료심사 원저는 아닙니다.</div>'+
     '</div>';
 }
@@ -3085,7 +3152,7 @@ function renderTip(c){
   }
   if(!msg){   // 0.4.5: 진드기 철(4~11월)은 접힌 안전 정보에만 있던 안내를 홈 첫 카드에 한 줄로
     var tk=tickSeason();
-    if(tk)msg=tk.alert?"진드기 많은 철이에요 · 풀밭 말고 <b>길 가운데</b>로 걸어요":"진드기 철(4~11월)이에요 · 다녀오면 귀 뒤와 발가락 사이를 훑어 주세요";
+    if(tk)msg=tk.alert?'<span class="sn">진드기 많은 철이에요.</span> <span class="sn">풀밭 말고 <b>길\u00a0가운데</b>로 걸어요</span>':'<span class="sn">진드기 철(4~11월)이에요.</span> <span class="sn">다녀오면 귀\u00a0뒤와 발가락\u00a0사이를 훑어\u00a0주세요</span>';
   }
   if(!msg){t.style.display="none";return;}
   t.style.display="";t.innerHTML=msg;
@@ -3096,28 +3163,35 @@ function renderToday(){
   renderEndSig(); renderNewNudge();
   var el=$("todaycard"); if(!el)return;
   var w=lastWalk();
-  if(!w){ el.className="today empty"; el.innerHTML='<div class="tx"><div class="k">첫 산책</div><div class="s" style="font-size:13px;opacity:.85">첫 산책부터 게이지가 떠요. 끝내면 PWC 기록 카드가 바로 떠요.</div></div>'; return; }
+  if(!w){ el.className="today empty"; el.innerHTML='<div class="tx"><div class="k">첫 산책</div><div class="s" style="font-size:13px;opacity:.85"><span class="sn">첫 산책부터 게이지가 떠요.</span> <span class="sn">끝내면 PWC 기록 카드가 바로\u00a0떠요.</span></div></div>'; return; }
   /* 0.4.4: 오늘 다녀왔으면 링은 '오늘 하루'(하루 합계)를 보여 준다. 아직이면 링 대신 발자국(나가고 싶어요)을 보여 준다 */
   var now=Date.now(), D=dayScore(dayOf(now)), ws=wishState(now), wc=wishCopy(ws), G=gapCfg();
-  function j2(a,b){ return a&&b?a+' · '+b:(a||b||''); }
+  // 고침 5: 지금 시간대가 힘든 등급이면 권하는 말의 둘째, 셋째 줄을 그 사실로 바꾼다(밤, 쉬는 날, 숨긴 시간, 사실만 보이는 안은 그대로).
+  // 산책 전 카드에는 둘 다, 오늘 다녀온 뒤의 '나가고 싶어요' 줄에는 셋째 줄('쉬만 하고 와도 돼요')이 'N시간 전 다녀왔어요' 자리에 나온다
+  if(wc&&ws&&G.copy==="A"&&!ws.off&&!ws.night&&!ws.rest&&!ws.quiet){ var hn=hardNow(now);
+    if(hn.l)wc={t:wc.t,s:hardTx(hn.why)[hn.l===2?1:0],   // 고침 7: 이유마다의 말은 HARD_TX에(비, 추위, 더위)
+      m:hn.l===2?"쉬만 하고 와도 돼요":"짧게 다녀와도 돼요"}; }
+  function j2(a,b){ return a&&b?'<span class="l2">'+a+'</span><span class="l2">'+b+'</span>':(a||b||''); }   // 좁은 칸에서 가운뎃점이 줄 머리나 꼬리에 걸리지 않게 한 줄씩
   var wishLine=wc&&ws&&!ws.off&&!ws.quiet?'<div class="wish">'+(G.copy==="B"?wc.t:G.copy==="C"?j2(wc.t,wc.s):j2(wc.t,wc.m))+'</div>':'';
   el.className="today";
   if(D.n){
     var g=D.score, C=2*Math.PI*36, off=C*(1-Math.max(.02,g/100));
     var km=(D.sum.dist/1000).toFixed(1), mins=Math.round(D.sum.ms/60000);
     var lastToday=dayOf(w.start)===dayOf(now);
+    // 고침 4: 나가고 싶어요 줄이 뜨면 둘째 줄(평소엔 하루 N번, 임시 기준)은 숨긴다. 둘 다 보이면 작은 폰에서 카드가 한 줄 길어져 스크롤이 생겼다
+    var wl=(ws&&(G.copy==="B"||ws.stage>0||ws.night||ws.rest))?wishLine:'';
     el.innerHTML='<div class="ring"><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="36" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="7"/>'+
       '<circle cx="42" cy="42" r="36" fill="none" stroke="#EFB02F" stroke-width="7" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 42 42)"/></svg><div class="n">'+g+'</div></div>'+
-      '<div class="tx"><div class="k">오늘 꾹게이지 · '+D.n+'번</div>'+
+      '<div class="tx"><div class="k">오늘 꾹게이지 · '+(D.outs||D.n)+'번</div>'+
       '<div class="v">'+km+'<small>km</small>'+mins+'<small>분</small></div>'+
-      '<div class="s">'+dayMsg(D)+(D.B.prov>0.01?' · 임시 기준':'')+'</div>'+
-      (ws&&(G.copy==="B"||ws.stage>0||ws.night||ws.rest)?wishLine:'')+'</div>'+
+      '<div class="s">'+j2(dayMsg(D),wl?'':(D.hard?(D.hard===2?'쉬만 해도 링이 차요':hardTx(D.why)[2]):(D.usual&&D.outs<D.usual?'평소엔 하루 '+D.usual+'번':(D.B.prov>0.01?'임시 기준':''))))+'</div>'+
+      wl+'</div>'+
       (lastToday?'<button class="btn" data-card="'+w.start+'">PWC 기록</button>':'');
   } else if(!ws||ws.off){
     // 산책 간격을 끈 경우: 시간 대신 오늘 하루 링이 비어 있다는 사실만
     el.innerHTML='<div class="ring paws">'+wishPawsSvg(0,1,true)+'</div>'+
       '<div class="tx"><div class="k">오늘 꾹게이지</div><div class="wt">아직 산책 전이에요</div>'+
-      '<div class="s">짧게 여러 번이든 길게 한 번이든 하루로 더해요</div></div>';
+      '<div class="s">나눠 걸은 산책은 하루로 더해요</div></div>';
   } else {
     var st=ws.stage, showRest=G.copy!=="B"&&!ws.night&&!ws.rest&&!ws.quiet&&st>=1;   // B안은 권하는 말이 없으니 쉬어요도 없다
     var pst=!G.paws||ws.quiet?0:(ws.rest||ws.night)?Math.min(st,1):st;
@@ -3146,7 +3220,31 @@ setInterval(function(){ var el=$("todaycard");
   renderToday(); },60000);
 document.addEventListener("visibilitychange",function(){ if(!document.hidden&&!W)renderToday(); });
 
-function renderHome(){
+/* 0.5.0 고침 3: 홈이 스크롤 없이 한 화면에 들어오게, 산책 시작 단추 크기를 남은 자리에 맞춘다(120px에서 256px 사이).
+   카드가 많아 120px로도 넘치면 그때만 스크롤된다. 펼친 '안전 정보' 안쪽은 세지 않는다(사용자가 펼친 것이라 스크롤이 맞다) */
+var FIT_RAF=0;
+function fitNow(){
+  try{
+    var b=$("start"), home=$("v-home"), tabs=$("tabs");
+    if(!b||!home||!tabs||!home.classList.contains("on")||!$("main").classList.contains("on"))return;
+    if(b.classList.contains("ghost")){ b.style.removeProperty("--sd"); return; }
+    var more=home.querySelector("details.more>summary"), tr=tabs.getBoundingClientRect();
+    if(!more||!tr.height)return;
+    var br=b.getBoundingClientRect(), mr=more.getBoundingClientRect();
+    var below=mr.bottom-br.bottom;                              // 단추 아래에 꼭 보여야 하는 높이(단추 여백, 꾹꾹로 추천, '안전 정보' 줄)
+    var pb=parseFloat(getComputedStyle(home.parentElement).paddingBottom)||0;
+    var limit=Math.min(tr.top-6,window.innerHeight-pb);         // 탭 줄 위, 그리고 문서가 화면보다 길어지지 않는 곳까지
+    var room=limit-(br.top+(window.scrollY||0))-below;          // 맨 위로 올렸을 때 단추가 쓸 수 있는 높이
+    var max=window.matchMedia&&window.matchMedia("(min-width:520px)").matches?192:Math.min(256,window.innerWidth*0.66);
+    var sd=Math.round(Math.max(120,Math.min(max,room)));
+    if(Math.abs(sd-(parseFloat(b.style.getPropertyValue("--sd"))||0))>=1)b.style.setProperty("--sd",sd+"px");
+  }catch(e){}
+}
+function fitStart(){ if(FIT_RAF)return; FIT_RAF=requestAnimationFrame(function(){ FIT_RAF=0; fitNow(); }); }
+try{ if(window.ResizeObserver)new ResizeObserver(fitStart).observe($("v-home")); }catch(e){}
+window.addEventListener("resize",fitStart);
+function renderHome(){ renderHomeIn(); fitNow(); }
+function renderHomeIn(){
   resumeRender();renderToday();
   if(!WX)return;
   var el=$("light");
@@ -3156,13 +3254,13 @@ function renderHome(){
     if(LOCWAIT){   // 받아오는 중: '켜주세요'와 단추를 보여 주지 않는다
       $("l-dot").innerHTML=IC.clock; $("l-h").textContent="확인 중"; $("l-why").textContent="위치와 날씨를 받아오고 있어요";
       $("l-side").style.display="none"; $("l-when").style.display="none"; $("l-when").innerHTML="";
-      $("l-tip").style.display="none"; $("wintercard").innerHTML=""; $("share").style.display="none"; $("sig").style.display="";
+      $("l-tip").style.display="none"; $("wintercard").innerHTML=""; $("sig").style.display="";
       $("pickcard").innerHTML=""; setStartBtn(false); $("homenote").innerHTML="";
       return;
     }
     $("l-dot").innerHTML=IC.pin;
     $("l-h").textContent="위치를 켜주세요";
-    $("l-why").textContent="지금 있는 자리를 알아야 바닥 온도를 계산할 수 있어요";
+    $("l-why").textContent="지금 있는 자리를 알아야 바닥\u00a0온도를 계산할\u00a0수\u00a0있어요";
     $("l-side").style.display="none";
     $("l-when").style.display="";
     $("l-when").innerHTML='<button type="button" class="lk-btn lk-main" id="fixloc">위치 허용하기</button>'+
@@ -3187,10 +3285,9 @@ function renderHome(){
         diagText()+'</span>';
     });
     $("l-tip").style.display="none"; $("wintercard").innerHTML="";
-    $("share").style.display="none";
     $("sig").style.display="";
     $("pickcard").innerHTML="";setStartBtn(false);
-    $("homenote").innerHTML="위치 없이도 꾹·똥 기록은 됩니다. 나가기 전에 <b>손등을 바닥에 5초</b> 대보세요.";
+    $("homenote").innerHTML='<span class="sn">위치 없이도 꾹·똥 기록은 됩니다.</span> <span class="sn">나가기 전에 <b>손등을 바닥에 5초</b>\u00a0대보세요.</span>';
     return;
   }
   var d=new Date(),now=d.getHours(),c=gradeAt(d,now);
@@ -3202,7 +3299,14 @@ function renderHome(){
   el.className="light "+["safe","warn","dang"][shown];
   $("l-dot").innerHTML=LIGHT[shown].dot;
   $("l-h").textContent=shadeSaves?"그늘로만 걸으세요":LIGHT[c.g].h;
-  $("l-why").textContent="양지 "+c.sun+"°C, 그늘 "+c.shade+"°C, 기온 "+Math.round(c.air)+"°C";
+  // 고침 9(06 11/12): 둘째 줄은 "바닥 예상 N도". 숫자는 햇볕 드는 바닥의 추정값이다(예전의 '양지').
+  //   그늘 숫자는 그늘이 5도 넘게 덜 뜨거울 때만 붙인다(아래 '길 ○쪽에 붙어 걸으세요' 줄과 같은 온도 차).
+  //   느낌 말은 카드의 단계를 따른다: 1 '뜨거울 것 같아요', 2 '너무 뜨거울 것 같아요', 0은 붙이지 않는다.
+  //   바닥이 기온과 비슷한데(밤, 흐린 날) 더위 때문에 단계가 오른 때만 기온을 적는다. 기온 숫자는 그때만 나온다.
+  var whySun=(c.sun-c.shade)>=5, whyAir=shown>=1&&!whySun&&c.gSun===0;
+  $("l-why").textContent="바닥\u00a0예상\u00a0"+c.sun+"도"+(whySun?"(그늘\u00a0"+c.shade+"도)":"")+
+    (shown===0?"":(whyAir?", 기온\u00a0"+Math.round(c.air)+"도라 "+(shown===2?"너무\u00a0더워요":"더워요")
+                         :(shown===2?", 너무\u00a0뜨거울\u00a0것\u00a0같아요":", 뜨거울\u00a0것\u00a0같아요")));
 
   var when=$("l-when"),safeFrom=null,safeTm=false,best=null,bestTm=false,bs=-1;
   for(var i=now+1;i<now+24;i++){                 // 자정을 넘겨 24시간 앞까지 본다
@@ -3228,7 +3332,6 @@ function renderHome(){
   } else side.style.display="none";
   renderTip(c);
   renderWinter(c);
-  $("share").style.display="";
   $("sig").style.display=c.g>0?"":"none";
   renderPick();
   $("homenote").innerHTML=(S.manual
@@ -3239,7 +3342,7 @@ function renderHome(){
     (WXLIVE
     ? "기온과 일사량 자동 연동(Open-Meteo). "
     : "날씨 서버에 연결 못 해 계절과 시간으로 <b>추정</b>했어요. ")+
-    "바닥 온도는 <b>추정값</b>이에요. 나가기 전 손등을 바닥에 5초 대보세요."+
+    '<span class="sn">바닥 온도는 <b>추정값</b>이에요.</span> <span class="sn">나가기 전 손등을 바닥에 5초\u00a0대보세요.</span>'+
     ((S.dog&&S.dog.age==null&&!S.dog.joint)
       ? "<br>위의 <b>이름을 누르면</b> "+esc(S.dog.name)+" 나이와 관절을 더 적을 수 있어요 (선택)" : "");
   var cg=$("chgloc"); if(cg)cg.addEventListener("click",openCity);
@@ -3355,7 +3458,7 @@ $("f-age").addEventListener("input",function(){
   $("agehint").innerHTML = (a>=12)
     ? "<b>"+a+"살</b> · 더운 날 <b>그늘 없는 곳에 묶어두거나 차에 두는 것</b>을 더 세게 말립니다.<br>"+
       "산책 자체는 오히려 어린 강아지보다 위험이 낮게 나와요. 그래서 산책량은 깎지 않아요."
-    : "12살이 넘으면 <b>더운 날 밖에 세워두는 것</b>에 대한 경고가 세져요. 산책량을 깎지는 않아요.";
+    : '<span class="sn">12살이 넘으면 <b>더운 날 밖에 세워두는\u00a0것</b>에\u00a0대한 경고가 세져요.</span> <span class="sn">산책량을 깎지는\u00a0않아요.</span>';
 });
 $("dogNext").addEventListener("click",function(){
   var a=parseInt($("f-age").value,10);
@@ -3404,8 +3507,9 @@ function enterMain(){
       if(lw.anc&&lw.anc.t>last)last=lw.anc.t;
       var any=wasRes||!!((lw.kkuks||[]).length||(lw.poops||[]).length||(lw.sniffs||[]).length||(lw.dist||0)>=50);   // 이어 걷던 산책은 원래 저장돼 있던 기록이라 버리지 않는다
       if(any){
-        lw.end=last; delete lw.resumedAt; delete lw.segNext; delete lw.anc; lw.autoEnd=1;
+        lw.end=last; delete lw.resumedAt; delete lw.segNext; delete lw.anc; delete lw.tip; lw.autoEnd=1;
         beta("walks");beta("walkTaps",lw.taps||1);if(NATIVE)beta("walksApp");
+        try{ var hl2=hardLv(dayOf(lw.start)).lv[HARD_SL.indexOf(slotOf(lw.start))]; if(hl2)lw.hard=hl2; }catch(e){}   // 고침 5
         var gdl=gaugeDetail(lw); lw.gauge=gdl.ready?gdl.score:null; lw.slot=gdl.slot;
         hk("walk_end",{minutes:Math.round((lw.end-lw.start)/60000),km:Math.round((lw.dist||0)/100)/10,
           kkuk:(lw.kkuks||[]).length,poop:(lw.poops||[]).length,gauge:(lw.gauge==null?-1:lw.gauge),resumed:wasRes,auto_end:true});
@@ -3481,8 +3585,10 @@ function provBase(){
   return {dist:Math.round(d), kkuk:Math.max(3,Math.round(kg*0.4)+2), sniff:180000};
 }
 function baseline(slot,excludeStart){
-  var ws=S.walks.filter(function(w){
-    return w.end&&slotOf(w.start)===slot&&w.start!==excludeStart;}).slice(0,14);
+  var all=S.walks.filter(function(w){
+    return w.end&&slotOf(w.start)===slot&&w.start!==excludeStart;});
+  // 고침 5: 힘든 시간대에 한 산책(꼬리표 hard)은 평소 기준에서 뺀다. 보통 산책이 5번 이상 남을 때만(장마철에 기준이 내려가지 않게)
+  var plain=all.filter(function(w){return !w.hard;}), ws=(plain.length>=5?plain:all).slice(0,14);
   var P=provBase();
   if(!ws.length)return {n:0,ready:true,prov:1,drift:false,
     dist:P.dist,kkuk:P.kkuk,sniff:P.sniff,poopRate:0,poopCounts:pottyHabit()==="out"};
@@ -3514,29 +3620,48 @@ function gaugeDetail(w){
   var slot=slotOf(w.start), B=baseline(slot,w.start);
   if(!B.ready)return {ready:false,n:B.n,slot:slot};
   var parts=[],raw=[];
-  function add(k,v,cap){parts.push({k:k,r:Math.min(cap||1.2,v)});raw.push(Math.min(cap||1.5,v));}
+  // 고침 5: 힘든 시간대의 산책은 덜 걸어도 찬다(1 짧게: 절반이면 참, 2 쉬만: 꾹이나 똥이 있으면 참). 끝난 산책은 꼬리표, 걷는 중은 그 시간대 등급.
+  // 등급은 점수를 올리기만 한다(등급 1은 값을 2배로 쳐 주고, 등급 2는 꾹이나 똥이 없으면 보통 계산 그대로)
+  var hl=w.end?(w.hard||0):(hardLv(dayOf(w.start)).lv[HARD_SL.indexOf(slot)]||0); if(hl!==1&&hl!==2)hl=0;   // 가져온 파일의 이상한 꼬리표는 등급 없음으로
+  function add(k,v,cap){parts.push({k:k,r:Math.min(cap||1.2,hl===1?v/HARD_F[1]:v)});raw.push(Math.min(cap||1.5,v));}
   add("꾹",(w.kkuks||[]).length/B.kkuk,1);   // 0.4.5: 꾹은 마킹 횟수라 평소보다 많아도 점수를 더 주지 않는다(1.0에서 자름)
   add("킁킁",(w.sniff||0)/B.sniff);
   add("거리",(w.dist||0)/B.dist);
   if(B.poopCounts){var pv=(w.poops||[]).length>0?1:0;parts.push({k:"똥",r:pv});raw.push(pv);}
   var sc=Math.round(parts.reduce(function(a,b){return a+b.r;},0)/parts.length*100);
+  if(hl===2&&((w.kkuks||[]).length>0||(w.poops||[]).length>0))sc=100;   // 고침 5: 쉬만 등급은 꾹이나 똥이 있으면 다 찬다. 없으면 보통 날 계산 그대로
   /* 0.4.3 문구: 평소와 똑같이 걸어도 100점이라 예전엔 '넉넉'이 떴다. 항목을 1.5배에서 자른 평균이
      1.10 이상이고 점수도 100일 때만 '넉넉', 아니면 '평소만큼'(11/5 꾹게이지 회의와 Codex 비교 검토) */
   var avgRaw=raw.reduce(function(a,b){return a+b;},0)/raw.length;
-  return {ready:true,score:Math.max(0,Math.min(100,sc)),parts:parts,avgRaw:avgRaw,B:B,slot:slot,
+  return {ready:true,score:Math.max(0,Math.min(100,sc)),parts:parts,avgRaw:avgRaw,B:B,slot:slot,hard:hl,
     bonusPoop:!B.poopCounts&&(w.poops||[]).length>0, bonusSpot:!!w.newSpot};
 }
 function gmsgOf(t,gd){var n=S.dog?S.dog.name:"우리 아이";
+  if(gd&&gd.hard&&t>=85&&!(t>=100&&gd.avgRaw>=1.10))return "이 산책 몫은 다 채웠어요";   // 고침 5: 줄어든 몫을 채운 것이라 '평소만큼'이라고 하지 않는다
   return (t>=100&&gd&&gd.avgRaw>=1.10)?"평소보다 넉넉했어요":t>=85?"평소만큼 했어요":t>=60?"조금만 더?":
          t>=30?n+" 아직 안 끝났대요":"이제 막 나왔네요";}
 /* ══ 0.4.4 하루 산책량 ════════════════════════════════════════
-   짧게 여러 번이든 길게 한 번이든 같은 하루로 본다. 하루는 새벽 4시에 바뀐다(밤 산책이 다음 날로 넘어가지 않게).
+   나눠 걸은 산책을 하루로 더한다. 하루는 새벽 4시에 바뀐다(밤 산책이 다음 날로 넘어가지 않게).
+   0.5.0 고침 4부터는 나간 횟수도 본다(아래 DAY_MISS). 그 전에는 길게 한 번이든 짧게 여러 번이든 같은 하루였다.
    하루 합계(꾹 수, 킁킁 시간, 거리, 똥)를 그 강아지의 평소 하루(최근 14일 중 산책한 날들의 가운데 값)와 비교한다.
    산책 안 한 날은 평소 하루 계산에 넣지 않는다(쉬는 날이 기준을 끌어내리지 않게). 처음 5일은 임시 기준과 섞는다. */
 function pottyHabit(){ return (S.dog&&S.dog.potty)||""; }   // "out" 밖에서만, "in" 주로 집 안, "both" 둘 다, "" 모름
 function dayOf(t){ var d=new Date(t-4*3600e3); return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate(); }
+/* 0.5.0 고침 4: 나가지 않은 산책의 몫은 절반까지만.
+   평소 하루 3번 걷는 강아지가 세 번 치를 한 번에 몰아 걸으면 예전에는 링이 100이었다(06 11/11).
+   걸은 양이 같아도 나간 횟수가 다르면 같은 하루가 아니다. 혼자 있는 시간과 배변 기회는 길게 걷는다고 채워지지 않는다
+   (혼자 둔 시간이 길수록 돌아온 보호자를 더 활발히 반김: Rehn, Keeling 2011, 12마리. 스웨덴 농업청 일반 권고는 낮에 6시간마다).
+   양과 횟수 가운데 어느 쪽이 더 큰지 가른 연구는 찾지 못해 반반으로 친다 [가정].
+   나간 산책들의 평소 몫(U)까지는 그대로 더하고, 그 위로 더 걸은 양은 나가지 않은 산책 몫(B-U)의 절반까지만 더한다.
+   평소 횟수를 아는 때(산책한 날 5일 이상, 평소 2번 이상)에만 쓴다. 넉넉 판정(avgRaw)과 화면의 km, 분은 합계 그대로다. */
+var DAY_MISS=0.5, OUT_GAP=10*60e3;   // 두 기록 사이가 10분 미만이면 한 번의 산책으로 센다(계산법 v3 3-2절 규칙)
+function outings(ws){
+  var a=ws.slice().sort(function(x,y){return x.start-y.start;}), g=[], end=0;
+  a.forEach(function(w){ if(g.length&&w.start-end<OUT_GAP)g[g.length-1].push(w); else g.push([w]); end=Math.max(end,w.end||w.start); });
+  return g;
+}
 function sumWalks(ws){
-  var o={n:ws.length,dist:0,sniff:0,kkuk:0,poop:0,ms:0};
+  var o={n:ws.length,outs:outings(ws).length,dist:0,sniff:0,kkuk:0,poop:0,ms:0};
   ws.forEach(function(w){o.dist+=w.dist||0;o.sniff+=w.sniff||0;o.kkuk+=(w.kkuks||[]).length;
     o.poop+=(w.poops||[]).length;o.ms+=Math.max(0,(w.end||w.start)-w.start);});
   return o;
@@ -3550,6 +3675,8 @@ function dayBaseline(skipDk,refT){
   S.walks.forEach(function(w){ if(!w.end||w.start<from||w.start>=ds)return; var k=dayOf(w.start); if(k===skipDk)return;
     if(!by[k]){by[k]=[];keys.push(k);} by[k].push(w); });
   keys.sort(function(a,b){return b-a;}); keys=keys.slice(0,14);
+  // 고침 5: 꼬리표(hard)가 붙은 산책이 있는 날은 평소 하루에서 뺀다. 보통 날이 5일 이상 남을 때만
+  var plainK=keys.filter(function(k){ return !by[k].some(function(w){return w.hard;}); }); if(plainK.length>=5)keys=plainK;
   var days=keys.map(function(k){return sumWalks(by[k]);});
   var P=provBase(), n=days.length, mix=Math.min(1,n/5);
   function bl(v,p){return v*mix+p*(1-mix);}
@@ -3559,24 +3686,137 @@ function dayBaseline(skipDk,refT){
     sniff:bl(Math.max(30000,median(days.map(function(d){return d.sniff;}))),P.sniff),
     kkuk:bl(Math.max(1,median(days.map(function(d){return d.kkuk;}))),P.kkuk),
     poopRate:days.filter(function(d){return d.poop>0;}).length/n,
-    walks:median(days.map(function(d){return d.n;}))};
+    walks:median(days.map(function(d){return d.outs;}))};
+}
+/* ══ 0.5.0 고침 5: 힘든 날 등급 ══════════════════════════════════
+   비가 오거나 더운 시간대의 산책은 덜 걸어도 그 몫이 찬다(06 11/11 밤: 위험도에 따라 링이 더 빨리 차게, 가장 힘든 때는 쉬만 해도).
+   등급은 시간대마다 매긴다. 그 시간대 깨어 있는 시간의 절반 이상이 그 날씨일 때만 준다.
+     1 짧게: 시간당 1mm 이상 3mm 미만 비(기상청 예보용어의 '약한 비'), 또는 앱 단계 '짧게, 그늘로'   → 그 시간대 몫의 절반
+     2 쉬만: 시간당 3mm 이상 비('(보통) 비' 이상), 또는 앱 단계 '지금은 나가지 마세요'             → 그 시간대 몫 0
+   비의 경계는 기상청 구분을 따랐다. 등급에 잇는 것, 절반(0.5), '시간대의 절반'은 정한 값이다 [가정].
+   비는 Open-Meteo의 rain과 showers를 더한 값이다(눈은 빼고). 눈과 미세먼지는 등급에 넣지 않았다.
+   고침 7: 추위(06 11/12). 기온이 영하 12도 이하면 1 짧게, 영하 15도 이하면 2 쉬만.
+     숫자는 기상청 한파주의보(아침 최저기온 영하 12도 이하), 한파경보(영하 15도 이하)에서 빌렸다 [가정].
+     강아지가 몇 도부터 위험한지 가른 연구는 찾지 못했다(미국수의사회도 "아주 추운 날은 산책을 줄이라"고만 한다).
+     그래서 위험 판정에는 쓰지 않고(위 날씨 카드는 그대로다), 그 시간대는 덜 걸어도 찬다는 데만 쓴다.
+   걷기 좋은 시간 계산(renderHome)도 '짧게' 단계를 0.5로 친다. 실제 날씨를 받았을 때만 매긴다(추정 날씨로는 깎지 않는다).
+   힘든 날 계산은 링을 올리기만 한다: 보통 날 계산과 견줘 높은 쪽을 쓴다(비가 온다고 같은 산책의 점수가 내려가면 안 된다).
+   지나간 시간대의 등급과, 이미 끝낸 산책에 붙인 등급은 그날 안에 내리지 않는다(예보가 바뀌어도 다 찬 링이 다시 내려가지 않게).
+   보호자 사정(바쁨)은 등급이 아니다. 그건 고침 4의 절반 규칙이 다룬다. */
+var HARD_F=[1,0.5,0], HARD_SL=["morning","day","evening"], HARD_HR={morning:[6,11],day:[11,17],evening:[17,23]};
+var HARD_COLD=[-12,-15];   // 고침 7: 기온이 이 값 이하면 등급 1, 2 [가정]
+var HARD_WHYS=["rain","cold","heat"];   // 이유의 종류. 등급과 시간 수가 같으면 앞의 것이 이긴다
+// 이유마다의 말: [짧게일 때, 쉬만일 때, 오늘 카드의 둘째 줄]
+var HARD_TX={rain:["비가 와요","비가 많이 와요","비가 와서 덜 세요"],cold:["지금은 추워요","지금은 너무 추워요","추워서 덜 세요"],heat:["지금은 더워요","지금은 너무 더워요","더워서 덜 세요"]};
+function hardTx(why){ return HARD_TX[HARD_WHYS.indexOf(why)>=0?why:"rain"]; }   // 모르는 이유는 비로(가져온 파일의 글자가 화면에 들어가지 않게 목록에 있는 것만)
+function hardHour(i,dt){   // 그 시각의 등급과 이유. i는 WX.hours의 자리
+  var w=WX&&WX.hours&&WX.hours[i]; if(!w||w.air==null)return {l:0,why:""};
+  var r=w.rain||0, rl=r>=3?2:(r>=1?1:0), g=0; try{ var c=gradeAt(dt,i); g=c?c.g:0; }catch(e){}
+  var cl=w.air<=HARD_COLD[1]?2:(w.air<=HARD_COLD[0]?1:0), x={l:rl,why:rl?"rain":""};
+  if(cl>x.l)x={l:cl,why:"cold"};
+  if(g>x.l)x={l:g,why:"heat"};
+  return x;
+}
+function hardLive(dk){     // 받은 날씨로 그날(새벽 4시에 바뀌는 날짜 dk)의 시간대 등급을 매긴다. 날씨가 그날 것이 아니면 null
+  if(!WX||!WXLIVE||!WX.day0)return null;
+  var y=Math.floor(dk/10000), m=Math.floor(dk/100)%100-1, d=dk%100, p=function(n){return (n<10?"0":"")+n;}, off=-1, pv=new Date(y,m,d-1);
+  if(WX.day0===y+"-"+p(m+1)+"-"+p(d))off=0;
+  else if(WX.day0===pv.getFullYear()+"-"+p(pv.getMonth()+1)+"-"+p(pv.getDate()))off=24;   // 어제 받은 날씨의 둘째 날
+  if(off<0)return null;
+  var lv=[],why=[];
+  HARD_SL.forEach(function(sl){ var a=HARD_HR[sl][0], b=HARD_HR[sl][1], n=b-a, c1=0, c2=0, cnt={};
+    for(var h=a;h<b;h++){ var x=hardHour(off+h,new Date(y,m,d,h)); if(x.l>=1){ c1++; cnt[x.why]=(cnt[x.why]||0)+1; } if(x.l>=2)c2++; }
+    var L=c2*2>=n?2:(c1*2>=n?1:0), wy="", bn=0;
+    if(L)HARD_WHYS.forEach(function(k){ if((cnt[k]||0)>bn){ bn=cnt[k]; wy=k; } });   // 그 날씨였던 시간이 가장 많은 이유(같으면 비, 추위, 더위 순)
+    lv.push(L); why.push(wy); });
+  return {day:dk,lv:lv,why:why};
+}
+function hardOk(h){        // 등급 기록이 제 모양인가. 가져온 백업 파일의 값은 믿지 않는다(0, 1, 2가 아닌 값이면 등급 없음으로)
+  return !!h&&typeof h==="object"&&Array.isArray(h.lv)&&h.lv.length===3&&h.lv.every(function(v){return v===0||v===1||v===2;});
+}
+function hardLv(dk){       // 폰에 남겨 둔 그날 등급이 있으면 그것, 없으면 받은 날씨로. 둘 다 없으면 등급 없음. 늘 새로 만든 깨끗한 값을 돌려준다
+  var h=(hardOk(S.hard)&&S.hard.day===dk)?S.hard:hardLive(dk);
+  if(!hardOk(h))return {day:dk,lv:[0,0,0],why:["","",""]};
+  var wy=Array.isArray(h.why)?h.why:[];
+  return {day:dk,lv:h.lv.slice(),why:h.lv.map(function(v,i){return v?(HARD_WHYS.indexOf(wy[i])>=0?wy[i]:"rain"):"";})};
+}
+function hardSync(){       // 날씨를 새로 받을 때마다 오늘 등급을 폰에 남긴다(자정 뒤에 날씨를 다시 받아도 그날 링이 바뀌지 않게)
+  var h=hardLive(dayOf(Date.now())); if(!h)return;
+  var o=(hardOk(S.hard)&&S.hard.day===h.day)?hardLv(h.day):null, nowH=new Date().getHours(), late=nowH<4;   // 새벽 0~4시는 전날로 치니 시간대가 모두 지나간 것이다
+  // 이미 지나간 시간대는 처음 남긴 등급을 그대로 둔다(예보가 바뀌어도 지나간 아침의 몫이 다시 늘지 않게)
+  if(o)HARD_SL.forEach(function(sl,i){ if(late||nowH>=HARD_HR[sl][1]){ h.lv[i]=o.lv[i]; h.why[i]=o.why[i]; } });
+  // 그 시간대에 이미 끝낸 산책에 붙인 등급 아래로는 내리지 않는다('쉬만 해도 차요'를 보고 끝낸 산책이 있는데, 예보가 바뀌었다고 다 찬 링이 다시 내려가면 안 된다)
+  dayWalks(h.day).forEach(function(w){ var i=HARD_SL.indexOf(slotOf(w.start)), t=(w.hard===1||w.hard===2)?w.hard:0;
+    if(i>=0&&t>h.lv[i]){ h.lv[i]=t; h.why[i]=(o&&o.why[i])||"rain"; } });
+  if(o&&o.lv.join()===h.lv.join()&&o.why.join()===h.why.join())return;
+  patchSaved(function(x){ x.hard=h; });
+}
+function hardNow(now){     // 지금 시간대의 등급
+  var h=hardLv(dayOf(now)), i=HARD_SL.indexOf(slotOf(now)); return {l:h.lv[i]||0,why:h.why[i]||""};
+}
+function hardShare(){      // 평소 하루에서 시간대마다 차지하는 몫(항목별): 그 시간대 평소 산책 × 그 시간대에 나간 날의 비율. 기록이 없으면 셋으로 똑같이
+  var ds=dayStart(Date.now()), from=ds-14*864e5, days={}, has={morning:{},day:{},evening:{}}, KS=["dist","sniff","kkuk"];
+  S.walks.forEach(function(w){ if(!w.end||w.start<from||w.start>=ds)return; var k=dayOf(w.start); days[k]=1; has[slotOf(w.start)][k]=1; });
+  var nd=Object.keys(days).length, e={}, sum={dist:0,sniff:0,kkuk:0}, out={};
+  HARD_SL.forEach(function(sl){ var p=nd?Object.keys(has[sl]).length/nd:0, b=p?baseline(sl,null):null; e[sl]={};
+    KS.forEach(function(k){ e[sl][k]=b?b[k]*p:0; sum[k]+=e[sl][k]; }); });
+  HARD_SL.forEach(function(sl){ out[sl]={}; KS.forEach(function(k){ out[sl][k]=sum[k]>0?e[sl][k]/sum[k]:1/3; }); });
+  return out;
 }
 function dayScore(dk,liveWalk,refT){
   var ws=dayWalks(dk); if(liveWalk&&dayOf(liveWalk.start)===dk) ws=ws.concat([liveWalk]);
   var B=dayBaseline(dk,refT||(liveWalk?liveWalk.start:Date.now())), T=sumWalks(ws);
   if(!ws.length) return {n:0,score:0,sum:T,B:B,avgRaw:0};
   var ph=pottyHabit(), parts=[], raw=[];
-  function add(v,cap){parts.push(Math.min(cap||1.2,v));raw.push(Math.min(cap||1.5,v));}
+  // 고침 5: 힘든 날 등급. 시간대 몫에 등급 값을 곱해 오늘 필요한 양 R을 줄인다(등급이 없으면 R = B). R은 아래 '힘든 날 계산'에서만 쓴다
+  var HD=hardLv(dk), R={dist:B.dist,sniff:B.sniff,kkuk:B.kkuk}, hardWhy="";
+  if(HD.lv[0]+HD.lv[1]+HD.lv[2]>0){ var SH=hardShare();
+    ["dist","sniff","kkuk"].forEach(function(k){ var f=0; HARD_SL.forEach(function(sl,i){ f+=SH[sl][k]*HARD_F[HD.lv[i]]; }); R[k]=B[k]*f; });
+    HARD_SL.forEach(function(sl,i){ if(HD.lv[i]&&SH[sl].dist>0&&hardWhy!=="rain")hardWhy=HD.why[i]||"heat"; }); }
+  var hardCut=R.dist<B.dist*0.999||R.sniff<B.sniff*0.999, allHard=hardCut&&R.dist<=0&&R.sniff<=0;   // allHard: 평소 나가는 시간대가 모두 쉬만 등급
+  function hf(t){ return HARD_F[HD.lv[HARD_SL.indexOf(slotOf(t))]||0]; }
+  // 고침 4: 점수에는 C(나가지 않은 산책 몫을 절반까지만 채운 값)를, 넉넉 판정에는 합계 T를 쓴다
+  var usual=B.n>=5?Math.floor(B.walks||1):0, C={dist:T.dist,sniff:T.sniff,kkuk:T.kkuk};
+  if(usual>=2){
+    var U={dist:0,sniff:0,kkuk:0}, KS=RING_KKUK?["dist","sniff","kkuk"]:["dist","sniff"];
+    outings(ws).forEach(function(g){ var b={dist:0,sniff:0,kkuk:0};
+      g.forEach(function(w){ var sb=baseline(slotOf(w.start),w.start); KS.forEach(function(k){ b[k]=Math.max(b[k],sb[k]); }); });
+      // 한 번의 평소 몫: 그 시간대 평소 산책과 '평소 하루 ÷ 평소 횟수' 가운데 큰 쪽(평소와 다른 시간에 나갔다고 깎이지 않게)
+      KS.forEach(function(k){ U[k]+=Math.max(b[k],B[k]/usual); }); });
+    KS.forEach(function(k){ var u=Math.min(B[k],U[k]); if(u<B[k]&&T[k]>u)C[k]=u+DAY_MISS*Math.min(T[k]-u,B[k]-u); });
+  }
+  function add(v,vr,cap){parts.push(Math.min(cap||1.2,v));raw.push(Math.min(cap||1.5,vr));}
   // 0.4.5: 꾹 상한 1.0(마킹이 많다고 넉넉해지지 않게)
-  if(RING_KKUK)add(T.kkuk/B.kkuk,1); add(T.sniff/B.sniff); add(T.dist/B.dist);
+  if(RING_KKUK)add(C.kkuk/B.kkuk,T.kkuk/B.kkuk,1); add(C.sniff/B.sniff,T.sniff/B.sniff); add(C.dist/B.dist,T.dist/B.dist);
   var poopCounts=ph==="out"||(ph!=="in"&&B.n>=5&&B.poopRate>=0.5);
   if(poopCounts){var pv=T.poop>0?1:0;parts.push(pv);raw.push(pv);}
   var sc=Math.round(parts.reduce(function(a,b){return a+b;},0)/parts.length*100);
-  return {n:ws.length,score:Math.max(0,Math.min(100,sc)),sum:T,B:B,poopCounts:poopCounts,
+  // 고침 5: 힘든 날 계산. 오늘 필요한 양 R에 견줘 한 번 더 셈하고, 위의 보통 날 계산(고침 4 그대로)보다 높을 때만 쓴다.
+  // 힘든 날 규칙은 링을 올리기만 한다(아침에만 비가 온 날 아침에 길게 한 번 걸으면 R 기준 셈이 더 낮게 나오는 경우가 있다)
+  if(hardCut){ var sh=0;
+    if(allHard)sh=(T.kkuk>0||T.poop>0)?100:0;   // 평소 나가는 시간대가 모두 쉬만 등급: 꾹이나 똥이 하나라도 있으면 다 찬다
+    else{ var Ch={dist:T.dist,sniff:T.sniff,kkuk:T.kkuk}, KH=RING_KKUK?["dist","sniff","kkuk"]:["dist","sniff"], ps=[];
+      if(usual>=2){ var Uh={dist:0,sniff:0,kkuk:0};   // 절반 규칙(고침 4)을 R 기준으로. 힘든 시간대에 나간 산책의 '한 번의 몫'도 등급 값만큼만
+        outings(ws).forEach(function(g){ var b={dist:0,sniff:0,kkuk:0}, gf=hf(g[0].start);
+          g.forEach(function(w){ var sb=baseline(slotOf(w.start),w.start); KH.forEach(function(k){ b[k]=Math.max(b[k],sb[k]); }); });
+          KH.forEach(function(k){ Uh[k]+=gf*Math.max(b[k],B[k]/usual); }); });
+        KH.forEach(function(k){ var u=Math.min(R[k],Uh[k]); if(u<R[k]&&T[k]>u)Ch[k]=u+DAY_MISS*Math.min(T[k]-u,R[k]-u); }); }
+      var nd=function(k,cap){ return Math.min(cap,R[k]>0?Ch[k]/R[k]:1); };   // 그 항목에 필요한 양이 0이면 찬 것으로
+      if(RING_KKUK)ps.push(nd("kkuk",1)); ps.push(nd("sniff",1.2)); ps.push(nd("dist",1.2));
+      if(poopCounts)ps.push(T.poop>0?1:0);
+      sh=Math.round(ps.reduce(function(a,b){return a+b;},0)/ps.length*100); }
+    if(sh>sc)sc=sh; }
+  return {n:ws.length,outs:T.outs,usual:usual>=2?usual:0,hard:hardCut?(allHard?2:1):0,why:hardCut?(hardWhy||"rain"):"",
+    score:Math.max(0,Math.min(100,sc)),sum:T,B:B,poopCounts:poopCounts,
     avgRaw:raw.reduce(function(a,b){return a+b;},0)/raw.length};
 }
 function dayMsg(D){
   if(D.score>=100&&D.avgRaw>=1.10)return "오늘은 평소보다 넉넉했어요";
+  // 고침 5: 힘든 날은 '평소'가 아니라 줄어든 '오늘 몫'에 견준 말로 쓴다
+  if(D.hard)return D.score>=100?"오늘 몫은 다 채웠어요":D.score>=85?"오늘 몫을 거의 채웠어요":D.score>=50?"오늘 몫의 절반은 넘었어요":"오늘은 가볍게 걸었어요";
+  // 고침 4: 평소보다 적게 나간 날은 링이 덜 차도 걸은 양은 평소만큼일 수 있다. 그럴 때는 양을 따로 말한다(넉넉 판정과 같은 avgRaw).
+  // 말은 "오늘 평소만큼 했어요"보다 길지 않게 쓴다(360px 폰에서 줄이 넘어가면 카드가 길어져 스크롤이 생긴다)
+  if(D.usual&&D.outs<D.usual&&D.avgRaw>=0.85)return D.avgRaw>=1.10?"양은 평소보다 많아요":"양은 평소만큼이에요";
   if(D.score>=85)return "오늘 평소만큼 했어요";
   if(D.score>=50)return "오늘 평소의 절반은 넘었어요";
   return "오늘은 가볍게 걸었어요";
@@ -3618,7 +3858,7 @@ function renderEndSig(){
     '<div class="k">산책 끝에 '+esc(kmJosa(nm,"은","는"))+'요?</div>'+
     '<div class="b3">'+["more","home","unk"].map(function(k){return '<button type="button" data-esig="'+k+'">'+ENDSIG[k]+'</button>';}).join("")+'</div>'+
     '<button type="button" class="lk" data-esig="cut">'+ENDSIG.cut+'</button>'+
-    '<div class="s">한 번만 누르면 돼요. 모아 두었다가 '+esc(nm)+'에게 충분한 양을 맞추는 데 써요</div></div>';
+    '<div class="s"><span class="sn">한 번만 누르면 돼요.</span> <span class="sn">모아 두었다가 '+esc(nm)+'에게 충분한 양을 맞추는\u00a0데\u00a0써요</span></div></div>';
 }
 $("endsig").addEventListener("click",function(e){
   var b=e.target.closest("[data-esig]"); if(!b)return;
@@ -3778,6 +4018,11 @@ function tick(){
                :"다른 앱 보는 중엔 경로가 안 그려져요. 꾹과 똥은 그대로 기록돼요")
       : (W.gaps?"끊긴 구간 "+W.gaps+"곳 · 그 사이 경로는 비어 있어요":"");
   }
+  // 고침 6: GPS 알림 줄이 비어 있을 때만 그 자리에 '그거 아세요?' 한 줄. 문장은 TIPS에서만 가져온다(저장된 글자를 화면에 넣지 않는다)
+  var tp=$("gtip");
+  if(tp){ var tip=wn.textContent?null:tipById(W.tip);
+    if(tip&&tp.getAttribute("data-id")!==tip.id){ tp.setAttribute("data-id",tip.id); tp.innerHTML="<b>그거 아세요?</b>"+tip.t; }
+    tp.hidden=!tip; wn.hidden=!!tip; }
   var gd=gaugeDetail(W);
   if(!gd.ready){
     $("gnum").textContent="-";var wsg0=$("wseg-g");if(wsg0)wsg0.textContent="-";
@@ -3793,7 +4038,7 @@ function tick(){
     $("gmsg").textContent=gmsgOf(g,gd);
     // 0.4.4: 오늘 앞서 다녀온 산책이 있으면 하루 합계도 한 줄에 보여 준다(나눠 걸어도 손해가 없게)
     var dk0=dayOf(W.start), dsc=(dk0===dayOf(Date.now())&&dayWalks(dk0).length)?dayScore(dk0,W).score:null;
-    $("gsub").textContent=[dsc!=null?"오늘 전체 "+dsc:"",gd.bonusPoop?"똥 보너스":"",gd.bonusSpot?"새 꾹자리":"",tail.replace(/^ · /,"")].filter(Boolean).join(", ");   // 0.4.4: 항목이 늘어 가운뎃점 대신 쉼표
+    $("gsub").textContent=[gd.hard===2?"쉬만 해도 차요":gd.hard===1?"절반만 걸어도 차요":"",dsc!=null?"오늘 전체 "+dsc:"",gd.bonusPoop?"똥 보너스":"",gd.bonusSpot?"새 꾹자리":"",tail.replace(/^ · /,"")].filter(Boolean).join(", ");   // 0.4.4: 항목이 늘어 가운뎃점 대신 쉼표
   }
   $("w-time").textContent=ms2t(Date.now()-W.start);
   $("w-km").textContent=((W.dist||0)/1000).toFixed(2)+" km";
@@ -3806,6 +4051,32 @@ function tick(){
    킁킁: 속도 값이 있으면 0.35m/s 미만일 때, 없으면 기준점에서 6초 넘게 못 벗어났을 때의 시간.
    끊김: 45초 넘게 점이 없다가 오면 그 사이를 직선으로 잇지 않고 끊어 그린다(걷는 속도일 때만 거리 인정). */
 var gpsResume=false,gpsDenied="",lastSave=0;
+/* ── 고침 11: 튀는 점 거르기 (06 11/12 산책 피드백: 시작 직후 아파트에서 지도가 탁탁 튄다) ──
+   앞에 받아들인 점에서 초속 7m(시속 약 25km)보다 빠르게 움직인 꼴이면 그 점은 버린다. 거리, 길, 킁킁 시간 어디에도 넣지 않는다.
+   버린 점이 3번 이어서 서로는 말이 되는 거리에 찍히면(진짜로 자리를 옮겼거나 앞 점이 틀렸던 것) 선을 끊고 그 자리에서 다시 잇는다.
+   그 사이 거리는 더하지 않는다. 튄 첫 점 하나만 남아 있었으면 그 점은 지운다.
+   7m/s는 저희가 정한 값이다 [가정]: 강아지와 뛰는 속도보다 넉넉히 높게 잡았다. 그래서 차나 자전거로 그보다 빨리 간 구간은 거리로 세지 않게 된다.
+   45초 넘게 끊겼다 온 점은 여기서 보지 않는다(아래 끊김 규칙이 맡는다). 걸러지기 전의 원본 점은 glAdd에 그대로 남는다. */
+var JUMP_V=7, JUMP_N=3, jG=null, jC=null, jN=0, jW=0;
+function jumpCheck(f){      // 0 버린다, 1 받아들인다, 2 자리를 옮긴 것으로 받아들인다
+  if(jW!==W.start){ jW=W.start; jG=null; jC=null; jN=0; }
+  if(!jG){ jG=f; return 1; }
+  var dt=(f.t-jG.t)/1000;
+  if(dt<0)return 1;                                        // 시각이 거꾸로인 점은 아래에서 버린다
+  if(dt>45||dist(jG,f)/Math.max(dt,1)<=JUMP_V){ jG=f; jC=null; jN=0; return 1; }
+  var dc=jC?(f.t-jC.t)/1000:-1;
+  jN=(dc>=0&&dist(jC,f)/Math.max(dc,1)<=JUMP_V)?jN+1:1; jC=f;
+  if(jN<JUMP_N)return 0;
+  jG=f; jC=null; jN=0; return 2;
+}
+function jumpReloc(f){      // 자리를 옮긴 것: 거리는 더하지 않고, 선을 끊어 여기서 다시 잇는다
+  var P=W.pts, q=[+f.lat.toFixed(6),+f.lng.toFixed(6)];
+  if(P.length===1&&!W.dist)P.pop();                        // 튄 첫 점 하나만 남아 있었으면 그 점을 지운다
+  if(P.length){q.push(1);W.gaps=(W.gaps||0)+1;}            // 길 가운데가 비면 끊긴 구간으로 센다(산책 화면의 '끊긴 구간 N곳' 안내)
+  P.push(q); delete W.segNext;
+  W.anc={lat:f.lat,lng:f.lng,t:f.t}; lastFix=f; gpsResume=false;
+  tick();S.live=W; lastSave=f.t; persistLive(); widgetPushSoon();
+}
 function gpsFix(f){
   if(!W)return;
   widgetDrain();
@@ -3813,6 +4084,9 @@ function gpsFix(f){
   if(!(f.acc<=60))return;
   gpsDenied="";if(NATIVE&&!S.locOK)S.locOK=1;
   if(!loc||S.manual){loc={lat:f.lat,lng:f.lng};if(S.manual){delete S.manual;save();}loadWeather();}
+  var jr=jumpCheck(f);                                     // 고침 11: 튀는 점은 여기서 버린다
+  if(!jr)return;
+  if(jr===2){jumpReloc(f);return;}
   var gapFlag=false,moved=false,anc=W.anc;
   if(lastFix){
     var dt=(f.t-lastFix.t)/1000;
@@ -3961,8 +4235,50 @@ $("pocketbtn").addEventListener("click",pocketOn);
   el.addEventListener("touchend",up,{passive:false}); el.addEventListener("touchcancel",up,{passive:false}); el.addEventListener("mouseup",up); el.addEventListener("mouseleave",up);
   el.addEventListener("contextmenu",function(e){e.preventDefault();});
 })();
+/* ══ 0.5.0 고침 6: 그거 아세요? (산책 중 한 줄) ════════════════════
+   보호자가 알아 두면 좋은 사실을 산책 한 번에 한 줄 보여 준다(06 11/12). 논문이나 공식 자료의 원문을 확인한 사실만 쓴다.
+   판정하는 말은 쓰지 않는다. 문장은 360px 폰에서 한 줄에 들어오게 24자 안팎으로 쓴다.
+   m: 보이는 달(처음, 끝. 12월에서 2월처럼 해를 넘겨도 된다). hot: 그 날씨일 때 먼저 보인다. only: 그 날씨일 때만 보인다.
+   고르는 법: 날씨에 맞는 줄이 있으면 그 가운데서, 없으면 나머지에서 '가장 오래 안 본 줄'. 본 순서는 폰에만 남긴다(S.tips.seen). */
+var TIPS=[
+  {id:"smell-new",    t:"처음 맡는 냄새는 더 오래 맡아요"},                       // Wang, Horowitz 2026 (43마리, 냄새 견본 실험)
+  {id:"leash-sniff",  t:"목줄을 한 강아지는 냄새를 4분의 1만 맡았어요"},           // Westgarth 외 2010 (공원 관찰 286회, 16%와 4%)
+  {id:"nosework",     t:"냄새 찾기 놀이 2주 뒤 더 낙관적이 됐어요"},               // Duranton, Horowitz 2019 (10마리씩)
+  {id:"long-walk",    t:"길게 걷는 강아지는 과체중이 적었어요"},                   // German 외 2017 (설문 11,154마리, 원인은 못 가림)
+  {id:"greet",        t:"2시간 만에 돌아와도 30분 때보다 더 반겨요"},              // Rehn, Keeling 2011 (12마리)
+  {id:"sleep-breath", t:"잘 때 숨은 1분에 13번쯤이 보통이에요"},                   // Rishniw 외 2012 (114마리)
+  {id:"dust-vet",     t:"먼지가 많은 주엔 동물병원 방문이 늘어요"},                // Jarvis 외 2025 (영국 방문 약 700만 건)
+  {id:"tick-grass",   t:"진드기의 절반은 풀밭에서 잡혀요", m:[4,11]},              // 질병관리청 2023년 참진드기 감시 (초지 48.2%)
+  {id:"winter-less",  t:"겨울엔 강아지도 봄보다 덜 움직여요", m:[12,2]},           // O'Rourke 외 2025 (28,562마리, 봄 44.1분과 겨울 41.6분)
+  {id:"asphalt",      t:"여름 아스팔트는 기온보다 11도쯤 뜨거워요", m:[5,9], hot:"heat"},   // 나성준 외 2024 (서울 실측, 평균 10.9도)
+  {id:"heat-exercise",t:"더위 사고 넷 중 셋은 운동 중에 시작돼요", m:[5,9], hot:"heat"},    // Hall 외 2020 (879건 중 652건)
+  {id:"snow-heart",   t:"눈에 발이 빠지면 심장이 더 빨리 뛰어요", only:"snow"},     // Crête, Larivière 2003 (강아지 3마리)
+  {id:"snow-paws",    t:"눈 온 뒤엔 발을 닦아 주세요(제설제)", only:"snow"}         // 미국수의사회 추운 날 안내, 머크 수의 매뉴얼
+];
+function tipById(id){ for(var i=0;i<TIPS.length;i++)if(TIPS[i].id===id)return TIPS[i]; return null; }
+function tipCtx(now){      // 지금 날씨: 더위(앱 단계가 '짧게, 그늘로' 이상), 눈(지난 6시간과 앞 1시간에 눈). 실제 날씨를 받았을 때만
+  var c={heat:false,snow:false};
+  try{ if(WX&&WXLIVE&&loc&&WX.hours){ var d=new Date(now), h=d.getHours(), g=gradeAt(d,h); c.heat=!!(g&&g.g>=1);
+    for(var i=Math.max(0,h-6);i<=h+1;i++){ var w=WX.hours[i]; if(w&&w.snow>0)c.snow=true; } } }catch(e){}
+  return c;
+}
+function tipPick(now){     // 이번 산책에 보일 줄의 id. 본 순서를 S.tips.seen에 남긴다(다음 저장 때 같이 저장된다)
+  var c=tipCtx(now), mo=new Date(now).getMonth()+1;
+  var seen=(S.tips&&Array.isArray(S.tips.seen))?S.tips.seen.filter(function(x){return typeof x==="string";}):[];
+  function inMonth(t){ if(!t.m)return true; var a=t.m[0], b=t.m[1]; return a<=b?(mo>=a&&mo<=b):(mo>=a||mo<=b); }
+  var pri=[], norm=[];
+  TIPS.forEach(function(t){ if(t.only){ if(c[t.only])pri.push(t); return; } if(t.hot&&c[t.hot]){ pri.push(t); return; } if(inMonth(t))norm.push(t); });
+  var pool=pri.length?pri:norm; if(!pool.length)return null;
+  var best=pool[0], bestAt=1e9;
+  pool.forEach(function(t){ var at=seen.lastIndexOf(t.id); if(at<bestAt){ bestAt=at; best=t; } });   // 본 적 없는 줄(-1)이 먼저, 그다음은 본 지 가장 오래된 줄
+  seen=seen.filter(function(x){return x!==best.id;}); seen.push(best.id);
+  S.tips={seen:seen.slice(-40)};
+  return best.id;
+}
 function begin(w){
-  W=w;lastSave=0;tab("walk");startGPS();tick();headListen();
+  W=w;lastSave=0;
+  if(!tipById(W.tip)){ try{ W.tip=tipPick(Date.now()); }catch(e){ W.tip=null; } }   // 고침 6: 이 산책의 한 줄(다시 켜도 같은 줄, 이어 걷기는 새 줄)
+  tab("walk");startGPS();tick();headListen();
   clearInterval(timer);timer=setInterval(tick,1000);
   holdScreen();
   widgetPush();
@@ -4054,11 +4370,12 @@ function endWalk(){
   stopGPS();
   W.end=Date.now();
   if(WX&&WXLIVE&&WX.now&&WX.now.air!=null)W.air=Math.round(WX.now.air);   // 기온 스티커용. 실측일 때만
+  try{ var hl=hardLv(dayOf(W.start)).lv[HARD_SL.indexOf(slotOf(W.start))]; if(hl)W.hard=hl; }catch(e){}   // 고침 5: 힘든 시간대 꼬리표. 이 산책의 꾹게이지와 평소 기준이 이 값을 본다
   var gd=gaugeDetail(W); var g=gd.ready?gd.score:null; W.gauge=g; W.slot=gd.slot;
   beta("walks");beta("walkTaps",W.taps||1);if(NATIVE)beta("walksApp");
   hk("walk_end",{minutes:Math.round((W.end-W.start)/60000),km:Math.round((W.dist||0)/100)/10,
     kkuk:(W.kkuks||[]).length,poop:(W.poops||[]).length,gauge:(g==null?-1:g),resumed:!!W.resumedAt});
-  delete W.anc;
+  delete W.anc; delete W.tip;   // 고침 6: 한 줄 팁은 화면용이라 기록에 남기지 않는다
   // 꾹꾹로는 자동으로 만들지 않는다. 기록에서 불러와 직접 다듬어 만든다.
   try{kmFogWalk(W);}catch(e){}
   S.walks.unshift(W);
@@ -4199,6 +4516,8 @@ function recordPee(p,at){
 /* ══ 킁킁: 오래 맡는 곳에서 한 번 누른다(누르고 떼기 없음) ══ */
 $("b-sniff").addEventListener("click",function(){
   if(!W)return;
+  // 고침 10(06 11/12 산책 피드백): 냄새는 걷는 내내 맡으니 언제 누르는지 헷갈린다. 처음 누를 때 한 번만 알려 준다. 기록은 그대로 남긴다
+  if(!S.snHint){S.snHint=1;save();toast("킁킁은 3초\u00a0넘게 냄새\u00a0맡는 곳에서 눌러\u00a0주세요",6000);$("toast").classList.add("long");}   // 긴 알림 모양(화면 너비까지 한 줄로)
   withFreshFix(recordSniff);
 });
 function recordSniff(p,at){
@@ -4346,9 +4665,9 @@ function renderWalks(){
   });
   bc.innerHTML = rows.length
     ? '<div class="lbl" style="margin-bottom:6px">내 기준선</div>'+rows.join("")+
-      '<div class="src" style="margin-top:9px">꾹게이지 100점은 <b>'+esc(kmJosa(S.dog&&S.dog.name?S.dog.name:"우리 아이","이","가"))+
-      ' 그 시간대에 평소 하던 만큼</b>이에요. 논문 배점이 아니라 자기 기록이 기준입니다.<br>'+
-      '처음 5번은 몸무게와 나이로 만든 임시 기준과 섞어요. 똥은 배변 습관이 밖에서만이면 넣고 주로 집 안이면 빼요. 그 밖에는 평소 절반 이상 싸는 시간대에만 넣어요.</div>'
+      '<div class="src" style="margin-top:9px"><span class="sn">꾹게이지 100점은 <b>'+esc(kmJosa(S.dog&&S.dog.name?S.dog.name:"우리 아이","이","가"))+
+      ' 그 시간대에 평소 하던\u00a0만큼</b>이에요.</span> <span class="sn">논문 배점이 아니라 자기 기록이 기준입니다.</span><br>'+
+      '<span class="sn">처음 5번은 몸무게와 나이로 만든 임시 기준과 섞어요.</span> <span class="sn">똥은 배변 습관이 밖에서만이면 넣고 주로 집 안이면 빼요.</span> <span class="sn">그 밖에는 평소 절반 이상 싸는 시간대에만 넣어요.</span></div>'
     : '<div class="empty">산책을 하면 시간대별 기준이 생겨요</div>';
   var wl=$("walklist");
   wl.innerHTML=!S.walks.length?'<div class="empty">아직 기록이 없어요</div>':
@@ -4406,10 +4725,24 @@ function renderLog(){
     "<br><br><b>산책과 몸무게</b>: 한 번에 10분 이하로 걷는 강아지는 1시간 넘게 걷는 강아지보다 "+
     "과체중인 경우가 <b>2.2배</b> 많았습니다(영국 11,154마리 설문, German 외 2017. 무엇이 원인인지는 가리지 못한 조사). "+
     "먹이를 25% 줄여 마른 몸을 유지한 래브라도는 <b>1.8년</b> 더 살았어요(24쌍, Kealy 외 2002).<br>"+
-    "<b>킁킁이 중요한 이유</b>: 목줄을 풀었을 때는 시간의 16%, 목줄을 했을 때는 4%를 냄새 맡는 데 썼고"+
+    "<b>킁킁이 중요한 이유</b>: 목줄을 풀었을 때는 시간의 16%, 목줄을 했을 때는 <span class='nb'>4%를</span> 냄새 맡는 데 썼고"+
     "(영국 공원 관찰 286회, Westgarth 외 2010), 2주 노즈워크를 한 강아지들은 "+
     "낙관적인 판단이 늘었습니다(10마리씩 비교, Duranton &amp; Horowitz 2019). "+
-    "한국은 목줄이 의무라 보호자가 멈춰 줘야 냄새를 맡을 수 있어요. 그래서 꾹게이지는 멈춰 선 시간도 함께 봅니다.";
+    "한국은 목줄이 의무라 보호자가 멈춰 줘야 냄새를 맡을\u00a0수\u00a0있어요. 그래서 꾹게이지는 멈춰 선 시간도 함께 봅니다."+
+    "<br><b>하루 링</b>: 나눠 걸은 산책을 더해 평소 하루와 견줍니다. 평소보다 적게 나간 날은 다른 산책에서 더 걸어도 "+
+    "나가지 않은 산책 몫의 <b>절반까지만</b> 채워져요. 혼자 있는 시간과 배변 기회는 길게 걷는다고 채워지지\u00a0않아서예요"+
+    "(혼자 있던 시간이 30분일 때보다 2시간, 4시간일 때 돌아온 보호자를 더 활발하게 반겼어요. 12마리, Rehn &amp; Keeling 2011). "+
+    "절반이라는 값은 연구에서 나온 숫자가 아니라 저희가 정한 값입니다."+
+    "<br><b>힘든 날</b>: 비가 오거나 덥거나 몹시 추운 시간대의 산책은 덜 걸어도 그 몫이 찹니다. "+
+    "약한 비(시간당 1mm 이상), '짧게, 그늘로', 영하\u00a012도 이하일 때는 절반, "+
+    "3mm 이상 비, '지금은 나가지 마세요', 영하\u00a015도 이하일 때는 꾹이나 똥만 해도 그 몫이 다 찬 것으로 봐요. "+
+    "비의 경계는 기상청 예보용어를 따랐고, 추위는 기상청 한파주의보와 한파경보의 기온을 빌렸습니다. "+
+    "강아지가 몇\u00a0도부터 위험한지 가른 연구는 찾지\u00a0못해서, 이\u00a0온도는 위험선이 아니라 덜\u00a0걸어도 되는 날을 정하는 데만 써요. "+
+    "절반이라는 값도 저희가 정한 값입니다."+
+    "<br><b>그거 아세요?</b>: 산책 중 한 줄은 논문과 공식 자료에서 확인한 사실만 씁니다. "+
+    "처음 맡는 냄새(Wang, Horowitz 2026, 43마리), 반기는 정도(Rehn, Keeling 2011, 12마리), 겨울 활동(O'Rourke 외 2025, 28,562마리), "+
+    "눈길의 심박수(Crête, Larivière 2003, 강아지 3마리), 먼지와 병원 방문(Jarvis 외 2025, 영국 방문 약 700만 건), "+
+    "더위 사고(Hall 외 2020, 879건 중 652건). 나머지는 위에 적은 연구와 같습니다.";
 }
 
 /* ── 기록 탭 안의 세 칸 ── */
@@ -5060,88 +5393,6 @@ function compassRose(){
     '</svg>'+
     '<div class="src" style="text-align:center;margin-top:5px">기록된 똥 '+hs.length+'번 중 <b>'+ns+'번</b>이 남북 ±30° 안</div>';
 }
-/* ══ 공유 카드 ══════════════════════════════════════════════════
-   이 앱의 값어치는 "판정 한 줄"이다. 그걸 그대로 그림으로 만들어 내보낸다.
-   요소는 셋만: 신호등 판정 · 세 온도 · 해제 시각. 동네 이름은 있으면 붙인다.
-   "추정"을 카드 안에 박는다. 추정값을 측정처럼 옮기면 한 번의 반박으로 무너진다. */
-function shareCard(){
-  if(!WX||!loc){toast("위치를 먼저 켜주세요");return;}
-  var d=new Date(), c=gradeAt(d,d.getHours());
-  if(!c){toast("아직 날씨를 못 받았어요");return;}
-
-  var gInShade=Math.max(c.gShade,c.gHeat);
-  var shadeSaves=(c.g>0 && c.gShade<c.gSun && gInShade<=1);
-  var shown=shadeSaves?Math.max(1,gInShade):c.g;
-  var head=shadeSaves?"그늘로만 걸으세요":LIGHT[c.g].h;
-
-  var W=1080,H=1350,cv=document.createElement("canvas");
-  cv.width=W;cv.height=H;
-  var x=cv.getContext("2d");
-  var BG=["#DCE9DC","#F5E7CB","#F4DBD5"][shown];
-  var FG=["#2C5A38","#7A5209","#8C2E1E"][shown];
-  x.fillStyle="#F4F2ED";x.fillRect(0,0,W,H);
-  x.fillStyle=BG;
-  (x.roundRect?function(){x.beginPath();x.roundRect(60,60,W-120,H-300,52);x.fill();}
-             :function(){x.fillRect(60,60,W-120,H-300);})();
-
-  x.textAlign="center";x.fillStyle=FG;
-  (function(){ var cx=W/2, cy=300;                 // 상태 아이콘(체크 또는 느낌표)을 직접 그린다
-    x.beginPath(); x.arc(cx,cy,72,0,Math.PI*2); x.fill();
-    x.save(); x.strokeStyle="#FFFFFF"; x.fillStyle="#FFFFFF"; x.lineWidth=15; x.lineCap="round"; x.lineJoin="round"; x.beginPath();
-    if(shown===0){ x.moveTo(cx-31,cy+2); x.lineTo(cx-8,cy+25); x.lineTo(cx+33,cy-20); x.stroke(); }
-    else{ x.moveTo(cx,cy-38); x.lineTo(cx,cy+8); x.stroke(); x.beginPath(); x.arc(cx,cy+33,9,0,Math.PI*2); x.fill(); }
-    x.restore(); })();
-  x.font="400 92px 'Jua','Pretendard Variable',sans-serif";
-  x.fillText(head,W/2,515);
-
-  // 세 온도
-  var ty=700, gap=300;
-  var vals=[["양지",c.sun+"°C","#B03A25"],["그늘",c.shade+"°C","#B07914"],["기온",Math.round(c.air)+"°C","#3F7A4C"]];
-  vals.forEach(function(v,i){
-    var cx=W/2+(i-1)*gap;
-    x.fillStyle="rgba(34,30,25,.55)";x.font="400 40px 'Jua','Pretendard Variable',sans-serif";
-    x.fillText(v[0],cx,ty);
-    x.fillStyle=v[2];x.font="400 92px 'Jua','Pretendard Variable',sans-serif";
-    x.fillText(v[1],cx,ty+96);
-  });
-
-  // 해제 시각
-  var safeFrom=null,safeTm=false;
-  for(var i=d.getHours()+1;i<d.getHours()+24;i++){
-    var tm=i>=24,hh=i%24;
-    var dt=new Date(d.getFullYear(),d.getMonth(),d.getDate()+(tm?1:0),hh);
-    var xx=gradeAt(dt,i<WX.hours.length?i:hh);
-    if(xx&&xx.g===0){safeFrom=hh;safeTm=tm;break;}
-  }
-  x.fillStyle="rgba(34,30,25,.78)";x.font="400 46px 'Jua','Pretendard Variable',sans-serif";
-  var line2 = c.g>0
-    ? (safeFrom!=null?(safeTm?"내일 ":"")+safeFrom+"시부터 괜찮아져요":"오늘은 계속 조심하세요")
-    : "지금 나가기 좋아요";
-  x.fillText(line2,W/2,ty+200);
-
-  // 동네
-  var place=S.manual&&S.manual.label?S.manual.label:null;
-  if(place){
-    x.fillStyle="rgba(34,30,25,.45)";x.font="400 36px 'Jua','Pretendard Variable',sans-serif";
-    x.fillText(place,W/2,ty+272);
-  }
-
-  // 하단, 추정 명시
-  x.fillStyle="#5B554C";x.font="400 40px 'Jua','Pretendard Variable',sans-serif";
-  x.fillText("사람은 신발을 신고, 강아지는 맨발입니다",W/2,H-190);
-  x.fillStyle="#8C857A";x.font="400 32px 'Jua','Pretendard Variable',sans-serif";
-  x.fillText("바닥 온도는 기온, 햇빛, 그늘로 계산한 추정값이에요",W/2,H-134);
-  x.fillStyle="#1B1712";x.font="400 46px 'Bagel Fat One','Jua',sans-serif";
-  x.fillText("꾹꾹이",W/2,H-58);
-
-  cv.toBlob(function(b){
-    if(!b){toast("이미지를 못 만들었어요");return;}
-    var txt=head+" · 양지 "+c.sun+"°C / 그늘 "+c.shade+"°C / 기온 "+Math.round(c.air)+"°C (추정)";
-    saveShare(b,"kkukkkuki_floor.png",txt,"오늘 바닥 온도");
-  },"image/png");
-}
-$("share").addEventListener("click",shareCard);
-
 /* ── 동네 이름 (카드 한 줄: "9월 16일 저녁 · 강서구 화곡동") ──
    오픈스트리트맵 Nominatim 역지오코딩. 산책 한 번에 한 번, 좌표는 날씨와 같은 소수 셋째 자리(약 100m)로
    뭉개서 보낸다. 결과는 이 기기에 캐시. 정책: 초당 1회 이하, 출처 표기. 바꿔야 하면 PLACE_API 한 줄. */
@@ -7328,6 +7579,7 @@ function tab(v){
   document.body.classList.toggle("walking",v==="walk");
   document.querySelectorAll("#tabs button").forEach(function(b){b.classList.toggle("on",b.dataset.v===v);});
   window.scrollTo(0,0);
+  if(v==="home")fitStart();
 }
 document.querySelectorAll("#tabs button").forEach(function(b){
   b.addEventListener("click",function(){tab(b.dataset.v);
