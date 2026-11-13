@@ -3586,8 +3586,11 @@ function median(a){
 }
 /* 첫 주 문제, 기준선이 14회 쌓일 때까지 아무것도 못 보여주면
    대부분은 핵심을 한 번도 못 보고 떠난다. 그래서 체중·나이로 임시선을
-   깔고, 산책이 한 번 쌓일 때마다 개인값 쪽으로 한 칸씩 갈아끼운다.
-   5회면 100% 그 개의 값이 된다. 화면에는 "임시 기준"이라고 적는다. */
+   깔고, 산책이 한 번 쌓일 때마다 그 강아지의 값 쪽으로 한 칸씩 갈아끼운다.
+   화면에는 "임시 기준"이라고 적는다.
+   고침 14(06 11/12 밤 산책: 낮에 한 번 걸었는데 밤에는 다시 0/5였고 16분, 900m에 95점이 났다):
+   임시 쪽을 몸무게 공식만으로 채우지 않고 시간대가 달라도 자기 기록으로 채운다. 끝낸 산책이 3번이면 공식은 다 빠진다.
+   그 시간대의 기록은 예전처럼 5번에 걸쳐 그 시간대 값으로 바뀐다(5번이 찬 시간대는 숫자가 예전과 같다). 3과 5는 정한 값 [가정]. */
 function provBase(){
   var kg=(S.dog&&S.dog.kg)||10, a=(S.dog&&S.dog.age!=null)?S.dog.age:4;
   var d=600+Math.min(950,kg*45);
@@ -3596,16 +3599,35 @@ function provBase(){
   if(S.dog&&S.dog.brachy)d*=0.85;
   return {dist:Math.round(d), kkuk:Math.max(3,Math.round(kg*0.4)+2), sniff:180000};
 }
-function baseline(slot,excludeStart){
-  var all=S.walks.filter(function(w){
-    return w.end&&slotOf(w.start)===slot&&w.start!==excludeStart;});
+function baseline(slot,excludeStart,skipDk){   // skipDk: 하루 링이 부를 때 넘기는 날짜. 그날의 산책은 임시 쪽 표본에서 뺀다(아래 고침 14의 끝 줄)
+  var NEED=3;   // 고침 14: 자기 기록이 이만큼 쌓이면 몸무게 공식을 쓰지 않는다
+  var fin=S.walks.filter(function(w){return w.end&&w.start!==excludeStart;});
+  var all=fin.filter(function(w){return slotOf(w.start)===slot;});
   // 고침 5: 힘든 시간대에 한 산책(꼬리표 hard)은 평소 기준에서 뺀다. 보통 산책이 5번 이상 남을 때만(장마철에 기준이 내려가지 않게)
   var plain=all.filter(function(w){return !w.hard;}), ws=(plain.length>=5?plain:all).slice(0,14);
   var P=provBase();
-  if(!ws.length)return {n:0,ready:true,prov:1,drift:false,
-    dist:P.dist,kkuk:P.kkuk,sniff:P.sniff,poopRate:0,poopCounts:pottyHabit()==="out"};
+  // 고침 14: 임시 쪽 Q = 자기 전체 기록(모든 시간대)의 가운데 값과 몸무게 공식을 섞은 값. 자기 기록의 몫 mixA는 끝낸 산책 수/3. 힘든 날 산책은 위와 같은 규칙으로 뺀다.
+  //   5번이 찬 시간대는 이 계산을 아예 하지 않는다(숫자가 예전과 같다).
+  //   이상한 값이 든 기록(가져온 파일의 글자, 음수, 터무니없이 큰 값)은 여기서 세지 않는다. 0으로 치거나 그대로 쓰면 다른 시간대의 기준이 바닥이나 끝없는 값이 되고 배운 횟수로도 잘못 센다(Codex 11/13).
+  //   세는 범위: 거리 0~200km, 멈춤 0~24시간, 꾹 1000번까지(정한 값 [가정]). 없는 값은 예전처럼 0으로 친다
+  //   하루 링이 '한 번의 몫'을 물을 때(skipDk)는 그날의 산책을 세지 않는다. 세면 저녁 산책을 끝내는 순간 낮 산책의 몫이 바뀌어 걸은 양은 같은데 하루 링이 뛴다(88 → 100, GPT-6-Astra 11/13)
+  var mixA=0, Q=P, nA=NEED;   // nA: 임시 쪽에 센 자기 기록 수(3까지). 산책 중 글 '임시 기준 (n/3회 학습)'의 n
+  if(ws.length<5){
+    var okN=function(v,max){return v==null||(typeof v==="number"&&v>=0&&v<=max);};
+    var good=fin.filter(function(w){return (skipDk==null||dayOf(w.start)!==skipDk)&&okN(w.dist,2e5)&&okN(w.sniff,864e5)&&(w.kkuks==null||(Array.isArray(w.kkuks)&&w.kkuks.length<=1000));});
+    var plainA=good.filter(function(w){return !w.hard;}), wa=(plainA.length>=5?plainA:good).slice(0,14);
+    mixA=Math.min(1,wa.length/NEED); nA=Math.min(NEED,wa.length);
+    if(wa.length){
+      var DA=Math.max(150,median(wa.map(function(w){return w.dist||0;})));
+      var KA=Math.max(1,median(wa.map(function(w){return (w.kkuks||[]).length;})));
+      var NA=Math.max(30000,median(wa.map(function(w){return w.sniff||0;})));
+      Q={dist:DA*mixA+P.dist*(1-mixA), kkuk:KA*mixA+P.kkuk*(1-mixA), sniff:NA*mixA+P.sniff*(1-mixA)};
+    }
+  }
+  if(!ws.length)return {n:0,ready:true,prov:1-mixA,nA:nA,drift:false,
+    dist:Q.dist,kkuk:Q.kkuk,sniff:Q.sniff,poopRate:0,poopCounts:pottyHabit()==="out"};
   var mix=Math.min(1,ws.length/5);
-  function bl(v,p){return v*mix+p*(1-mix);}
+  function bl(v,p){return mix>=1?v:v*mix+p*(1-mix);}   // 고침 14: 5번이 찬 시간대는 임시 쪽을 아예 보지 않는다(숫자가 예전과 같다)
   var poopRate=ws.filter(function(w){return (w.poops||[]).length>0;}).length/ws.length;
   var D=Math.max(150,median(ws.map(function(w){return w.dist||0;})));
   var K=Math.max(1,median(ws.map(function(w){return (w.kkuks||[]).length;})));
@@ -3618,8 +3640,8 @@ function baseline(slot,excludeStart){
     var o=median(ws.slice(5).map(function(w){return w.dist||0;}));
     drift = o>0 && r < o*0.75;
   }
-  return {n:ws.length,ready:true,prov:1-mix,drift:drift,
-    dist:bl(D,P.dist), kkuk:bl(K,P.kkuk), sniff:bl(N,P.sniff),
+  return {n:ws.length,ready:true,prov:(1-mix)*(1-mixA),nA:nA,drift:drift,   // prov: 몸무게 공식이 차지하는 몫(0이면 모두 자기 기록)
+    dist:bl(D,Q.dist), kkuk:bl(K,Q.kkuk), sniff:bl(N,Q.sniff),
     poopRate:poopRate,
     // 0.4.4: 배변 습관을 고르면 그걸 따른다. 밖에서만이면 첫날부터 똥을 채점, 집 안이면 채점하지 않는다. 모르면 예전처럼 기록을 보고 정한다
     poopCounts:pottyHabit()==="out"?true:pottyHabit()==="in"?false:(ws.length>=5&&poopRate>=0.5)};
@@ -3635,7 +3657,8 @@ function gaugeDetail(w){
   // 고침 5: 힘든 시간대의 산책은 덜 걸어도 찬다(1 짧게: 절반이면 참, 2 쉬만: 꾹이나 똥이 있으면 참). 끝난 산책은 꼬리표, 걷는 중은 그 시간대 등급.
   // 등급은 점수를 올리기만 한다(등급 1은 값을 2배로 쳐 주고, 등급 2는 꾹이나 똥이 없으면 보통 계산 그대로)
   var hl=w.end?(w.hard||0):(hardLv(dayOf(w.start)).lv[HARD_SL.indexOf(slot)]||0); if(hl!==1&&hl!==2)hl=0;   // 가져온 파일의 이상한 꼬리표는 등급 없음으로
-  function add(k,v,cap){parts.push({k:k,r:Math.min(cap||1.2,hl===1?v/HARD_F[1]:v)});raw.push(Math.min(cap||1.5,v));}
+  var capP=B.prov>0.01?1:1.2, capR=B.prov>0.01?1:1.5;   // 고침 14: 몸무게 공식이 섞인 임시 기준인 동안은 덤(120%)을 주지 않는다. '넉넉' 판정도 하지 않는다
+  function add(k,v,cap){parts.push({k:k,r:Math.min(cap||capP,hl===1?v/HARD_F[1]:v)});raw.push(Math.min(cap||capR,v));}
   add("꾹",(w.kkuks||[]).length/B.kkuk,1);   // 0.4.5: 꾹은 마킹 횟수라 평소보다 많아도 점수를 더 주지 않는다(1.0에서 자름)
   add("킁킁",(w.sniff||0)/B.sniff);
   add("거리",(w.dist||0)/B.dist);
@@ -3766,11 +3789,11 @@ function hardSync(){       // 날씨를 새로 받을 때마다 오늘 등급을
 function hardNow(now){     // 지금 시간대의 등급
   var h=hardLv(dayOf(now)), i=HARD_SL.indexOf(slotOf(now)); return {l:h.lv[i]||0,why:h.why[i]||""};
 }
-function hardShare(){      // 평소 하루에서 시간대마다 차지하는 몫(항목별): 그 시간대 평소 산책 × 그 시간대에 나간 날의 비율. 기록이 없으면 셋으로 똑같이
+function hardShare(skipDk){      // 평소 하루에서 시간대마다 차지하는 몫(항목별): 그 시간대 평소 산책 × 그 시간대에 나간 날의 비율. 기록이 없으면 셋으로 똑같이. 고침 14: skipDk(셈하는 날)의 산책은 임시 쪽 표본에서 뺀다
   var ds=dayStart(Date.now()), from=ds-14*864e5, days={}, has={morning:{},day:{},evening:{}}, KS=["dist","sniff","kkuk"];
   S.walks.forEach(function(w){ if(!w.end||w.start<from||w.start>=ds)return; var k=dayOf(w.start); days[k]=1; has[slotOf(w.start)][k]=1; });
   var nd=Object.keys(days).length, e={}, sum={dist:0,sniff:0,kkuk:0}, out={};
-  HARD_SL.forEach(function(sl){ var p=nd?Object.keys(has[sl]).length/nd:0, b=p?baseline(sl,null):null; e[sl]={};
+  HARD_SL.forEach(function(sl){ var p=nd?Object.keys(has[sl]).length/nd:0, b=p?baseline(sl,null,skipDk):null; e[sl]={};
     KS.forEach(function(k){ e[sl][k]=b?b[k]*p:0; sum[k]+=e[sl][k]; }); });
   HARD_SL.forEach(function(sl){ out[sl]={}; KS.forEach(function(k){ out[sl][k]=sum[k]>0?e[sl][k]/sum[k]:1/3; }); });
   return out;
@@ -3782,7 +3805,7 @@ function dayScore(dk,liveWalk,refT){
   var ph=pottyHabit(), parts=[], raw=[];
   // 고침 5: 힘든 날 등급. 시간대 몫에 등급 값을 곱해 오늘 필요한 양 R을 줄인다(등급이 없으면 R = B). R은 아래 '힘든 날 계산'에서만 쓴다
   var HD=hardLv(dk), R={dist:B.dist,sniff:B.sniff,kkuk:B.kkuk}, hardWhy="";
-  if(HD.lv[0]+HD.lv[1]+HD.lv[2]>0){ var SH=hardShare();
+  if(HD.lv[0]+HD.lv[1]+HD.lv[2]>0){ var SH=hardShare(dk);
     ["dist","sniff","kkuk"].forEach(function(k){ var f=0; HARD_SL.forEach(function(sl,i){ f+=SH[sl][k]*HARD_F[HD.lv[i]]; }); R[k]=B[k]*f; });
     HARD_SL.forEach(function(sl,i){ if(HD.lv[i]&&SH[sl].dist>0&&hardWhy!=="rain")hardWhy=HD.why[i]||"heat"; }); }
   var hardCut=R.dist<B.dist*0.999||R.sniff<B.sniff*0.999, allHard=hardCut&&R.dist<=0&&R.sniff<=0;   // allHard: 평소 나가는 시간대가 모두 쉬만 등급
@@ -3792,7 +3815,7 @@ function dayScore(dk,liveWalk,refT){
   if(usual>=2){
     var U={dist:0,sniff:0,kkuk:0}, KS=RING_KKUK?["dist","sniff","kkuk"]:["dist","sniff"];
     outings(ws).forEach(function(g){ var b={dist:0,sniff:0,kkuk:0};
-      g.forEach(function(w){ var sb=baseline(slotOf(w.start),w.start); KS.forEach(function(k){ b[k]=Math.max(b[k],sb[k]); }); });
+      g.forEach(function(w){ var sb=baseline(slotOf(w.start),w.start,dk); KS.forEach(function(k){ b[k]=Math.max(b[k],sb[k]); }); });   // 고침 14: dk(그날)는 임시 쪽 표본에서 뺀다
       // 한 번의 평소 몫: 그 시간대 평소 산책과 '평소 하루 ÷ 평소 횟수' 가운데 큰 쪽(평소와 다른 시간에 나갔다고 깎이지 않게)
       KS.forEach(function(k){ U[k]+=Math.max(b[k],B[k]/usual); }); });
     KS.forEach(function(k){ var u=Math.min(B[k],U[k]); if(u<B[k]&&T[k]>u)C[k]=u+DAY_MISS*Math.min(T[k]-u,B[k]-u); });
@@ -3810,7 +3833,7 @@ function dayScore(dk,liveWalk,refT){
     else{ var Ch={dist:T.dist,sniff:T.sniff,kkuk:T.kkuk}, KH=RING_KKUK?["dist","sniff","kkuk"]:["dist","sniff"], ps=[];
       if(usual>=2){ var Uh={dist:0,sniff:0,kkuk:0};   // 절반 규칙(고침 4)을 R 기준으로. 힘든 시간대에 나간 산책의 '한 번의 몫'도 등급 값만큼만
         outings(ws).forEach(function(g){ var b={dist:0,sniff:0,kkuk:0}, gf=hf(g[0].start);
-          g.forEach(function(w){ var sb=baseline(slotOf(w.start),w.start); KH.forEach(function(k){ b[k]=Math.max(b[k],sb[k]); }); });
+          g.forEach(function(w){ var sb=baseline(slotOf(w.start),w.start,dk); KH.forEach(function(k){ b[k]=Math.max(b[k],sb[k]); }); });
           KH.forEach(function(k){ Uh[k]+=gf*Math.max(b[k],B[k]/usual); }); });
         KH.forEach(function(k){ var u=Math.min(R[k],Uh[k]); if(u<R[k]&&T[k]>u)Ch[k]=u+DAY_MISS*Math.min(T[k]-u,R[k]-u); }); }
       var nd=function(k,cap){ return Math.min(cap,R[k]>0?Ch[k]/R[k]:1); };   // 그 항목에 필요한 양이 0이면 찬 것으로
@@ -4045,7 +4068,7 @@ function tick(){
     $("gnum").textContent=g;var wsg=$("wseg-g");if(wsg)wsg.textContent=g;
     $("gring").setAttribute("stroke-dashoffset",(615.8*(1-g/100)).toFixed(1));
     var tail="";
-    if(gd.B&&gd.B.prov>0.01)tail=" · 임시 기준 ("+gd.B.n+"/5회 학습)";
+    if(gd.B&&gd.B.prov>0.01)tail=" · 임시 기준 ("+(gd.B.nA||0)+"/3회 학습)";   // 고침 14: 기준에 센 자기 기록 수(시간대와 상관없이, 걷고 있는 산책은 빼고). 3번이면 임시가 아니다
     else if(gd.B&&gd.B.drift)tail=" · 기준선이 내려가는 중이에요";
     $("gmsg").textContent=gmsgOf(g,gd);
     // 0.4.4: 오늘 앞서 다녀온 산책이 있으면 하루 합계도 한 줄에 보여 준다(나눠 걸어도 손해가 없게)
@@ -4679,7 +4702,7 @@ function renderWalks(){
     ? '<div class="lbl" style="margin-bottom:6px">내 기준선</div>'+rows.join("")+
       '<div class="src" style="margin-top:9px"><span class="sn">꾹게이지 100점은 <b>'+esc(kmJosa(S.dog&&S.dog.name?S.dog.name:"우리 아이","이","가"))+
       ' 그 시간대에 평소 하던\u00a0만큼</b>이에요.</span> <span class="sn">논문 배점이 아니라 자기 기록이 기준입니다.</span><br>'+
-      '<span class="sn">처음 5번은 몸무게와 나이로 만든 임시 기준과 섞어요.</span> <span class="sn">똥은 배변 습관이 밖에서만이면 넣고 주로 집 안이면 빼요.</span> <span class="sn">그 밖에는 평소 절반 이상 싸는 시간대에만 넣어요.</span></div>'
+      '<span class="sn">처음 3번은 몸무게와 나이로 만든 임시 기준과 섞어요.</span> <span class="sn">똥은 배변 습관이 밖에서만이면 넣고 주로 집 안이면 빼요.</span> <span class="sn">그 밖에는 평소 절반 이상 싸는 시간대에만 넣어요.</span></div>'
     : '<div class="empty">산책을 하면 시간대별 기준이 생겨요</div>';
   var wl=$("walklist");
   wl.innerHTML=!S.walks.length?'<div class="empty">아직 기록이 없어요</div>':
