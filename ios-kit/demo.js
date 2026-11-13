@@ -47,7 +47,7 @@
     [34000,"pwc close",function(){ click("#pwc-close"); }],
     [36000,"log tab",function(){ click('#tabs button[data-v="log"]'); click('#logtab [data-v="walk"]'); }],   // 기록 탭
     [41000,"walk detail",function(){ click("#walklist [data-wid]"); }],                   // 산책 상세
-    [50000,"dong map",function(){ click("#w-close"); click('#logtab [data-v="poop"]'); }],   // 동네 지도
+    [50000,"dong map",function(){ click("#w-close"); click('#logtab [data-v="map"]'); }],   // 동네 지도(고침 18부터 지도 칸)
     [58000,"party",function(){ click('#tabs button[data-v="party"]'); }],
     [62000,"home",function(){ click('#tabs button[data-v="home"]'); }]
   ];
