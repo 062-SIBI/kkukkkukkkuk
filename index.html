@@ -1105,6 +1105,15 @@ body.pwc-on .toast{top:calc(70px + env(safe-area-inset-top,0px));bottom:auto;bac
 #pwc .pw-stage{position:relative;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding-block:4px}
 #pwc .pw-frame{position:relative;border-radius:14px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.06);background:#000;max-width:100%}
 #pwc .pw-frame canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+/* 고침 17: 남긴 PWC 기록 보기(#pwc.view)와 공유 전에 한 번 묻는 줄 */
+#pwc .pw-frame #pw-kept{display:none;width:100%;height:100%;object-fit:contain;background:#1d1712}
+#pwc.view{grid-template-columns:minmax(0,1fr)}
+#pwc.view .pw-frame canvas,#pwc.view .pw-panel,#pwc.view .pw-load,#pwc.view .pw-segst{display:none!important}
+#pwc.view .pw-frame #pw-kept{display:block}
+#pwc .pw-ask{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+#pwc .pw-ask p{margin:0;font-size:13px;line-height:1.45;color:var(--pfg)}
+#pwc .pw-ask div{display:flex;gap:8px;justify-content:center}
+.row .ic.pwth{border:0;padding:0;background-size:cover;background-position:center;cursor:pointer}
 #pwc .pw-frame canvas:active{cursor:grabbing}
 #pwc .pw-load{position:absolute;inset:0;display:grid;place-items:center;color:var(--pmuted);font-size:13px;background:#120d09}
 #pwc .pw-segst{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);white-space:nowrap;font-size:12.5px;font-weight:700;
@@ -2199,6 +2208,7 @@ body.walking .app{padding-bottom:16px}
       <canvas id="pw-cv" width="1080" height="1920" tabindex="0" aria-label="카드 미리보기. 숫자, 이름 줄, 경로, 스티커를 끌어서 옮길 수 있어요"></canvas>
       <div class="pw-load" id="pw-load">글꼴 불러오는 중</div>
       <div class="pw-segst" id="pw-segst" role="status" hidden></div>
+      <img id="pw-kept" alt="남겨 둔 PWC 기록">
     </div>
     <div class="pw-under" id="pw-under">
       <div class="pw-camui" id="pw-camui" hidden>
@@ -2217,6 +2227,8 @@ body.walking .app{padding-bottom:16px}
         <button class="pw-ib" id="pw-selDone" type="button" aria-label="선택 끝내기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l10 -10"/></svg></button>
       </div>
       <p class="pw-hint" id="pw-hint">끌어서 옮기고 두 손가락으로 크기를 바꿔요</p>
+      <div class="pw-ask" id="pw-ask" hidden><p><span class="sn">공유하면 이 그림이 이 산책의 PWC 기록으로 남아요.</span> <span class="sn">한 산책에 한 장이에요.</span></p><div><button class="pw-mini" id="pw-ask-no" type="button">더 고치기</button><button class="pw-cta" id="pw-ask-go" type="button">공유하기</button></div></div>
+      <p class="pw-hint" id="pw-keptnote" hidden>이 산책의 PWC 기록이에요. 한 산책에 한 장만 남겨요</p>
     </div>
   </main>
 
@@ -3553,6 +3565,7 @@ function enterMain(){
   try{ if(document.fonts&&document.fonts.load)document.fonts.load("400 46px 'Bagel Fat One'","꾹이").catch(function(){}); }catch(e){}   // 공유 이미지 맨 아래 로고
 }
 function boot(){
+  pwcLoad().then(function(){ try{ if(Object.keys(PWCK.has).length)renderLog(); }catch(e){} });   // 고침 17: 남긴 PWC 기록 목록
   nativeInit();
   press($("srcpick"),function(b){S.src=b.dataset.v;save();});
   $("betarep").addEventListener("click",betaSend);
@@ -4751,11 +4764,12 @@ function renderWalks(){
   var wl=$("walklist");
   wl.innerHTML=!S.walks.length?'<div class="empty">아직 기록이 없어요</div>':
     S.walks.slice(0,30).map(function(w){var t=new Date(w.start);
-      return '<div class="row tap" data-wid="'+w.start+'"><div class="ic">'+IC.logo+'</div><div class="tx">'+
+      return '<div class="row tap" data-wid="'+w.start+'">'+(pwcKept(w.start)?'<button type="button" class="ic pwth" data-pwc="'+w.start+'" aria-label="남겨 둔 PWC 기록 보기"></button>':'<div class="ic">'+IC.logo+'</div>')+'<div class="tx">'+
         '<div class="a">'+(w.gauge==null?'기준 학습 중':'꾹게이지 '+w.gauge)+' · '+(w.dist/1000).toFixed(2)+'km</div>'+
         '<div class="b cnts">'+cnts(w)+'</div></div>'+
         '<div class="rt">'+(t.getMonth()+1)+'/'+t.getDate()+'<br>'+pad(t.getHours())+':'+pad(t.getMinutes())+'</div></div>';
     }).join("");
+  pwcThumbs(wl);   // 고침 17
 }
 
 /* ── 💧·💩 ── */
@@ -4833,6 +4847,8 @@ press($("logtab"),function(b){
 
 /* ── 산책 상세 시트 ── */
 $("walklist").addEventListener("click",function(e){
+  var k=e.target.closest("[data-pwc]");   // 고침 17: 작은 그림을 누르면 남긴 PWC 기록을 크게 본다
+  if(k){ var kw=S.walks.filter(function(x){return x.start===+k.dataset.pwc;})[0]; if(kw){ pwcOpen(kw); return; } }
   var r=e.target.closest("[data-wid]");if(!r)return;
   openWalk(+r.dataset.wid);
 });
@@ -4841,6 +4857,7 @@ function openWalk(id){
   var w=S.walks.filter(function(x){return x.start===id;})[0];
   if(!w)return;
   curWalk=id;
+  var cb=$("w-card").querySelector("span"); if(cb)cb.textContent=pwcKept(id)?"PWC 기록 보기":"PWC 기록 만들기";   // 고침 17
   var t=new Date(w.start),mins=Math.round(((w.end||w.start)-w.start)/60000);
   $("w-head").innerHTML='<h3 style="font-size:19px">'+(t.getMonth()+1)+'월 '+t.getDate()+'일 '+
     pad(t.getHours())+':'+pad(t.getMinutes())+' <span style="font-size:12px;color:var(--ink-3)">'+
@@ -4872,8 +4889,8 @@ $("w-close").addEventListener("click",function(){$("wsheet").classList.remove("o
 $("wsheet").addEventListener("click",function(e){if(e.target===this)this.classList.remove("on");});
 $("w-del").addEventListener("click",function(){
   if(curWalk==null)return;
-  if(!confirm("이 산책 기록을 지울까요?"))return;
-  S.walks=S.walks.filter(function(x){return x.start!==curWalk;});save(); glForget(curWalk);
+  if(!confirm(pwcKept(curWalk)?"이 산책 기록과 남겨 둔 PWC 기록 그림을 지울까요?":"이 산책 기록을 지울까요?"))return;
+  S.walks=S.walks.filter(function(x){return x.start!==curWalk;});save(); glForget(curWalk); pwcDrop(curWalk);   // 고침 17: 남긴 그림도 함께 지운다
   $("wsheet").classList.remove("on");renderLog();toast("지웠어요");
 });
 
@@ -5544,22 +5561,26 @@ function placeFill(w,lang,cb){
    안드로이드 WebView엔 navigator.share도 <a download>도 없다. 그래서 앱에선 네이티브로 돈다. */
 function blobB64(b){return new Promise(function(res,rej){var r=new FileReader();
   r.onload=function(){var s=String(r.result);res(s.slice(s.indexOf(",")+1));};r.onerror=rej;r.readAsDataURL(b);});}
+/* 고침 17: 공유(저장)를 끝냈는지 돌려준다(끝냄 true, 그냥 닫았거나 못 했음 false). 예전에 부르던 곳은 이 값을 쓰지 않는다.
+   아이폰은 공유를 끝냈을 때, 안드로이드는 보낼 앱을 골랐을 때, 웹은 공유 창이 끝났거나 파일로 받기를 시작했을 때 끝낸 것으로 본다
+   (파일로 받기는 끝났는지 알 길이 없다. 못 받았으면 보기 화면의 공유로 같은 그림을 다시 받는다) */
 function saveShare(b,name,text,title){
   if(NATIVE&&NP.Filesystem&&NP.Share){
-    blobB64(b).then(function(d){return NP.Filesystem.writeFile({path:name,data:d,directory:"CACHE"});})
+    return blobB64(b).then(function(d){return NP.Filesystem.writeFile({path:name,data:d,directory:"CACHE"});})
       .then(function(r){return NP.Share.share({title:title||name,text:text||undefined,files:[r.uri],dialogTitle:title||"공유"});})
+      .then(function(r){return IOS?true:!!(r&&r.activityType);})   // 안드로이드는 고른 앱이 없어도 성공으로 답할 때가 있다(창을 띄운 채 홈에 다녀옴). 고른 앱이 있을 때만 끝낸 것으로 본다
       .catch(function(e){var m=String((e&&(e.message||e.errorMessage))||e);
-        if(!/cancel/i.test(m))toast("공유를 못 했어요");});
-    return;
+        if(!/cancel/i.test(m))toast("공유를 못 했어요");return false;});
   }
   var f=null;try{f=new File([b],name,{type:b.type});}catch(e){}
   if(f&&navigator.canShare&&navigator.canShare({files:[f]})){
-    navigator.share({files:[f],text:text||undefined}).catch(function(){});return;
+    return navigator.share({files:[f],text:text||undefined}).then(function(){return true;},function(){return false;});
   }
   var u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=name;
   document.body.appendChild(a);a.click();a.remove();
   setTimeout(function(){URL.revokeObjectURL(u);},4000);
   toast("파일로 저장했어요");
+  return Promise.resolve(true);
 }
 
 /* ══ PWC 기록, PADD Walk Club ══════════════════════════════════════
@@ -5569,6 +5590,69 @@ function saveShare(b,name,text,title){
    숫자를 머리 뒤로 숨긴다. 오려 내기를 못 하면 깊이 효과만 빼고 그린다.
    좌표는 폭 1080 설계 좌표. 스토리 9:16(1920) · 피드 4:5(1350). */
 var pwcOpen=function(){};
+/* 고침 17(06 11/13 "그래"): 산책 하나에 PWC 기록은 한 장. 공유(저장)를 끝내면 그 그림을 이 폰 안(IndexedDB "kkuk-pwc")에 남기고,
+   그 뒤로 그 산책은 만들기 대신 보기만 된다. 열쇠는 산책의 시작 시각. 그림은 폰 밖으로 나가지 않고 기록 내보내기 파일에도 들어가지 않는다.
+   남기지 못하면(저장소가 막힘, 꽉 참) 잠그지 않는다. 남긴 그림이 이 폰에 없으면(새 폰, 저장소가 비워짐) 다시 만들 수 있다.
+   PWCK.has는 남긴 산책의 목록(앱을 켤 때 한 번 읽는다). 단추 글과 기록 줄의 작은 그림은 이것을 본다 */
+var PWCK={has:{},loaded:false,ready:null,th:{},db:null,conn:null}, pwcView=function(){};
+function pwcDb(){
+  if(PWCK.db)return PWCK.db;
+  var p=new Promise(function(res,rej){
+    var q, late=false, to=setTimeout(function(){ late=true; rej(new Error("idb timeout")); },4000);   // 열기가 끝내 답하지 않는 브라우저에서 끝없이 기다리지 않는다
+    try{ q=indexedDB.open("kkuk-pwc",1); }catch(e){ clearTimeout(to); rej(e); return; }
+    q.onupgradeneeded=function(){ try{ q.result.createObjectStore("cards"); }catch(e){} };
+    q.onsuccess=function(){ clearTimeout(to); var db=q.result; if(late){ try{db.close();}catch(e){} return; }
+      function gone(){ if(PWCK.db===p)PWCK.db=null; if(PWCK.conn===db)PWCK.conn=null; }
+      db.onversionchange=function(){ try{db.close();}catch(e){} gone(); };   // 다른 창이 저장소를 지우려 하면 놓아 준다
+      db.onclose=gone; PWCK.conn=db; res(db); };   // 저장소가 닫히면 다음에 다시 연다
+    q.onerror=function(){ clearTimeout(to); rej(q.error||new Error("idb")); }; q.onblocked=function(){ clearTimeout(to); rej(new Error("blocked")); };
+  });
+  PWCK.db=p; p.catch(function(){ if(PWCK.db===p)PWCK.db=null; });
+  return p;
+}
+function pwcTx(mode,fn){
+  return pwcDb().then(function(db){ return new Promise(function(res,rej){
+    var tx,out,err=null,end=false,to;
+    /* 연결이 끊겼거나 멈춘 것 같으면 버린다. 다음 일은 새로 연 연결로 한다(앱이 뒤로 갔다 오면 쥐고 있던 연결이 죽어 있을 수 있다) */
+    function drop(){ try{db.close();}catch(x){} if(PWCK.conn===db){ PWCK.conn=null; PWCK.db=null; } }
+    try{ tx=db.transaction("cards",mode); }catch(e){ drop(); rej(e); return; }
+    function fin(ok,v){ if(end)return; end=true; clearTimeout(to); if(ok)res(v); else rej(v); }
+    to=setTimeout(function(){ try{tx.abort();}catch(x){} drop(); fin(false,new Error("tx timeout")); },6000);
+    tx.oncomplete=function(){ fin(true,out); };
+    tx.onerror=function(ev){ err=(ev&&ev.target&&ev.target.error)||err; };   // 요청이 실패한 까닭(같은 열쇠가 이미 있음 같은 것)을 적어 두고, 거래가 접힐 때 그 까닭으로 알린다
+    tx.onabort=function(){ var er=tx.error||err||new Error("tx"); if(er.name!=="ConstraintError"&&er.name!=="QuotaExceededError")drop(); fin(false,er); };   // 이미 있음, 꽉 참은 연결 탓이 아니다
+    try{ fn(tx.objectStore("cards"),function(v){ out=v; }); }catch(e){ err=e; try{tx.abort();}catch(x){} fin(false,e); }
+  }); });
+}
+function pwcKept(id){ return !!PWCK.has[String(id)]; }
+function pwcLoad(){
+  var p=pwcTx("readonly",function(st,set){ var q=st.getAllKeys(); q.onsuccess=function(){ set(q.result||[]); }; })
+    .then(function(ks){ var h={}; (ks||[]).forEach(function(k){ h[String(k)]=1; }); PWCK.has=h; },function(){});
+  PWCK.ready=Promise.race([p,new Promise(function(r){ setTimeout(r,1500); })]).then(function(){ PWCK.loaded=true; });
+  return PWCK.ready;
+}
+/* add: 같은 산책에 이미 남긴 그림이 있으면 덮어쓰지 않고 실패한다(ConstraintError). 한 장이라는 약속을 저장소가 지킨다 */
+function pwcAdd(id,rec){ return pwcTx("readwrite",function(st){ st.add(rec,String(id)); }).then(function(){ PWCK.has[String(id)]=1; return true; }); }
+function pwcGet(id){ return pwcTx("readonly",function(st,set){ var q=st.get(String(id)); q.onsuccess=function(){ set(q.result||null); }; }); }
+function pwcDrop(id){ id=String(id); delete PWCK.has[id]; if(PWCK.th[id]){ try{URL.revokeObjectURL(PWCK.th[id]);}catch(e){} delete PWCK.th[id]; }
+  function del(){ return pwcTx("readwrite",function(st){ st.delete(id); }); }
+  return del().catch(function(e){ if(pwcSlow(e))return; return new Promise(function(r){ setTimeout(r,700); }).then(del); }).catch(function(){}); }   // 바로 실패했으면(끊긴 연결) 새 연결로 한 번 더 지운다
+/* 답이 없어서(시간 초과) 실패한 것인가. 그런 실패는 다시 해도 또 기다리기만 하므로 다시 하지 않는다 */
+function pwcSlow(e){ return /timeout/.test(String((e&&e.message)||"")); }
+function pwcWipe(){ PWCK.has={}; return new Promise(function(res){ var fin=function(){ res(); };
+  try{ if(PWCK.conn)PWCK.conn.close(); }catch(e){} PWCK.conn=null; PWCK.db=null;
+  // 열기가 아직 끝나지 않았어도 기다리지 않고 바로 지우기를 낸다(늦게 열린 연결은 지우기 요청을 받고 스스로 닫는다).
+  // 다른 창이 붙잡고 있으면(onblocked) 놓을 때까지 기다리되 길어야 1.5초. 그때까지 못 지워도 다른 창이 놓는 대로 지워진다
+  try{ var q=indexedDB.deleteDatabase("kkuk-pwc"); q.onsuccess=q.onerror=fin; }catch(e){ fin(); }
+  setTimeout(fin,1500); }); }
+/* 기록 탭 줄의 작은 그림: 남긴 그림과 함께 넣어 둔 작은 판(폭 240)을 읽어 붙인다 */
+function pwcThumbs(root){
+  Array.prototype.forEach.call(root.querySelectorAll("[data-pwc]"),function(el){ var id=el.dataset.pwc;
+    function put(){ el.style.backgroundImage='url("'+PWCK.th[id]+'")'; }
+    if(PWCK.th[id]){ put(); return; }
+    pwcGet(id).then(function(r){ if(!r||!r.th||!pwcKept(id))return;   // 읽는 사이에 그 산책을 지웠으면 쥐지 않는다
+      if(!PWCK.th[id])PWCK.th[id]=URL.createObjectURL(new Blob([r.th],{type:"image/jpeg"})); put(); },function(){}); });
+}
 (function(){
 'use strict';
 var CW=1080, INK='#17100A', WHITE='#FFFFFF', ORANGE='#F0952A', BLUE='#3B9DF5', YEL='#EFB02F', GREY='#DAD6D0';
@@ -6092,12 +6176,13 @@ function redraw(lum){ if(lum) lumDirty=true; dirty=true; if(OPEN&&!looping){ loo
 /* ---------- 선택 도구 · 아래 줄(안내 / 선택 막대 / 카메라 단추) ---------- */
 var selbar=$('pw-selbar'), selScale=$('pw-selScale'), selRot=$('pw-selRot'), selDel=$('pw-selDel'), rotWrap=$('pw-rotWrap'), hint=$('pw-hint');
 function underUI(){
-  var L=E.sel, live=E.live, noPic=!E.photo&&!E.bgOff&&!live;
-  selbar.hidden=!L; $('pw-camui').hidden=!!L||!live; $('pw-camfb').hidden=!!L||!noPic; hint.hidden=!!L||live||noPic;
-  $('pw-share').classList.toggle('dim',live);
+  var L=E.sel, live=E.live, noPic=!E.photo&&!E.bgOff&&!live, v=!!VIEW, ask=ASK&&!v, off=ask||v;   // 고침 17: 묻는 줄이나 보기일 때는 다른 줄을 숨긴다
+  selbar.hidden=!L||off; $('pw-camui').hidden=!!L||!live||off; $('pw-camfb').hidden=!!L||!noPic||off; hint.hidden=!!L||live||noPic||off;
+  $('pw-ask').hidden=!ask; $('pw-keptnote').hidden=!v;
+  $('pw-share').classList.toggle('dim',live&&!v);
   requestAnimationFrame(fit);
 }
-function select(L){ E.sel=L; if(L){ selScale.value=Math.round(L.s*100); selRot.value=Math.round(L.r*180/Math.PI); rotWrap.hidden=!(L.kind==='sticker'||(L.kind==='block'&&E.tpl==='tattoo')); selDel.hidden=L.kind!=='sticker'; } underUI(); redraw(); }
+function select(L){ E.sel=L; if(L){ askOff(); selScale.value=Math.round(L.s*100); selRot.value=Math.round(L.r*180/Math.PI); rotWrap.hidden=!(L.kind==='sticker'||(L.kind==='block'&&E.tpl==='tattoo')); selDel.hidden=L.kind!=='sticker'; } underUI(); redraw(); }
 selScale.addEventListener('input',function(){ if(E.sel){ touch(E.sel); E.sel.s=selScale.value/100; redraw(); } });
 selRot.addEventListener('input',function(){ if(E.sel){ touch(E.sel); E.sel.r=selRot.value*Math.PI/180; redraw(); } });
 selDel.addEventListener('click',function(){ if(E.sel&&E.sel.kind==='sticker'){ E.layers=E.layers.filter(function(L){return L!==E.sel;}); select(null); redraw(); } });
@@ -6142,8 +6227,8 @@ function touch(L){ if(L&&L.kind!=='sticker'&&L.kind!=='head'&&L.kind!=='grid') E
 
 /* ---------- 화면 크기 ---------- */
 var stage=$('pw-stage'), frameEl=$('pw-frame'), under=$('pw-under');
-function fit(){ if(!OPEN) return; var g=geo(), r=stage.getBoundingClientRect(), extra=(under.offsetHeight||40)+8; var ah=Math.max(160,r.height-extra-12), aw=r.width;
-  var h=Math.min(ah,aw*g.H/CW), w=h*CW/g.H; frameEl.style.width=Math.floor(w)+'px'; frameEl.style.height=Math.floor(h)+'px'; }
+function fit(){ if(!OPEN&&!VIEW) return; var gH=VIEW?CW*VIEW.H/VIEW.W:geo().H, r=stage.getBoundingClientRect(), extra=(under.offsetHeight||40)+8; var ah=Math.max(160,r.height-extra-12), aw=r.width;
+  var h=Math.min(ah,aw*gH/CW), w=h*CW/gH; frameEl.style.width=Math.floor(w)+'px'; frameEl.style.height=Math.floor(h)+'px'; }
 if(window.ResizeObserver) new ResizeObserver(fit).observe(stage); window.addEventListener('resize',fit);
 
 /* ---------- 카메라: 산책 인증은 그 자리에서 찍는 게 기본 ----------
@@ -6453,15 +6538,93 @@ function prepare(){
     out.toBlob(function(b){ if(b&&k===String(E.ver)){ E.blob=b; E.bkey=k; } },E.bgOff?'image/png':'image/jpeg',0.93); },500);
 }
 function shareText(){ var D=E.D, ST=D.st; return D.dog+' 산책 '+(D.hasDist?ST.dist.v+'km, ':'')+ST.time.v+', 마킹 '+ST.pee.v+'\n#PADDWalkClub\n꾹꾹이 '+DL_LINK+'?r=pwc'; }
+/* 고침 17: 한 산책에 한 장. VIEW는 남긴 그림을 보는 중, ASK는 공유 전에 묻는 줄이 떠 있음, BUSY는 남기는 중.
+   VSEQ는 카드 화면을 열고 닫을 때마다 늘린다. 늦게 끝난 읽기나 남기기가 지금 화면을 바꾸지 못하게 한다 */
+var VIEW=null, ASK=false, ASKOK=false, ASKN=0, BUSY=false, VSEQ=0;   // ASKOK: 묻는 동안 저장소를 읽어 '남긴 그림이 없음'(또는 읽을 수 없음)이 정해졌다
+/* 물음을 접는다. ASKN은 물음마다 올리는 번호: 접은 물음의 늦은 답이 새 물음의 '공유하기'를 풀지 못하게 한다 */
+function askOff(){ ASK=false; ASKOK=false; ASKN++; }
+function bufOfBlob(b){ return new Promise(function(res,rej){ var r=new FileReader(); r.onload=function(){ res(r.result); }; r.onerror=function(){ rej(r.error||new Error('read')); }; r.readAsArrayBuffer(b); }); }
+/* 기록 줄에 붙일 작은 판. 공유한 그림 그대로를 줄인다. 못 만들어도(3초를 넘겨도) 남기기는 한다 */
+function thumbOf(b){ return new Promise(function(res){ var u=URL.createObjectURL(b), im=new Image(), to=setTimeout(function(){ out(null); },3000);
+  function out(v){ clearTimeout(to); try{ URL.revokeObjectURL(u); }catch(e){} res(v); }   // 3초를 넘겨 끝낼 때도 임시 주소는 푼다
+  im.onload=function(){ try{ var t=document.createElement('canvas'); t.width=240; t.height=Math.max(1,Math.round(im.height*240/im.width)); var x=t.getContext('2d'); x.fillStyle='#1d1712'; x.fillRect(0,0,t.width,t.height); x.drawImage(im,0,0,t.width,t.height);
+      t.toBlob(function(tb){ if(!tb){ out(null); return; } bufOfBlob(tb).then(out,function(){ out(null); }); },'image/jpeg',0.8); }catch(e){ out(null); } };
+  im.onerror=function(){ out(null); }; im.src=u; }); }
+/* 그 산책이 아직 있는가(기록 목록에 있거나 이어 걷는 중) */
+function walkAlive(w){ return !!w&&((W&&W.start===w.start)||S.walks.some(function(x){ return x.start===w.start; })); }
+function keep(w,b,m,my){   // my: 공유를 시작할 때의 화면 번호. 그 뒤에 화면이 바뀌었으면 그림만 남기고 화면은 건드리지 않는다
+  BUSY=true; var rec=null, again=false;
+  function done(){ BUSY=false;
+    if(!walkAlive(w)){ pwcDrop(w.start); return; }   // 넣는 사이에 산책을 지웠다: 지우기가 이긴다
+    toast('이 산책의 PWC 기록으로 남겼어요'); try{ renderLog(); }catch(e){}
+    if(my===VSEQ) pwcView(w,rec); }   // 그 사이에 화면을 닫았거나 다른 산책을 열었으면 끼어들지 않는다
+  function fail(e){
+    if(e&&e.name==='ConstraintError'){ BUSY=false; PWCK.has[String(w.start)]=1; try{ renderLog(); }catch(x){} if(my===VSEQ) pwcView(w); return; }   // 다른 창에서 먼저 남겼다: 그 그림을 보여 준다
+    /* 바로 실패했으면 연결이 끊긴 것일 수 있다(공유하느라 앱이 뒤로 갔다 온 뒤). 잠깐 뒤에 새 연결로 한 번만 다시 넣는다.
+       꽉 찼거나 답이 없어서 실패한 것은 다시 해도 같으므로 바로 알린다 */
+    if(rec&&!again&&!(e&&e.name==='QuotaExceededError')&&!pwcSlow(e)){ again=true;
+      setTimeout(function(){ if(!walkAlive(w)){ BUSY=false; return; } pwcAdd(w.start,rec).then(done,fail); },700); return; }
+    BUSY=false; toast('그림을 폰에 남기지 못했어요. 이 산책은 다시 만들 수 있어요',3600); }
+  Promise.all([bufOfBlob(b),thumbOf(b)]).then(function(a){
+      if(!walkAlive(w)){ BUSY=false; return; }   // 그 사이에 산책을 지웠다: 그림을 넣지 않는다
+      rec={t:Date.now(),tpl:m.tpl,type:b.type,w:m.w,h:m.h,name:m.name,text:m.text,buf:a[0],th:a[1]};
+      return pwcAdd(w.start,rec).then(done,fail); },fail);
+}
+function viewOff(){ if(VIEW){ try{ URL.revokeObjectURL(VIEW.url); }catch(e){} VIEW=null; } $('pwc').classList.remove('view'); $('pw-kept').removeAttribute('src'); }
+/* 남긴 그림 보기. rec를 주면 다시 읽지 않는다. 이 폰에 그림이 없으면 잠금을 풀고 만들기로 간다 */
+pwcView=function(w,rec){
+  if(!w) return; var id=String(w.start), my=++VSEQ;
+  function show(r){
+    if(my!==VSEQ||!walkAlive(w)) return;   // 읽는 사이에 다른 화면을 열었거나 닫았다, 또는 그 산책을 지웠다
+    if(!r||!r.buf){ delete PWCK.has[id]; toast('남겨 둔 그림을 이 폰에서 찾지 못했어요. 다시 만들 수 있어요',3600); try{ renderLog(); }catch(e){} pwcOpen(w); return; }
+    if(OPEN) pwcClose(); viewOff();
+    var blob=new Blob([r.buf],{type:r.type||'image/jpeg'}), D=walkData(w);
+    VIEW={w:w, blob:blob, url:URL.createObjectURL(blob), name:r.name||('pwc_'+D.ymd+'.jpg'), text:r.text||'', W:r.w||CW, H:r.h||1920};
+    $('pw-kept').src=VIEW.url; $('pw-sub').textContent=D.dog+' · '+D.md+' '+D.tod+' 산책';
+    $('pwc').classList.add('on','view'); document.body.classList.add('pwc-on'); underUI();
+  }
+  if(rec){ show(rec); return; }
+  pwcGet(id).then(show,function(){ if(my===VSEQ) toast('남겨 둔 그림을 열지 못했어요. 잠시 뒤에 다시 눌러 주세요',3200); });
+};
 $('pw-share').addEventListener('click',function(){
-  var b0=this; if(!E.w||b0.disabled) return;
+  var b0=this; if(b0.disabled||BUSY) return;
+  if(VIEW){ saveShare(VIEW.blob,VIEW.name,VIEW.text,'PWC 기록'); return; }   // 보기: 남긴 그림을 그대로 다시 보낸다(새로 남기지 않는다)
+  if(!E.w) return;
   if(E.live){ toast('먼저 찍어 주세요'); return; }
-  var name='pwc_'+E.D.ymd+'_'+E.tpl+(E.bgOff?'.png':'.jpg');
-  function go(b){ prefSave(); beta('cardShare'); beta('f_'+E.tpl); if(E.photo) beta('cardPhoto'); hk('card_share',{card:E.tpl}); saveShare(b,name,shareText(),'PWC 기록'); }
-  if(E.blob&&E.bkey===String(E.ver)){ go(E.blob); return; }
-  b0.disabled=true;
-  var k=String(E.ver);
-  outCanvas().toBlob(function(b){ b0.disabled=false; if(!b){ toast('카드를 못 만들었어요'); return; } E.blob=b; E.bkey=k; go(b); },E.bgOff?'image/png':'image/jpeg',0.93);
+  var w=E.w, id=String(w.start), my=VSEQ;
+  if(pwcKept(id)){ pwcView(w); return; }   // 이미 남긴 산책
+  if(E.sel) select(null);   // 고른 것이 있을 때만 푼다(다시 그리면 준비해 둔 그림을 새로 만들어야 해서 공유 창이 늦게 뜬다)
+  ASK=true; ASKOK=false; var n=++ASKN; underUI();   // 한 번 묻는다: 공유를 끝내면 이 그림이 이 산책의 한 장으로 남는다
+  /* 묻는 동안 저장소를 한 번 더 읽는다(다른 창에서 먼저 남겼거나, 켤 때 목록을 다 읽지 못한 경우). 이미 있으면 묻는 줄을 접고 그 그림을 보여 준다.
+     답이 오기 전에는 '공유하기'가 보내지 않는다. 읽기가 바로 실패하면(끊긴 연결) 새 연결로 한 번 더 읽는다: 못 읽은 것이 없다는 뜻은 아니다.
+     그래도 읽을 수 없으면(저장소가 막힘, 답이 없음) 공유까지 막을 수는 없으므로 예전처럼 보내기만 한다.
+     '공유하기'를 누른 뒤에 읽지 않는 까닭: 공유 창은 누른 그 자리에서 띄워야 한다(늦게 띄우면 사파리가 사용자 동작으로 쳐 주지 않을 수 있다) */
+  (function read(again){
+    pwcGet(id).then(function(r){ if(n!==ASKN||my!==VSEQ||!ASK) return;   // 접었거나 다시 띄운 물음의 답은 버린다
+        if(r&&r.buf){ PWCK.has[id]=1; try{ renderLog(); }catch(e){} pwcView(w,r); return; }
+        ASKOK=true; },
+      function(e){ if(n!==ASKN||my!==VSEQ||!ASK) return;
+        if(again&&!pwcSlow(e)){ setTimeout(function(){ if(n===ASKN&&my===VSEQ&&ASK) read(false); },300); return; }
+        ASKOK=true; });
+  })(true);
+});
+$('pw-ask-no').addEventListener('click',function(){ askOff(); underUI(); });
+$('pw-ask-go').addEventListener('click',function(){
+  var b0=this, w=E.w, my=VSEQ; if(!w||!ASK||b0.disabled||BUSY) return;
+  if(E.live){ askOff(); underUI(); toast('먼저 찍어 주세요'); return; }
+  if(pwcKept(w.start)){ pwcView(w); return; }
+  if(!ASKOK){ toast('잠시만요. 남겨 둔 그림이 있는지 보고 있어요'); return; }
+  var tpl=E.tpl, name='pwc_'+E.D.ymd+'_'+tpl+(E.bgOff?'.png':'.jpg'), text=shareText(), gH=geo().H, png=E.bgOff, k=String(E.ver);
+  var ready=(E.blob&&E.bkey===k)?E.blob:null, cvs=ready?null:outCanvas();
+  function fin(){ b0.disabled=false; }
+  function go(b){ prefSave(); beta('cardShare'); beta('f_'+tpl); if(E.photo) beta('cardPhoto'); hk('card_share',{card:tpl});
+    Promise.resolve(saveShare(b,name,text,'PWC 기록')).then(function(ok){ fin(); if(ok) keep(w,b,{tpl:tpl,name:name,text:text,w:CW,h:gH},my); },fin); }
+  /* 보내기 시작: 묻는 줄을 접는다. 보내는 동안 '더 고치기'를 누르거나, 늦게 끝난 공유가 그 사이 새로 띄운 물음을 접는 일이 없게 한다 */
+  b0.disabled=true; askOff(); underUI();
+  if(ready){ go(ready); return; }
+  cvs.toBlob(function(b){ if(!b){ fin(); toast('카드를 못 만들었어요'); return; }
+    if(my!==VSEQ){ fin(); return; }   // 그림을 만드는 사이에 화면을 닫았거나 다른 산책을 열었다: 보내지 않는다
+    E.blob=b; E.bkey=k; go(b); },png?'image/png':'image/jpeg',0.93);
 });
 
 /* ---------- 열기·닫기 ---------- */
@@ -6469,6 +6632,10 @@ function prefSave(){ S.pwcPref={tpl:E.tpl,color:E.color,ratio:E.ratio}; save(); 
 function sub(){ var D=E.D; $('pw-sub').textContent=D.dog+' · '+D.md+' '+D.tod+' 산책'; }
 pwcOpen=function(w){
   if(!w) return;
+  // 고침 17: 남긴 산책이면 만들기 대신 보기. 남긴 산책 목록을 아직 못 읽었으면 읽은 뒤에 연다(길어야 1.5초)
+  if(!PWCK.loaded&&PWCK.ready){ var my=++VSEQ; PWCK.ready.then(function(){ if(my===VSEQ) pwcOpen(w); }); return; }   // 기다리는 동안 또 열면 나중 것만 연다
+  if(pwcKept(w.start)){ pwcView(w); return; }
+  viewOff(); askOff(); VSEQ++;
   var same=E.w===w; E.w=w; E.D=walkData(w);
   if(!same){ E.photo=null; E.photos=[]; }
   var p=S.pwcPref||{};
@@ -6485,9 +6652,9 @@ pwcOpen=function(w){
   // 막 끝난 산책이면 카메라부터. 그 자리에서 찍은 사진이 인증이다
   if(!E.photo&&camOK()&&Date.now()-(w.end||w.start)<3*3600e3) camStart();
 };
-function pwcClose(){ camStop(); CAM.resume=false; OPEN=false; $('pwc').classList.remove('on'); document.body.classList.remove('pwc-on'); E.sel=null; }
+function pwcClose(){ camStop(); CAM.resume=false; OPEN=false; askOff(); VSEQ++; viewOff(); $('pwc').classList.remove('on'); document.body.classList.remove('pwc-on'); E.sel=null; }
 $('pwc-close').addEventListener('click',pwcClose);
-window.__pwc={get E(){return E;}, render:function(){ return outCanvas(); }, segRun:segRun, close:pwcClose};
+window.__pwc={get E(){return E;}, render:function(){ return outCanvas(); }, segRun:segRun, close:pwcClose, get K(){return PWCK;}, get view(){return VIEW;}};
 })();
 
 
@@ -6567,8 +6734,10 @@ $("gpsexport").addEventListener("click",function(){
 });
 $("reset").addEventListener("click",function(){
   // 0.5.0: 한 번 누르면 묻지 않고 모든 기록이 지워졌다. 지우기 전에 묻는다(가져오기와 같은 방식)
-  if(!confirm("산책 기록과 꾹꾹로, 강아지 정보를 이 기기에서 모두 지워요. 되돌릴 수 없어요.\n먼저 기록 내보내기로 저장해 두셨나요? 정말 지울까요?"))return;
-  try{localStorage.removeItem(KEY);glDrop();}catch(e){}rvBump();location.reload();});
+  if(!confirm("산책 기록과 꾹꾹로, 강아지 정보, 남겨 둔 PWC 기록 그림을 이 기기에서 모두 지워요. 되돌릴 수 없어요.\n먼저 기록 내보내기로 저장해 두셨나요? 정말 지울까요?"))return;
+  // 고침 17: 남긴 그림을 먼저 지운다. 그 사이(길어야 1.5초) 앱이 기록을 저장해도 되살아나지 않게, 기록 지우기와 다시 켜기는 예전처럼 한 번에 한다
+  toast("지우는 중이에요");
+  pwcWipe().then(function(){ try{localStorage.removeItem(KEY);glDrop();}catch(e){}rvBump();location.reload(); });});
 
 /* ══ 탭 ══ */
 
