@@ -1795,6 +1795,52 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
 /* F5 한 화면: 산책 중. 탭 줄이 없는 화면인데 아래 여백이 남아 헛스크롤이 생겼다(아이폰 46px). 단추는 그만큼 아래로 내려온다 */
 body.walking .app{padding-bottom:16px}
 @supports (height:1dvh){body.walking #v-walk.on{min-height:calc(100dvh - 32px - env(safe-area-inset-top,0px))}}
+/* ══ 0.5.0 웹 고침 18 (11/13): 기록 탭 줄이기 ══
+   세 칸은 산책, 지도, 똥. 지난 날은 하루 한 줄로 접는다. 아래에 늘어서 있던 단추와 접힌 칸은 '설정과 백업' 시트 안으로. 누르는 곳은 높이 44px 이상 */
+#logtab button{min-height:44px}
+/* 하루 줄: 날짜와 요일, 횟수, 거리 합. 오른쪽 끝은 펼침 표시 */
+.dday{display:grid;grid-template-columns:76px 1fr auto 20px;align-items:center;column-gap:8px;width:100%;min-height:50px;padding:0;background:none;border:0;border-bottom:1px solid var(--line);font:inherit;color:var(--ink);text-align:left;cursor:pointer}
+.dday .dd{font-size:14.5px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.dday .dn{font-size:13px;font-weight:600;color:var(--ink-2);white-space:nowrap}
+.dday .dk{font-size:14.5px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.dday .dcv{width:20px;height:20px;color:var(--ink-3);display:block}
+.dday[aria-expanded="true"] .dcv{transform:rotate(180deg)}
+.dday:focus-visible,#walkmore:focus-visible{outline:3px solid var(--ink);outline-offset:-3px}
+.drows{display:none}
+.dgrp.open .drows{display:block}
+/* 펼친 날은 옅은 바탕 한 덩어리로 묶는다: 어디까지가 그날인지 보이게. 작은 그림(.pwth)의 크기 맞춤을 건드리지 않게 바탕색만 바꾼다 */
+.dgrp.open{background:var(--ground);border-radius:12px;margin:6px -9px;padding:0 9px}
+.dgrp.open .row .ic{background-color:var(--panel)}
+#walklist>.dgrp:last-child:not(.open)>.dday{border-bottom:0}
+#walkmore{display:block;width:100%;min-height:48px;padding:6px 0 2px;background:none;border:0;border-top:1px solid var(--line);font:inherit;font-size:13.5px;font-weight:600;color:var(--ink-2);cursor:pointer}
+#walkmore[hidden]{display:none}
+#basebox{margin-top:12px}
+/* 지도 칸의 꾹꾹로 상자 */
+#routebox .lbl2{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:8px}
+#routebox .lbl2 small{font-weight:400;color:var(--ink-3);font-size:12px;margin-left:2px}
+#routebox .card,#routebox .rcard:last-child{margin-bottom:0}
+/* 설정과 백업: 기록 탭 맨 아래 한 줄과 그 시트 */
+#setopen{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;margin-top:14px;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);font:inherit;font-size:15px;font-weight:600;color:var(--ink);text-align:left;cursor:pointer}
+#setopen small,.set-row small,details.setd>summary small{display:block;font-size:12px;font-weight:400;color:var(--ink-3);margin-top:3px}
+#setopen i,details.setd>summary i{flex:none;font-style:normal;font-size:18px;color:var(--ink-3)}
+#s-title{outline:0}
+#setopen:focus-visible,.set-row:focus-visible,.set-del:focus-visible,details.setd>summary:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.set-h{font-size:12px;font-weight:600;color:var(--ink-3);margin:18px 0 8px}
+.set-two{display:flex;gap:9px}
+.set-two .big{padding:14px 0;font-size:14.5px}
+.set-row,details.setd>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:44px;padding:15px 2px;background:none;border:0;font:inherit;font-size:15px;font-weight:400;color:var(--ink);text-align:left;cursor:pointer}
+.set-row small,details.setd>summary small{margin-top:2px}
+.set-row .val{flex:none;font-size:12.5px;font-weight:600;color:var(--brand-deep);background:var(--panel-2);border-radius:99px;padding:5px 11px}
+.set-row[aria-pressed="false"] .val{color:var(--ink-3)}
+details.calib.setd{background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;margin-top:0}
+/* 접힌 칸 안에 접힌 칸이 또 있을 때(시험용 도구 안의 바닥 온도 재기) 안쪽 표시가 바깥을 따라 펼친 모양이 되지 않게 */
+details.calib:not([open])>summary::after{content:" ▾"}
+details.calib.setd>summary::after{content:none}
+#calib>summary{text-wrap:balance}
+details.setd[open]>summary i{transform:rotate(90deg)}
+.calib.setd>.body{padding:0 2px 16px}
+#statsnote{margin:-6px 0 0;padding:0 2px 14px;border-bottom:1px solid var(--line)}
+.set-del{display:block;width:100%;min-height:44px;margin-top:16px;padding:12px 0;background:none;border:0;font:inherit;font-size:13.5px;color:var(--clay);text-align:center;cursor:pointer}
 </style>
 </head>
 <body>
@@ -1822,7 +1868,7 @@ body.walking .app{padding-bottom:16px}
     <div class="card" style="margin-top:18px">
       <div style="font-size:13.5px;color:var(--ink-2);line-height:1.75">
       대신 <b>폰을 바꾸거나 브라우저 기록을 지우면 사라져요.</b><br>
-      기록 탭에서 <b>파일로 내보내</b> 두면 새 기기에서 그대로 가져올 수 있어요.<br>
+      기록 탭에서 <b>파일로 저장</b>해 두면 새 기기에서 그대로 불러올 수 있어요.<br>
       계정과 자동 백업은 나중에 붙일 예정이에요.</div>
     </div>
     <div class="grow"></div>
@@ -2027,27 +2073,24 @@ body.walking .app{padding-bottom:16px}
     <div class="bar"><h1>기록</h1><span class="sub" id="logsub"></span></div>
 
     <div class="seg2" id="logtab" style="margin-bottom:13px">
-      <button data-v="route" aria-pressed="true">꾹꾹로</button>
-      <button data-v="walk" aria-pressed="false">산책</button>
-      <button data-v="poop" aria-pressed="false">꾹 · 똥</button>
+      <button data-v="walk" aria-pressed="true">산책</button>
+      <button data-v="map" aria-pressed="false">지도</button>
+      <button data-v="poop" aria-pressed="false">똥</button>
     </div>
 
-    <div class="sub-view on" id="lv-route">
-      <button class="big" id="r-new" style="margin-bottom:13px"><svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5l0 14"/><path d="M5 12l14 0"/></svg><span>기록에서 꾹꾹로 만들기</span></button>
-      <div id="routelist"></div>
-      <p class="src">걸은 기록을 불러와 앞뒤를 잘라내고 이름을 붙이면 꾹꾹로가 됩니다.<br>
-      <b>기본</b> 꾹꾹로가 향한 방향으로 홈 화면의 그늘과 추천 시간을 계산해요.</p>
-    </div>
-
-    <div class="sub-view" id="lv-walk">
-      <div class="card" id="basecard"></div>
+    <div class="sub-view on" id="lv-walk">
       <div class="card" style="padding:6px 15px">
         <div id="walklist"><div class="empty">아직 기록이 없어요</div></div>
+        <button type="button" id="walkmore" hidden>지난 산책 더 보기</button>
       </div>
-      <p class="src">산책을 누르면 그날 기록을 하나씩 볼 수 있어요.</p>
+      <p class="src">산책을 누르면 그날 기록이 열려요.</p>
+      <details class="calib" id="basebox" hidden>
+        <summary id="basesum">평소 산책</summary>
+        <div class="body" id="basecard"></div>
+      </details>
     </div>
 
-    <div class="sub-view" id="lv-poop">
+    <div class="sub-view" id="lv-map">
       <div class="card km-area" id="km-area">
         <div class="km-h"><span class="km-tt"><span class="km-ava sm" id="ka-ava"></span><b id="ka-title">산책 동네</b></span><span>걸은 곳만 안개가 걷혀요</span></div>
         <div id="ka-empty" class="empty">산책을 한 번 하면 동네 지도가 열려요</div>
@@ -2060,6 +2103,15 @@ body.walking .app{padding-bottom:16px}
           <p class="src" id="ka-note"></p>
         </div>
       </div>
+      <div class="card" id="routebox">
+        <div class="lbl2">꾹꾹로 <small>자주 걷는 길</small></div>
+        <div id="routelist"></div>
+        <button class="big ghost" id="r-new" type="button" style="margin-top:10px"><svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5l0 14"/><path d="M5 12l14 0"/></svg><span>걸은 기록으로 꾹꾹로 만들기</span></button>
+        <p class="src" style="margin:10px 0 0">꾹꾹로를 정해 두면 홈에서 그 길의 그늘과 걷기 좋은 시간을 알려 드려요.</p>
+      </div>
+    </div>
+
+    <div class="sub-view" id="lv-poop">
       <div class="stat3">
         <div class="s"><div class="v" id="m-poop">0</div><div class="k">이번 달 똥</div></div>
         <div class="s"><div class="v" id="m-firm">없음</div><div class="k">굳기</div></div>
@@ -2079,24 +2131,27 @@ body.walking .app{padding-bottom:16px}
         <b>과학계도 아직 다투는 중</b>: 그래서 점수는 없고, 그냥 기록만 합니다.</div>
       </div>
     </div>
-    <button class="big ghost" id="export">기록 내보내기 (파일로 저장)</button>
-    <button class="big ghost" id="import" style="margin-top:9px">기록 가져오기</button>
-    <input type="file" id="importfile" accept="application/json,.json" style="display:none">
-    <button class="big ghost" id="gpsexport" style="margin-top:9px">GPS 기록 내보내기 (꾹게이지 시험용)</button>
-    <p class="src" style="margin-top:6px">최근 산책의 GPS 원본 점이에요. 폰 안에만 있고, 누를 때만 파일로 만들어요.</p>
-    <button class="big ghost" id="betarep" style="margin-top:9px">베타 기록 보내기</button>
-    <button class="big ghost" id="statsopt" style="margin-top:9px" aria-pressed="true" hidden>사용 통계 보내기: 켜짐</button>
-    <p class="src" id="statsnote" style="margin-top:6px" hidden><span class="sn">앱을 고치려고 산책 수, 시간, 거리 같은 숫자와 기기 종류(브라우저, 화면&nbsp;<span class="nb">크기)를</span> 핵클(분석 도구)로 보냅니다.</span> <span class="sn">위치와 경로, 강아지 이름과 사진은 보내지&nbsp;않고 끄면 바로 멈춰요.</span> <a href="privacy/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:3px">처리방침 보기</a></p>
-    <p class="src" style="margin-top:9px"><span class="sn">폰을 바꾸거나 <span class="web-i">브라우저 기록을 지우면</span><span class="app-i">앱을 지우면</span> <b>산책 기록이 사라져요.</b></span>
-    <span class="sn">가끔 내보내서 파일로&nbsp;두세요.</span> <span class="sn">기록을 받아 두는 서버가 없어서 이 기기에만 저장돼요.</span></p>
-    <button class="big ghost" id="reset" style="margin-top:13px;color:var(--clay)">처음부터 다시</button>
-    <details class="calib" id="methodbox" style="margin-top:14px">
-      <summary>꾹게이지와 바닥 온도 근거 보기</summary>
-      <div class="body"><p class="src" style="margin:4px 0 6px" id="method"></p></div>
-    </details>
+    <button type="button" id="setopen"><span>설정과 백업<small>기록 파일로 저장, 숨 세기, 근거</small></span><i aria-hidden="true">›</i></button>
+  </div>
+</div>
+</div>
 
-    <details class="calib" id="srr">
-      <summary>잘 때 숨 세기 · 심장이 보내는 조기 신호</summary>
+<!-- 설정과 백업 (고침 18): 기록 탭 아래에 늘어서 있던 단추와 접힌 칸을 시트 하나로 모았다. 단추 id와 하는 일은 그대로다 -->
+<div class="sheet" id="ssheet" role="dialog" aria-modal="true" aria-label="설정과 백업">
+  <div class="in">
+    <div class="grab"></div>
+    <h3 id="s-title" tabindex="-1" style="font-size:19px;margin-bottom:2px">설정과 백업</h3>
+    <div class="set-h">기록 백업</div>
+    <div class="set-two">
+      <button class="big ghost" id="export" type="button">파일로 저장</button>
+      <button class="big ghost" id="import" type="button">파일에서 불러오기</button>
+    </div>
+    <input type="file" id="importfile" accept="application/json,.json" style="display:none">
+    <p class="src" style="margin:9px 0 0"><span class="sn">폰을 바꾸거나 <span class="web-i">브라우저 기록을 지우면</span><span class="app-i">앱을 지우면</span> <b>기록이 사라져요.</b></span>
+    <span class="sn">가끔 파일로 저장해&nbsp;두세요.</span> <span class="sn">기록을 받아 두는 서버가 없어서 이 기기에만 저장돼요.</span></p>
+    <div class="set-h">더 보기</div>
+    <details class="calib setd" id="srr">
+      <summary><span>잘 때 숨 세기<small>30초 동안 숨을 세서 기록해요</small></span><i aria-hidden="true">›</i></summary>
       <div class="body">
         <p class="src" style="margin:4px 0 12px">강아지가 <b>깊이 잠들었을 때</b>, 가슴이 한 번
         오르내릴 때마다 아래 버튼을 누르세요. 30초를 재서 1분 값으로 바꿔드립니다.<br>
@@ -2114,9 +2169,20 @@ body.walking .app{padding-bottom:16px}
         진단이 아니라 <b>기록</b>입니다. 25회를 계속 넘거나 며칠에 걸쳐 올라가면 병원에 이 기록을 보여주세요.</p>
       </div>
     </details>
-
+    <details class="calib setd" id="methodbox">
+      <summary><span>숫자의 근거<small>꾹게이지와 바닥 온도가 어디서 왔는지</small></span><i aria-hidden="true">›</i></summary>
+      <div class="body"><p class="src" style="margin:4px 0 6px" id="method"></p></div>
+    </details>
+    <button class="set-row" id="statsopt" type="button" aria-pressed="true" hidden><span>사용 통계 보내기<small>위치와 이름은 보내지 않아요</small></span><span class="val" id="statsval">켜짐</span></button>
+    <p class="src" id="statsnote" hidden><span class="sn">앱을 고치려고 산책 수, 시간, 거리 같은 숫자와 기기 종류(브라우저, 화면&nbsp;<span class="nb">크기)를</span> 핵클(분석 도구)로 보냅니다.</span> <span class="sn">위치와 경로, 강아지 이름과 사진은 보내지&nbsp;않고 끄면 바로 멈춰요.</span> <a href="privacy/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:3px">처리방침 보기</a></p>
+    <details class="calib setd" id="toolbox">
+      <summary><span>시험용 도구<small>GPS 기록, 써 본 기록 보내기, 바닥 온도 재기</small></span><i aria-hidden="true">›</i></summary>
+      <div class="body">
+        <button class="big ghost" id="gpsexport" type="button">GPS 기록 내보내기</button>
+        <p class="src" style="margin-top:6px">최근 산책의 GPS 원본 점이에요. 폰 안에만 있고, 누를 때만 파일로 만들어요.</p>
+        <button class="big ghost" id="betarep" type="button" style="margin-top:9px">써 본 기록 보내기</button>
     <details class="calib" id="calib">
-      <summary>실측 보정 · 적외선 온도계로 계수 맞추기</summary>
+      <summary>바닥 온도 재기 · 적외선 온도계로 계수 맞추기</summary>
       <div class="body">
         <div class="now" id="c-now">위치·날씨를 먼저 받아야 해요</div>
         <div class="seg2" id="c-surf">
@@ -2143,8 +2209,11 @@ body.walking .app{padding-bottom:16px}
         온도계는 노면에서 5~10cm 띄우고, 같은 지점을 3번 재서 중간값을 넣으세요.</p>
       </div>
     </details>
+      </div>
+    </details>
+    <button class="set-del" id="reset" type="button">모든 기록 지우고 처음부터</button>
+    <button class="big ghost" id="s-close" type="button" style="margin-top:8px">닫기</button>
   </div>
-</div>
 </div>
 
 <!-- 💩 시트 -->
@@ -2666,7 +2735,7 @@ function widgetLaunch(){
 }
 
 /* ══ 베타 기록 ══════════════════════════════════════════════════
-   서버가 없으니 이 기기 안에서만 센다. 보낼 땐 사람이 "베타 기록 보내기"로 직접 보낸다.
+   서버가 없으니 이 기기 안에서만 센다. 보낼 땐 사람이 '써 본 기록 보내기'(기록 탭의 설정과 백업, 시험용 도구)로 직접 보낸다.
    세는 것: 산책당 탭 수(꾹·💩 기록 탭은 뺌), PWC 기록 열람·공유, 주머니 모드, 알게 된 곳. 위치는 안 센다. */
 function beta(k,n){S.beta=S.beta||{since:Date.now()};S.beta[k]=(S.beta[k]||0)+(n==null?1:n);}
 
@@ -2675,7 +2744,7 @@ function beta(k,n){S.beta=S.beta||{since:Date.now()};S.beta[k]=(S.beta[k]||0)+(n
    보내는 것은 app_open, walk_start, walk_end, card_view, card_share, party_interest와
    0.4.5에서 더한 walk_endsig, newroute_nudge(이 둘은 방침을 알린 지 30일 뒤부터), 그리고 아래 숫자 속성뿐이다.
    위치, 경로, 좌표, 강아지 이름, 사진, 메모는 어떤 속성에도 넣지 않는다. 사용자 구분은 핵클 기기 ID만 쓴다.
-   기록 탭 맨 아래 '사용 통계 보내기'를 끄면 SDK를 부르지 않는다. */
+   기록 탭 '설정과 백업'의 '사용 통계 보내기'를 끄면 SDK를 부르지 않는다. */
 var HK_IOS=true;   // 아이폰 앱에서도 사용 통계를 켠다(안드로이드 앱, 웹과 같게). 끄려면 false로 바꾸고 앱스토어 개인정보 답에서 기기 ID와 제품 상호 작용을 뺀다(위치는 남는다). 앱 안의 개인정보 파일은 ios-kit이 이 줄을 읽어 맞춘다
 var HACKLE_KEY=(location.hostname==="062-sibi.github.io"||(IOS&&HK_IOS))?"1P4Ki8uNp9DPaLtyXTafjyPj4AdYuwyr":"";   // 배포 주소(웹과 안드로이드 앱)에서만 켠다. 폰 미리보기(raw.githack.com)와 내 컴퓨터 시험에서는 보내지 않는다
 var HK={c:null,q:[],loading:false,failed:false};
@@ -2753,7 +2822,7 @@ function statsRender(){
   var b=$("statsopt"),n=$("statsnote"); if(!b)return;
   b.hidden=n.hidden=!HACKLE_KEY;
   b.setAttribute("aria-pressed",statsOffNow()?"false":"true");
-  b.textContent="사용 통계 보내기: "+(statsOffNow()?"꺼짐":"켜짐");
+  $("statsval").textContent=statsOffNow()?"꺼짐":"켜짐";   // 고침 18: 줄 오른쪽의 작은 글만 바꾼다
 }
 (function(){
   try{var r=new URLSearchParams(location.search).get("r");
@@ -2783,7 +2852,7 @@ function betaText(){
 }
 function betaSend(){
   var t=betaText();
-  if(NATIVE&&NP.Share){NP.Share.share({title:"꾹꾹이 베타 기록",text:t,dialogTitle:"베타 기록 보내기"}).catch(function(){});return;}
+  if(NATIVE&&NP.Share){NP.Share.share({title:"꾹꾹이 베타 기록",text:t,dialogTitle:"써 본 기록 보내기"}).catch(function(){});return;}
   if(navigator.share){navigator.share({text:t}).catch(function(){});return;}
   if(navigator.clipboard&&navigator.clipboard.writeText)
     navigator.clipboard.writeText(t).then(function(){toast("복사했어요 · 카톡에 붙여넣어 보내 주세요");},function(){toast("복사를 못 했어요");});
@@ -4278,7 +4347,7 @@ var quotaWarned=false;
 function persistLive(){
   if(save()){quotaWarned=false;return true;}
   if(!quotaWarned){quotaWarned=true;
-    toast("저장 공간이 꽉 찼어요 · 기록 탭에서 기록 내보내기를 먼저 해 주세요",4000);}
+    toast("저장 공간이 꽉 찼어요 · 기록 탭의 설정과 백업에서 파일로 저장을 먼저 해 주세요",4000);}
   return false;
 }
 function holdScreen(){
@@ -4719,7 +4788,7 @@ function routeBest(r){
 function renderRoutes(){
   var el=$("routelist"),mr=mainRoute();
   if(!S.routes.length){
-    el.innerHTML='<div class="card"><div class="empty">아직 꾹꾹로가 없어요<br>위 버튼으로 걸었던 기록에서 만들어 보세요</div></div>';
+    el.innerHTML='<div class="card"><div class="empty">아직 꾹꾹로가 없어요<br>아래 단추로 걸었던 기록에서 <span class="nb">만들어 보세요</span></div></div>';
     return;
   }
   el.innerHTML=S.routes.map(function(r){
@@ -4756,20 +4825,45 @@ function renderWalks(){
       '</div></div><div class="rt">'+B.n+'회</div></div>');
   });
   bc.innerHTML = rows.length
-    ? '<div class="lbl" style="margin-bottom:6px">내 기준선</div>'+rows.join("")+
+    ? rows.join("")+
       '<div class="src" style="margin-top:9px"><span class="sn">꾹게이지 100점은 <b>'+esc(kmJosa(S.dog&&S.dog.name?S.dog.name:"우리 아이","이","가"))+
       ' 그 시간대에 평소 하던\u00a0만큼</b>이에요.</span> <span class="sn">논문 배점이 아니라 자기 기록이 기준입니다.</span><br>'+
       '<span class="sn">처음 3번은 몸무게와 나이로 만든 임시 기준과 섞어요.</span> <span class="sn">똥은 배변 습관이 밖에서만이면 넣고 주로 집 안이면 빼요.</span> <span class="sn">그 밖에는 평소 절반 이상 싸는 시간대에만 넣어요.</span></div>'
-    : '<div class="empty">산책을 하면 시간대별 기준이 생겨요</div>';
-  var wl=$("walklist");
-  wl.innerHTML=!S.walks.length?'<div class="empty">아직 기록이 없어요</div>':
-    S.walks.slice(0,30).map(function(w){var t=new Date(w.start);
+    : '';
+  // 고침 18: '내 기준선' 카드를 '{이름}의 평소 산책'으로 접어 목록 아래에 둔다. 기록이 없으면 칸을 숨긴다. 이름은 글자로만 넣는다
+  $("basebox").hidden=!rows.length;
+  $("basesum").textContent=(S.dog&&S.dog.name?S.dog.name:"우리 아이")+"의 평소 산책";
+  /* 고침 18: 오늘 산책은 한 줄씩, 지난 날은 하루 한 줄로 접는다(날짜와 요일, 횟수, 거리 합). 하루 줄을 누르면 그날 산책이 펼쳐진다.
+     하루는 하루 링과 같게 새벽 4시에 바뀐다(dayOf). 산책한 날 7일(오늘 포함)까지 보이고, 그 앞은 '지난 산책 더 보기'를 누를 때마다 30일씩 나온다.
+     하루 거리는 그날 줄에 보이는 값(소수 둘째 자리)을 더한다: 펼쳐서 더해 본 값과 하루 줄이 어긋나지 않게. 거리가 없는 기록은 0으로 친다. 예전의 30번 한도는 없다 */
+  var wl=$("walklist"), more=$("walkmore");
+  if(!S.walks.length){ wl.innerHTML='<div class="empty">아직 기록이 없어요</div>'; more.hidden=true; return; }
+  var today=dayOf(Date.now()), gs=[], gm={}, lim=LD.DAYS+LD.pages*LD.STEP, h="", past=0;
+  S.walks.forEach(function(w){ var k=dayOf(w.start); if(!gm[k]){ gm[k]={k:k,ws:[]}; gs.push(gm[k]); } gm[k].ws.push(w); });
+  gs.sort(function(a,b){return b.k-a.k;});
+  gs.forEach(function(g){
+    if(g.k<=today&&++past>lim)return;   // 오늘과 그 앞의 날만 센다. 날짜가 앞선 기록(폰 시계가 틀렸던 날)은 세지 않고 늘 보여 줘서 오늘 산책을 밀어내지 않는다
+    g.ws.sort(function(a,b){return b.start-a.start;});   // 하루 안에서는 늦은 산책부터(저장 순서가 뒤섞인 백업 파일도)
+    if(g.k===today){ h+=g.ws.map(walkRow).join(""); return; }
+    var d=new Date(g.ws[0].start-4*3600e3), c=0, on=!!LD.open[g.k];
+    g.ws.forEach(function(w){ c+=Math.round(parseFloat(((+w.dist||0)/1000).toFixed(2))*100); });
+    h+='<div class="dgrp'+(on?' open':'')+'" data-day="'+g.k+'">'+
+      '<button type="button" class="dday" aria-expanded="'+(on?'true':'false')+'">'+
+        '<span class="dd">'+(d.getMonth()+1)+'/'+d.getDate()+' '+LD.WD[d.getDay()]+'</span>'+
+        '<span class="dn">산책 '+g.ws.length+'번</span><span class="dk">'+(c/100).toFixed(2)+'km</span>'+LD.CV+'</button>'+
+      '<div class="drows">'+g.ws.map(walkRow).join("")+'</div></div>';
+  });
+  wl.innerHTML=h; more.hidden=past<=lim;
+  pwcThumbs(wl);   // 고침 17
+}
+/* 고침 18: 산책 목록의 펼친 날(open)과 더 보기를 누른 횟수(pages). 화면을 다시 그려도 그대로 두고, 저장하지는 않는다(앱을 다시 열면 접힌 채) */
+var LD={open:{},pages:0,DAYS:7,STEP:30,WD:["일","월","화","수","목","금","토"],
+  CV:'<svg class="dcv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6l6 -6"/></svg>'};
+function walkRow(w){ var t=new Date(w.start);
       return '<div class="row tap" data-wid="'+w.start+'">'+(pwcKept(w.start)?'<button type="button" class="ic pwth" data-pwc="'+w.start+'" aria-label="남겨 둔 PWC 기록 보기"></button>':'<div class="ic">'+IC.logo+'</div>')+'<div class="tx">'+
-        '<div class="a">'+(w.gauge==null?'기준 학습 중':'꾹게이지 '+w.gauge)+' · '+(w.dist/1000).toFixed(2)+'km</div>'+
+        '<div class="a">'+(w.gauge==null?'기준 학습 중':'꾹게이지 '+w.gauge)+' · '+((+w.dist||0)/1000).toFixed(2)+'km</div>'+
         '<div class="b cnts">'+cnts(w)+'</div></div>'+
         '<div class="rt">'+(t.getMonth()+1)+'/'+t.getDate()+'<br>'+pad(t.getHours())+':'+pad(t.getMinutes())+'</div></div>';
-    }).join("");
-  pwcThumbs(wl);   // 고침 17
 }
 
 /* ── 💧·💩 ── */
@@ -4844,9 +4938,17 @@ press($("logtab"),function(b){
   $("lv-"+b.dataset.v).classList.add("on");
   window.scrollTo(0,0);
 });
+/* 고침 18: 지난 산책 더 보기(30일씩), 설정과 백업 시트. 열 때마다 맨 위부터 보이고 초점을 제목으로 옮긴다(키보드와 화면 읽기 도구가 시트 안에서 시작하게). 닫으면 초점을 연 단추로 돌려준다 */
+$("walkmore").addEventListener("click",function(){ LD.pages++; renderWalks(); });
+$("setopen").addEventListener("click",function(){ var sh=$("ssheet"); sh.classList.add("on"); sh.querySelector(".in").scrollTop=0; try{ $("s-title").focus({preventScroll:true}); }catch(e){} });
+$("s-close").addEventListener("click",function(){ $("ssheet").classList.remove("on"); try{ $("setopen").focus({preventScroll:true}); }catch(e){} });
 
 /* ── 산책 상세 시트 ── */
 $("walklist").addEventListener("click",function(e){
+  var dh=e.target.closest(".dday");   // 고침 18: 하루 줄을 누르면 그날 산책을 펼치거나 접는다
+  if(dh){ var dg=dh.parentNode, dk=dg.dataset.day, on=!LD.open[dk];
+    if(on)LD.open[dk]=1; else delete LD.open[dk];
+    dg.classList.toggle("open",on); dh.setAttribute("aria-expanded",on?"true":"false"); return; }
   var k=e.target.closest("[data-pwc]");   // 고침 17: 작은 그림을 누르면 남긴 PWC 기록을 크게 본다
   if(k){ var kw=S.walks.filter(function(x){return x.start===+k.dataset.pwc;})[0]; if(kw){ pwcOpen(kw); return; } }
   var r=e.target.closest("[data-wid]");if(!r)return;
@@ -4864,7 +4966,7 @@ function openWalk(id){
     (SLOTS[w.slot||slotOf(w.start)]||'')+'</span></h3>'+
     '<div style="font-size:12.5px;color:var(--ink-3);margin-top:4px">'+
     (w.gauge==null?'기준 학습 중':'꾹게이지 '+w.gauge)+
-    ' · '+(w.dist/1000).toFixed(2)+'km, '+mins+'분</div><div class="cnts" style="margin-top:10px">'+cnts(w)+'</div>';
+    ' · '+((+w.dist||0)/1000).toFixed(2)+'km, '+mins+'분</div><div class="cnts" style="margin-top:10px">'+cnts(w)+'</div>';
   var body="", ks=w.kkuks||[], ps=w.poops||[], ns=w.sniffs;
   function hm(t){var tt=new Date(t);return pad(tt.getHours())+':'+pad(tt.getMinutes());}
   function where(k){if(k.lat==null)return '위치 없음';var sp=kmSpotNear([k.lat,k.lng],10);return sp?esc(kmSpotName(sp)):'지도에 표시';}
@@ -5591,7 +5693,7 @@ function saveShare(b,name,text,title){
    좌표는 폭 1080 설계 좌표. 스토리 9:16(1920) · 피드 4:5(1350). */
 var pwcOpen=function(){};
 /* 고침 17(06 11/13 "그래"): 산책 하나에 PWC 기록은 한 장. 공유(저장)를 끝내면 그 그림을 이 폰 안(IndexedDB "kkuk-pwc")에 남기고,
-   그 뒤로 그 산책은 만들기 대신 보기만 된다. 열쇠는 산책의 시작 시각. 그림은 폰 밖으로 나가지 않고 기록 내보내기 파일에도 들어가지 않는다.
+   그 뒤로 그 산책은 만들기 대신 보기만 된다. 열쇠는 산책의 시작 시각. 그림은 폰 밖으로 나가지 않고 '파일로 저장'으로 만든 파일에도 들어가지 않는다.
    남기지 못하면(저장소가 막힘, 꽉 참) 잠그지 않는다. 남긴 그림이 이 폰에 없으면(새 폰, 저장소가 비워짐) 다시 만들 수 있다.
    PWCK.has는 남긴 산책의 목록(앱을 켤 때 한 번 읽는다). 단추 글과 기록 줄의 작은 그림은 이것을 본다 */
 var PWCK={has:{},loaded:false,ready:null,th:{},db:null,conn:null}, pwcView=function(){};
@@ -6683,8 +6785,8 @@ $("importfile").addEventListener("change",function(){
     var j;
     try{ j=JSON.parse(r.result); }catch(e){ toast("이 파일은 꾹꾹이 기록이 아니에요"); return; }
     if(!j||typeof j!=="object"||!("walks" in j)){ toast("이 파일은 꾹꾹이 기록이 아니에요"); return; }
-    // 0.4.3: 'GPS 기록 내보내기' 파일도 walks가 있어 아래 검사를 지나간다. 백업이 아니므로 덮어쓰기 전에 막는다
-    if(j.type==="gps"||Array.isArray(j.cols)){ toast("GPS 기록 파일은 백업이 아니에요 · 기록 내보내기로 만든 파일을 골라 주세요",4000); return; }
+    // 0.4.3: 'GPS 기록 내보내기' 파일도 walks가 있어 아래 검사를 지나간다. 백업('파일로 저장')이 아니므로 덮어쓰기 전에 막는다
+    if(j.type==="gps"||Array.isArray(j.cols)){ toast("GPS 기록 파일은 백업이 아니에요 · '파일로 저장'으로 만든 파일을 골라 주세요",4000); return; }
     // 0.4.3: 모양이 틀린 백업(walks가 목록이 아님 등)으로 덮어쓰면 앱이 기록을 못 읽는다. 덮어쓰기 전에 검사한다
     var okShape=Array.isArray(j.walks)&&j.walks.every(function(w){return !!w&&typeof w==="object"&&typeof w.start==="number";})
       &&["routes","spots","parties"].every(function(k){return !(k in j)||Array.isArray(j[k]);})
@@ -6734,7 +6836,7 @@ $("gpsexport").addEventListener("click",function(){
 });
 $("reset").addEventListener("click",function(){
   // 0.5.0: 한 번 누르면 묻지 않고 모든 기록이 지워졌다. 지우기 전에 묻는다(가져오기와 같은 방식)
-  if(!confirm("산책 기록과 꾹꾹로, 강아지 정보, 남겨 둔 PWC 기록 그림을 이 기기에서 모두 지워요. 되돌릴 수 없어요.\n먼저 기록 내보내기로 저장해 두셨나요? 정말 지울까요?"))return;
+  if(!confirm("산책 기록과 꾹꾹로, 강아지 정보, 남겨 둔 PWC 기록 그림을 이 기기에서 모두 지워요. 되돌릴 수 없어요.\n먼저 '파일로 저장'으로 저장해 두셨나요? 정말 지울까요?"))return;
   // 고침 17: 남긴 그림을 먼저 지운다. 그 사이(길어야 1.5초) 앱이 기록을 저장해도 되살아나지 않게, 기록 지우기와 다시 켜기는 예전처럼 한 번에 한다
   toast("지우는 중이에요");
   pwcWipe().then(function(){ try{localStorage.removeItem(KEY);glDrop();}catch(e){}rvBump();location.reload(); });});
@@ -7484,7 +7586,7 @@ function kmWalkShow(w){
     '<span>'+kmDotSvg("poop",13)+'똥 '+(w.poops||[]).length+'</span></div>';
 }
 
-/* ── 기록 › 꾹·똥: {이름} 산책 동네 ── */
+/* ── 기록 › 지도: {이름} 산책 동네 ── */
 var KMA=null,KMA_SEL=null,KMA_ALL=false;
 function kmAreaRender(){
   if(!$("km-area"))return;
@@ -7508,7 +7610,7 @@ function kmAreaRender(){
   $("ka-reco-t").textContent="추천 길 만들기";
   $("ka-note").textContent="동네는 산책을 가장 많이 시작한 곳에서 1km 안이에요. 새 길은 처음 걸은 길만 셉니다.";
   kmAreaPickUI();
-  if($("lv-poop").classList.contains("on"))kmAreaMap();
+  if($("lv-map").classList.contains("on"))kmAreaMap();
 }
 function kmAreaMap(){
   var box=$("ka-map");if(!box||$("ka-body").hidden)return;
@@ -7554,7 +7656,7 @@ $("ka-pick").addEventListener("click",function(e){
   save();kmAreaRender();
 });
 $("ka-reco").addEventListener("click",function(){kmRecoOpen();});
-$("logtab").addEventListener("click",function(e){var b=e.target.closest("button");if(b&&b.dataset.v==="poop")setTimeout(kmAreaMap,0);});
+$("logtab").addEventListener("click",function(e){var b=e.target.closest("button");if(b&&b.dataset.v==="map")setTimeout(kmAreaMap,0);});
 
 /* ══ 길 그물: 지도 조각의 길로 잇는다(폰 안, 서버 없음) ══════════════════
    큰길 옆은 비싸게, 인도와 공원, 강가는 싸게 매긴다. 봄부터 가을까지는 풀숲(비포장 흙길)을 비싸게(대한수의사회: 봄~가을 우거진 수풀 피하기).
@@ -7884,6 +7986,7 @@ function kmLiveTick(){
 $("wseg").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;kmLiveMode(b.dataset.v==="m");});
 
 function tab(v){
+  $("ssheet").classList.remove("on");   // 고침 18: 설정과 백업은 기록 탭에 딸린 시트다. 화면이 바뀌면(시트를 연 채 위젯으로 산책이 시작될 때 등) 닫는다: 산책 중에 지우기와 불러오기가 떠 있지 않게
   document.querySelectorAll(".view").forEach(function(x){x.classList.remove("on");});
   $("v-"+v).classList.add("on");
   $("tabs").style.display=(v==="walk")?"none":"";

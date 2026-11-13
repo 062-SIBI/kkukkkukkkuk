@@ -742,7 +742,7 @@ function kmWalkShow(w){
     '<span>'+kmDotSvg("poop",13)+'똥 '+(w.poops||[]).length+'</span></div>';
 }
 
-/* ── 기록 › 꾹·똥: {이름} 산책 동네 ── */
+/* ── 기록 › 지도: {이름} 산책 동네 ── */
 var KMA=null,KMA_SEL=null,KMA_ALL=false;
 function kmAreaRender(){
   if(!$("km-area"))return;
@@ -766,7 +766,7 @@ function kmAreaRender(){
   $("ka-reco-t").textContent="추천 길 만들기";
   $("ka-note").textContent="동네는 산책을 가장 많이 시작한 곳에서 1km 안이에요. 새 길은 처음 걸은 길만 셉니다.";
   kmAreaPickUI();
-  if($("lv-poop").classList.contains("on"))kmAreaMap();
+  if($("lv-map").classList.contains("on"))kmAreaMap();
 }
 function kmAreaMap(){
   var box=$("ka-map");if(!box||$("ka-body").hidden)return;
@@ -812,7 +812,7 @@ $("ka-pick").addEventListener("click",function(e){
   save();kmAreaRender();
 });
 $("ka-reco").addEventListener("click",function(){kmRecoOpen();});
-$("logtab").addEventListener("click",function(e){var b=e.target.closest("button");if(b&&b.dataset.v==="poop")setTimeout(kmAreaMap,0);});
+$("logtab").addEventListener("click",function(e){var b=e.target.closest("button");if(b&&b.dataset.v==="map")setTimeout(kmAreaMap,0);});
 
 /* ══ 길 그물: 지도 조각의 길로 잇는다(폰 안, 서버 없음) ══════════════════
    큰길 옆은 비싸게, 인도와 공원, 강가는 싸게 매긴다. 봄부터 가을까지는 풀숲(비포장 흙길)을 비싸게(대한수의사회: 봄~가을 우거진 수풀 피하기).
