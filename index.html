@@ -2196,7 +2196,7 @@ body.walking .app{padding-bottom:16px}
 
   <main class="pw-stage" id="pw-stage">
     <div class="pw-frame" id="pw-frame">
-      <canvas id="pw-cv" width="1080" height="1920" tabindex="0" aria-label="카드 미리보기. 숫자, 경로, 스티커를 끌어서 옮길 수 있어요"></canvas>
+      <canvas id="pw-cv" width="1080" height="1920" tabindex="0" aria-label="카드 미리보기. 숫자, 이름 줄, 경로, 스티커를 끌어서 옮길 수 있어요"></canvas>
       <div class="pw-load" id="pw-load">글꼴 불러오는 중</div>
       <div class="pw-segst" id="pw-segst" role="status" hidden></div>
     </div>
@@ -5793,6 +5793,9 @@ function brand(c,g,col){
 }
 function brandCol(g){ return autoCol(CW-72-g.F(48),g.T,g.F(48),g.F(48)); }
 function lab(k,long){ var st=E.D.st[k]; return long?st.long:st.lab; }
+function gridW(c,items,o){ var ST=E.D.st, t=0;   // 고침 16: 그리기 전에 너비를 잰다(grid와 같은 셈)
+  items.forEach(function(k){ setFont(c,o.vw||700,o.vs,FAM.bar); setLS(c,o.lsv||-0.01,o.vs); var w1=mw(c,ST[k].v); setFont(c,500,o.ls,FAM.kr); noLS(c); t+=Math.max(w1,mw(c,lab(k,o.long))); });
+  return t+o.gap*(items.length-1); }
 function grid(c,items,x,y,o){ // 값 위, 라벨 아래
   var vs=o.vs, ls=o.ls, gap=o.gap, xx=x, maxH=vs+ls*1.3+o.mt, ws=[], ST=E.D.st;
   c.save(); c.textBaseline='alphabetic'; c.fillStyle=o.col; shadowFor(c,o.col);
@@ -5947,7 +5950,32 @@ function stickerLayerOf(c,L){
 
 /* ---------- 그리기 ---------- */
 var order=[];
-function contentOf(c,g,L){ if(L.kind==='block') return blockOf(c,g,L); if(L.kind==='route') return routeOf(c,g); return stickerLayerOf(c,L); }
+/* 고침 16(06 11/13 "크기랑 위치 수정 가능하게"): 이름 줄과 작은 숫자 줄도 끌 수 있는 덩어리다.
+   옮기지 않으면 자리와 색이 예전(고정 글자)과 같다. 색은 놓인 자리의 밝기를 따른다. E.layers에 넣지 않고 E.fix에 따로 둔다 */
+function fixLayers(){ return E.fix||(E.fix={head:{id:'head',kind:'head',x:0,y:0,s:1,r:0},grid:{id:'grid',kind:'grid',x:0,y:0,s:1,r:0}}); }
+/* 글자색을 정하려고 밝기를 재는 네모(x,y,w,h)도 덩어리와 같이 옮기고 키운다(상자 가운데 기준, drawLayer와 같은 셈).
+   옮기지도 키우지도 않았으면 예전과 똑같은 네모다 */
+function fixCol(L,bb,x,y,w,h){
+  if(!L||(L.x===0&&L.y===0&&L.s===1)) return autoCol(x,y,w,h);
+  var cx=bb.x+bb.w/2, cy=bb.y+bb.h/2; return autoCol(cx+L.x+(x-cx)*L.s,cy+L.y+(y-cy)*L.s,w*L.s,h*L.s);
+}
+function headOf(c,g,L){
+  var hw=headerW(c,g), x=72, y=g.Y(256), done=E.tpl==='done'; if(done){ x=Math.min(440,CW-72-hw); y=g.Y(1480); }
+  var bb={x:x-10,y:y-8,w:hw+20,h:g.F(30)*1.2+16};   // 상자는 글자보다 조금 크게(고른 테두리가 글자에 붙지 않게). 가운데는 같다
+  var col=done?fixCol(L,bb,x,y,hw,g.F(40)):fixCol(L,bb,72,y,560,g.F(40));
+  return {bb:bb, paint:function(c){ header(c,g,x,y,col); }};
+}
+function gridOf(c,g,L){
+  var t=E.tpl, items=others(3), x, y, o, rw, rh; if(!items.length) return null;
+  if(t==='done'){ x=72; y=g.Y(250); rw=640; rh=g.F(96); o={vs:g.F(54),ls:g.F(28),gap:g.F(68),mt:g.F(8),vw:600}; }
+  else if(t==='depth'){ x=432; y=g.Y(1458); rw=560; rh=g.F(110); o={vs:g.F(64),ls:g.F(30),gap:g.F(56),mt:g.F(10),long:true}; }
+  else return null;
+  var bb={x:x-10,y:y-8,w:gridW(c,items,o)+20,h:o.vs+o.ls*1.3+o.mt+16}; o.col=fixCol(L,bb,x,y,rw,rh);
+  return {bb:bb, paint:function(c){ grid(c,items,x,y,o); }};
+}
+/* 같이 보일 숫자를 모두 꺼서 작은 숫자 줄이 사라지면 고르기도 푼다(보이지 않는 것을 잡고 있지 않게) */
+function selCheck(){ if(E.sel&&E.sel.kind==='grid'&&!others(3).length) select(null); }
+function contentOf(c,g,L){ if(L.kind==='block') return blockOf(c,g,L); if(L.kind==='route') return routeOf(c,g); if(L.kind==='head') return headOf(c,g,L); if(L.kind==='grid') return gridOf(c,g,L); return stickerLayerOf(c,L); }
 function drawLayer(c,g,L){
   var o=contentOf(c,g,L); if(!o) return; L._bb=o.bb; L._rot=!!o.rot; var cx=o.bb.x+o.bb.w/2, cy=o.bb.y+o.bb.h/2;
   c.save(); c.translate(L.x+cx,L.y+cy); c.rotate(L.r); c.scale(L.s,L.s); c.translate(-cx,-cy); o.paint(c); c.restore(); order.push(L);
@@ -5973,21 +6001,13 @@ function render(c,preview,over){
   var t=E.tpl, behind=function(L){ return cut&&L.kind==='block'; };
   E.layers.forEach(function(L){ if(behind(L)) drawLayer(c,g,L); });
   if(cut) c.drawImage(E.photo.seg.cut,pr.dx,pr.dy,pr.dw,pr.dh);
-  // 고정 글자
-  var bc=brandCol(g);
-  if(t==='done'){
-    var items=others(3), rc=autoCol(72,g.Y(250),640,g.F(96));
-    grid(c,items,72,g.Y(250),{vs:g.F(54),ls:g.F(28),gap:g.F(68),mt:g.F(8),col:rc,vw:600});
-    var hw=headerW(c,g), hx=Math.min(440,CW-72-hw);
-    header(c,g,hx,g.Y(1480),autoCol(hx,g.Y(1480),hw,g.F(40)));
-  } else {
-    header(c,g,72,g.Y(256),autoCol(72,g.Y(256),560,g.F(40)));
-  }
-  if(t==='depth'){ var gi=others(3); if(gi.length) grid(c,gi,432,g.Y(1458),{vs:g.F(64),ls:g.F(30),gap:g.F(56),mt:g.F(10),long:true,col:autoCol(432,g.Y(1458),560,g.F(110))}); }
+  // 이름 줄과 작은 숫자 줄(고침 16: 끌 수 있는 덩어리로 그린다. 그리는 차례는 예전 그대로: done.은 숫자 줄 먼저, 깊이는 이름 줄 먼저)
+  var bc=brandCol(g), FX=fixLayers();
+  if(t==='depth'){ drawLayer(c,g,FX.head); drawLayer(c,g,FX.grid); } else { drawLayer(c,g,FX.grid); drawLayer(c,g,FX.head); }
   brand(c,g,bc);
   E.layers.forEach(function(L){ if(!behind(L)) drawLayer(c,g,L); });
   if(over&&TPL[t].depth) headGuide(c,g);
-  if(preview && E.sel && E.sel._bb) outline(c,E.sel);
+  if(preview && E.sel && E.sel._bb && order.indexOf(E.sel)>=0) outline(c,E.sel);   // 고침 16: 이번에 그리지 않은 것(숫자를 모두 꺼서 사라진 줄)에는 테두리를 치지 않는다
 }
 /* 찍기 전 안내선: 깊이 카드는 머리 꼭대기가 여기 오면 숫자가 머리 뒤로 들어간다 */
 function headGuide(c,g){
@@ -6006,11 +6026,11 @@ function outline(c,L){
 
 /* ---------- 레이어 ---------- */
 function blockLayer(){ return E.layers.filter(function(L){return L.kind==='block';})[0]||null; }
-function resetLayers(keepStickers){
+function resetLayers(keepStickers,keepFix){   // 고침 16: keepFix면 이름 줄과 작은 숫자 줄의 자리는 그대로 둔다(사진만 바꿀 때)
   var st=keepStickers?E.layers.filter(function(L){return L.kind==='sticker';}):[];
   E.layers=[{id:'block',kind:'block',x:0,y:0,s:1,r:E.tpl==='tattoo'?-8*Math.PI/180:0}];
   if(E.routeOn&&E.D.route) E.layers.unshift({id:'route',kind:'route',x:0,y:0,s:1,r:0});
-  E.layers=E.layers.concat(st); gest=null; select(null);
+  E.layers=E.layers.concat(st); if(!keepFix) E.fix=null; gest=null; select(null);
 }
 /* 머리에 맞춰 숫자 자리 잡기. 깊이 카드는 머리 꼭대기가 숫자 아랫부분을 살짝 가리게,
    타투는 가슴께 가운데로. 사람이 옮긴 뒤엔 건드리지 않는다(카드·사진을 바꿀 때만) */
@@ -6049,6 +6069,8 @@ function addSticker(key){
 function hitTest(L,px,py){
   var b=L._bb; if(!b) return false; var cx=b.x+b.w/2, cy=b.y+b.h/2, dx=px-(L.x+cx), dy=py-(L.y+cy), cr=Math.cos(-L.r), sr=Math.sin(-L.r);
   var lx=(dx*cr-dy*sr)/L.s+cx, ly=(dx*sr+dy*cr)/L.s+cy, pd=22/L.s;
+  // 고침 16: 이름 줄과 작은 숫자 줄은 미리보기에서 높이가 8px쯤이라 그대로는 손가락으로 못 잡는다. 닿는 높이가 화면에서 40px이 되게 둘레를 넓힌다
+  if(L.kind==='head'||L.kind==='grid'){ var kk=(cv.getBoundingClientRect().width||CW)/CW; pd=Math.max(22,(40/kk-b.h*L.s)/2)/L.s; }
   return lx>=b.x-pd&&lx<=b.x+b.w+pd&&ly>=b.y-pd&&ly<=b.y+b.h+pd;
 }
 function topHit(p){ for(var i=order.length-1;i>=0;i--){ if(hitTest(order[i],p.x,p.y)) return order[i]; } return null; }
@@ -6085,19 +6107,21 @@ $('pw-selDone').addEventListener('click',function(){ select(null); });
 var ptrs=new Map(), gest=null;
 function canPan(){ return bgOn()&&!E.live; }
 function canRot(L){ return L&&L!=='photo'&&(L.kind==='sticker'||(L.kind==='block'&&E.tpl==='tattoo')); }
-function cpt(e){ var r=cv.getBoundingClientRect(), g=geo(); return {x:(e.clientX-r.left)*CW/r.width, y:(e.clientY-r.top)*g.H/r.height}; }
+/* 고침 16: 끌기와 두 손가락은 화면 좌표(cx, cy)의 차이로 센다. 무엇을 처음 잡는 순간 아래 줄이 크기 막대로 바뀌어 미리보기가 커지는데,
+   카드 좌표(x, y)의 차이로 세면 손가락이 가만히 있어도 그만큼 덩어리가 튄다. kx, ky는 지금 미리보기에서 화면 1px이 카드 좌표로 몇인지 */
+function cpt(e){ var r=cv.getBoundingClientRect(), g=geo(); return {x:(e.clientX-r.left)*CW/r.width, y:(e.clientY-r.top)*g.H/r.height, cx:e.clientX, cy:e.clientY, kx:CW/(r.width||CW), ky:g.H/(r.height||g.H)}; }
 function startDrag(p,target){ gest={type:'drag',target:target,p0:p,b:target==='photo'?{x:E.pz.x,y:E.pz.y}:{x:target.x,y:target.y},moved:false}; }
 cv.addEventListener('pointerdown',function(e){
   try{ cv.setPointerCapture(e.pointerId); }catch(er){} var p=cpt(e); ptrs.set(e.pointerId,p);
   if(ptrs.size===1){ var L=topHit(p); startDrag(p,L||'photo'); if(L) select(L); }
   else if(ptrs.size===2){ var a=Array.from(ptrs.values()), tg=gest?gest.target:'photo';
-    gest={type:'pinch',target:tg,d0:Math.hypot(a[1].x-a[0].x,a[1].y-a[0].y)||1,a0:Math.atan2(a[1].y-a[0].y,a[1].x-a[0].x),s0:tg==='photo'?E.pz.z:tg.s,r0:tg==='photo'?0:tg.r}; }
+    gest={type:'pinch',target:tg,d0:Math.hypot(a[1].cx-a[0].cx,a[1].cy-a[0].cy)||1,a0:Math.atan2(a[1].cy-a[0].cy,a[1].cx-a[0].cx),s0:tg==='photo'?E.pz.z:tg.s,r0:tg==='photo'?0:tg.r}; }
 });
 cv.addEventListener('pointermove',function(e){
   if(!ptrs.has(e.pointerId)||!gest) return; var p=cpt(e); ptrs.set(e.pointerId,p);
-  if(gest.type==='drag'&&ptrs.size===1){ var dx=p.x-gest.p0.x, dy=p.y-gest.p0.y; if(Math.abs(dx)+Math.abs(dy)>6) gest.moved=true;
+  if(gest.type==='drag'&&ptrs.size===1){ var dx=(p.cx-gest.p0.cx)*p.kx, dy=(p.cy-gest.p0.cy)*p.ky; if(Math.abs(dx)+Math.abs(dy)>6) gest.moved=true;
     if(gest.target==='photo'){ if(!canPan()) return; E.pz.x=gest.b.x+dx; E.pz.y=gest.b.y+dy; if(gest.moved) E.touched=true; redraw(true); } else { gest.target.x=gest.b.x+dx; gest.target.y=gest.b.y+dy; if(gest.moved){ gest.target.moved=true; touch(gest.target); } redraw(); } }
-  else if(gest.type==='pinch'&&ptrs.size>=2){ var a=Array.from(ptrs.values()), d=Math.hypot(a[1].x-a[0].x,a[1].y-a[0].y), an=Math.atan2(a[1].y-a[0].y,a[1].x-a[0].x);
+  else if(gest.type==='pinch'&&ptrs.size>=2){ var a=Array.from(ptrs.values()), d=Math.hypot(a[1].cx-a[0].cx,a[1].cy-a[0].cy), an=Math.atan2(a[1].cy-a[0].cy,a[1].cx-a[0].cx);
     if(gest.target==='photo'){ if(!canPan()) return; E.pz.z=clamp(gest.s0*d/gest.d0,1,4); E.touched=true; redraw(true); }
     else { touch(gest.target); gest.target.s=clamp(gest.s0*d/gest.d0,0.3,3); if(canRot(gest.target)) gest.target.r=gest.r0+(an-gest.a0); select(gest.target); redraw(); } }
 });
@@ -6114,7 +6138,7 @@ cv.addEventListener('keydown',function(e){ var L=E.sel; if(!L) return; var st=e.
   else if(e.key==='Escape') select(null); else used=false;
   if(used){ e.preventDefault(); touch(L); if(E.sel) select(E.sel); redraw(); } });
 /* 스티커가 아닌 것(숫자 덩어리·경로·사진)을 손댔으면 자동 자리 잡기를 멈춘다 */
-function touch(L){ if(L&&L.kind!=='sticker') E.touched=true; }
+function touch(L){ if(L&&L.kind!=='sticker'&&L.kind!=='head'&&L.kind!=='grid') E.touched=true; }   // 고침 16: 이름 줄과 작은 숫자 줄은 스티커처럼 큰 숫자의 자동 자리 잡기를 멈추지 않는다
 
 /* ---------- 화면 크기 ---------- */
 var stage=$('pw-stage'), frameEl=$('pw-frame'), under=$('pw-under');
@@ -6251,10 +6275,10 @@ function buildData(){
   var D=E.D, ST=D.st, hb=$('pw-heroes'); hb.innerHTML=''; var allowed=TPL[E.tpl].heroes;
   $('pw-walkid').innerHTML=esc(D.md+' '+D.dow)+' <span>'+D.start+'</span>~<span>'+D.end+'</span>'+(D.course?' · '+esc(D.course):(D.place?' · '+esc(D.place):''));
   buildPlace();
-  ORDER.forEach(function(k){ var st=ST[k]; var b=btn('pw-chip',st.lab+' <span class="n">'+st.v+(st.u?' km':'')+'</span>',E.hero===k,function(){ E.hero=k; E.heroBy[E.tpl]=k; buildData(); relayout(); redraw(true); });
+  ORDER.forEach(function(k){ var st=ST[k]; var b=btn('pw-chip',st.lab+' <span class="n">'+st.v+(st.u?' km':'')+'</span>',E.hero===k,function(){ E.hero=k; E.heroBy[E.tpl]=k; buildData(); relayout(); selCheck(); redraw(true); });
     if(allowed.indexOf(k)<0||(k==='dist'&&!D.hasDist)){ b.disabled=true; b.title=k==='dist'&&!D.hasDist?'거리가 기록되지 않은 산책이에요':(k==='dist'&&E.tpl==='depth'?'소수점이 머리에 가려져요':'이 카드에는 안 맞아요'); } hb.appendChild(b); });
   var sb=$('pw-stats'); sb.innerHTML='';
-  ORDER.forEach(function(k){ if(k===E.hero) return; var st=ST[k], b=btn('pw-chip',st.lab+' <span class="n">'+st.v+(st.u?' km':'')+'</span>',E.show[k],function(){ E.show[k]=!E.show[k]; buildData(); redraw(); });
+  ORDER.forEach(function(k){ if(k===E.hero) return; var st=ST[k], b=btn('pw-chip',st.lab+' <span class="n">'+st.v+(st.u?' km':'')+'</span>',E.show[k],function(){ E.show[k]=!E.show[k]; buildData(); selCheck(); redraw(); });
     if(k==='dist'&&!D.hasDist){ b.disabled=true; b.title='거리가 기록되지 않은 산책이에요'; } sb.appendChild(b); });
   var hasR=!!D.route; $('pw-routeOn').checked=E.routeOn&&hasR; $('pw-routeOn').disabled=!hasR; $('pw-marks').checked=E.marks&&hasR; $('pw-marks').disabled=!hasR||!D.pee.length;
   $('pw-noroute').hidden=hasR;
@@ -6296,7 +6320,7 @@ function usePhoto(ph,composed){
   E.photo=ph; E.depth=null; E.touched=false; if(ph){ E.bgOff=false; ph.composed=!!composed; } $('pw-bgOff').checked=E.bgOff;
   if(!(ph&&ph.live)) E.layers=E.layers.filter(function(L){ return !(L.kind==='sticker'&&L.key==='shot'); });
   if(composed){ E.pz={x:0,y:0,z:1}; select(null); }
-  else { framePhoto(); resetLayers(true); autoPlace(); }
+  else { framePhoto(); resetLayers(true,true); autoPlace(); }   // 고침 16: 옮겨 둔 이름 줄과 작은 숫자 줄은 스티커처럼 남긴다(큰 숫자만 새로 자리 잡는다)
   buildThumbs(); buildTpls(); buildStickers(); underUI(); redraw(true); kickSeg();
 }
 function pickFile(input,label,live){ var f=input.files&&input.files[0]; input.value=''; if(!f) return;
