@@ -1105,6 +1105,15 @@ body.pwc-on .toast{top:calc(70px + env(safe-area-inset-top,0px));bottom:auto;bac
 #pwc .pw-stage{position:relative;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding-block:4px}
 #pwc .pw-frame{position:relative;border-radius:14px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.06);background:#000;max-width:100%}
 #pwc .pw-frame canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+/* 고침 17: 남긴 PWC 기록 보기(#pwc.view)와 공유 전에 한 번 묻는 줄 */
+#pwc .pw-frame #pw-kept{display:none;width:100%;height:100%;object-fit:contain;background:#1d1712}
+#pwc.view{grid-template-columns:minmax(0,1fr)}
+#pwc.view .pw-frame canvas,#pwc.view .pw-panel,#pwc.view .pw-load,#pwc.view .pw-segst{display:none!important}
+#pwc.view .pw-frame #pw-kept{display:block}
+#pwc .pw-ask{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+#pwc .pw-ask p{margin:0;font-size:13px;line-height:1.45;color:var(--pfg)}
+#pwc .pw-ask div{display:flex;gap:8px;justify-content:center}
+.row .ic.pwth{border:0;padding:0;background-size:cover;background-position:center;cursor:pointer}
 #pwc .pw-frame canvas:active{cursor:grabbing}
 #pwc .pw-load{position:absolute;inset:0;display:grid;place-items:center;color:var(--pmuted);font-size:13px;background:#120d09}
 #pwc .pw-segst{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);white-space:nowrap;font-size:12.5px;font-weight:700;
@@ -2196,9 +2205,10 @@ body.walking .app{padding-bottom:16px}
 
   <main class="pw-stage" id="pw-stage">
     <div class="pw-frame" id="pw-frame">
-      <canvas id="pw-cv" width="1080" height="1920" tabindex="0" aria-label="카드 미리보기. 숫자, 경로, 스티커를 끌어서 옮길 수 있어요"></canvas>
+      <canvas id="pw-cv" width="1080" height="1920" tabindex="0" aria-label="카드 미리보기. 숫자, 이름 줄, 경로, 스티커를 끌어서 옮길 수 있어요"></canvas>
       <div class="pw-load" id="pw-load">글꼴 불러오는 중</div>
       <div class="pw-segst" id="pw-segst" role="status" hidden></div>
+      <img id="pw-kept" alt="남겨 둔 PWC 기록">
     </div>
     <div class="pw-under" id="pw-under">
       <div class="pw-camui" id="pw-camui" hidden>
@@ -2217,6 +2227,8 @@ body.walking .app{padding-bottom:16px}
         <button class="pw-ib" id="pw-selDone" type="button" aria-label="선택 끝내기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l10 -10"/></svg></button>
       </div>
       <p class="pw-hint" id="pw-hint">끌어서 옮기고 두 손가락으로 크기를 바꿔요</p>
+      <div class="pw-ask" id="pw-ask" hidden><p><span class="sn">공유하면 이 그림이 이 산책의 PWC 기록으로 남아요.</span> <span class="sn">한 산책에 한 장이에요.</span></p><div><button class="pw-mini" id="pw-ask-no" type="button">더 고치기</button><button class="pw-cta" id="pw-ask-go" type="button">공유하기</button></div></div>
+      <p class="pw-hint" id="pw-keptnote" hidden>이 산책의 PWC 기록이에요. 한 산책에 한 장만 남겨요</p>
     </div>
   </main>
 
@@ -3181,7 +3193,9 @@ function renderToday(){
   // 고침 5: 지금 시간대가 힘든 등급이면 권하는 말의 둘째, 셋째 줄을 그 사실로 바꾼다(밤, 쉬는 날, 숨긴 시간, 사실만 보이는 안은 그대로).
   // 산책 전 카드에는 둘 다, 오늘 다녀온 뒤의 '나가고 싶어요' 줄에는 셋째 줄('쉬만 하고 와도 돼요')이 'N시간 전 다녀왔어요' 자리에 나온다
   if(wc&&ws&&G.copy==="A"&&!ws.off&&!ws.night&&!ws.rest&&!ws.quiet){ var hn=hardNow(now);
-    if(hn.l)wc={t:wc.t,s:hardTx(hn.why)[hn.l===2?1:0],   // 고침 7: 이유마다의 말은 HARD_TX에(비, 추위, 더위)
+    // 고침 15(06 11/13: 위 카드도 같은 말): 위 카드가 지금 같은 날씨 말을 하고 있으면 여기서는 그 한 줄만 뺀다. 위 카드가 다른 말을 하고 있으면(더위 경고, 날씨를 못 받음, 아직 다시 그리지 않음) 예전처럼 여기서 말한다
+    var topSays=!!WXSAME&&WXSAME.l===hn.l&&WXSAME.why===hn.why;
+    if(hn.l)wc={t:wc.t,s:topSays?"":hardTx(hn.why)[hn.l===2?1:0],   // 고침 7: 이유마다의 말은 HARD_TX에(비, 추위, 더위)
       m:hn.l===2?"쉬만 하고 와도 돼요":"짧게 다녀와도 돼요"}; }
   function j2(a,b){ return a&&b?'<span class="l2">'+a+'</span><span class="l2">'+b+'</span>':(a||b||''); }   // 좁은 칸에서 가운뎃점이 줄 머리나 꼬리에 걸리지 않게 한 줄씩
   var wishLine=wc&&ws&&!ws.off&&!ws.quiet?'<div class="wish">'+(G.copy==="B"?wc.t:G.copy==="C"?j2(wc.t,wc.s):j2(wc.t,wc.m))+'</div>':'';
@@ -3229,8 +3243,8 @@ $("todaycard").addEventListener("click",function(e){
 /* 0.4.4: 나가고 싶어요는 시간이 지나며 바뀌니 홈에 있을 때 1분마다, 앱으로 돌아올 때 다시 그린다 */
 setInterval(function(){ var el=$("todaycard");
   if(W||!$("v-home")||!$("v-home").classList.contains("on")||(el&&el.contains(document.activeElement)))return;   // 버튼에 포커스가 있으면 건드리지 않는다
-  renderToday(); },60000);
-document.addEventListener("visibilitychange",function(){ if(!document.hidden&&!W)renderToday(); });
+  wxTick(); },60000);   // 고침 15: 위 카드가 할 말이 바뀌었으면 홈을 다시, 아니면 예전처럼 이 카드만
+document.addEventListener("visibilitychange",function(){ if(!document.hidden&&!W)wxTick(); });
 
 /* 0.5.0 고침 3: 홈이 스크롤 없이 한 화면에 들어오게, 산책 시작 단추 크기를 남은 자리에 맞춘다(120px에서 256px 사이).
    카드가 많아 120px로도 넘치면 그때만 스크롤된다. 펼친 '안전 정보' 안쪽은 세지 않는다(사용자가 펼친 것이라 스크롤이 맞다) */
@@ -3257,6 +3271,9 @@ try{ if(window.ResizeObserver)new ResizeObserver(fitStart).observe($("v-home"));
 window.addEventListener("resize",fitStart);
 function renderHome(){ renderHomeIn(); fitNow(); }
 function renderHomeIn(){
+  // 고침 15: 위 카드가 할 말을 아래 카드(renderToday)보다 먼저 정한다. 아래 카드가 같은 줄을 빼야 해서다.
+  //   위 카드를 이번에 다시 그릴 수 있을 때만 바꾼다. 못 그리면 화면에 남아 있는 말 그대로 둔다(같은 말이 두 카드에 겹치지 않게, Codex 11/13)
+  try{ if(wxCan())WXSAME=wxSame(); }catch(e){}
   resumeRender();renderToday();
   if(!WX)return;
   var el=$("light");
@@ -3343,6 +3360,10 @@ function renderHomeIn(){
     side.innerHTML="해가 "+COMPASS[Math.round((sun.az/45))%8]+"쪽에 있어요 · <b>길 "+shadeSide(sun.az)+"쪽</b>에 붙어 걸으세요";
   } else side.style.display="none";
   renderTip(c);
+  // 고침 15(06 11/13: 위 카드도 같은 말): 지금 시간대가 비나 추위로 힘든 등급이면 제목은 그 말, 둘째 줄은 숫자, 색은 주의 카드. 덧붙임 글(해 방향, 더 좋은 시간, 진드기)은 그때 보이지 않는다
+  if(WXSAME){ el.className="light warn"; $("l-dot").innerHTML=WXSAME.why==="rain"?IC.rain:IC.alert;
+    $("l-h").textContent=WXSAME.h; $("l-why").textContent=WXSAME.n;
+    side.style.display="none"; when.style.display="none"; $("l-tip").style.display="none"; }
   renderWinter(c);
   $("sig").style.display=c.g>0?"":"none";
   renderPick();
@@ -3544,6 +3565,7 @@ function enterMain(){
   try{ if(document.fonts&&document.fonts.load)document.fonts.load("400 46px 'Bagel Fat One'","꾹이").catch(function(){}); }catch(e){}   // 공유 이미지 맨 아래 로고
 }
 function boot(){
+  pwcLoad().then(function(){ try{ if(Object.keys(PWCK.has).length)renderLog(); }catch(e){} });   // 고침 17: 남긴 PWC 기록 목록
   nativeInit();
   press($("srcpick"),function(b){S.src=b.dataset.v;save();});
   $("betarep").addEventListener("click",betaSend);
@@ -3586,8 +3608,11 @@ function median(a){
 }
 /* 첫 주 문제, 기준선이 14회 쌓일 때까지 아무것도 못 보여주면
    대부분은 핵심을 한 번도 못 보고 떠난다. 그래서 체중·나이로 임시선을
-   깔고, 산책이 한 번 쌓일 때마다 개인값 쪽으로 한 칸씩 갈아끼운다.
-   5회면 100% 그 개의 값이 된다. 화면에는 "임시 기준"이라고 적는다. */
+   깔고, 산책이 한 번 쌓일 때마다 그 강아지의 값 쪽으로 한 칸씩 갈아끼운다.
+   화면에는 "임시 기준"이라고 적는다.
+   고침 14(06 11/12 밤 산책: 낮에 한 번 걸었는데 밤에는 다시 0/5였고 16분, 900m에 95점이 났다):
+   임시 쪽을 몸무게 공식만으로 채우지 않고 시간대가 달라도 자기 기록으로 채운다. 끝낸 산책이 3번이면 공식은 다 빠진다.
+   그 시간대의 기록은 예전처럼 5번에 걸쳐 그 시간대 값으로 바뀐다(5번이 찬 시간대는 숫자가 예전과 같다). 3과 5는 정한 값 [가정]. */
 function provBase(){
   var kg=(S.dog&&S.dog.kg)||10, a=(S.dog&&S.dog.age!=null)?S.dog.age:4;
   var d=600+Math.min(950,kg*45);
@@ -3596,16 +3621,35 @@ function provBase(){
   if(S.dog&&S.dog.brachy)d*=0.85;
   return {dist:Math.round(d), kkuk:Math.max(3,Math.round(kg*0.4)+2), sniff:180000};
 }
-function baseline(slot,excludeStart){
-  var all=S.walks.filter(function(w){
-    return w.end&&slotOf(w.start)===slot&&w.start!==excludeStart;});
+function baseline(slot,excludeStart,skipDk){   // skipDk: 하루 링이 부를 때 넘기는 날짜. 그날의 산책은 임시 쪽 표본에서 뺀다(아래 고침 14의 끝 줄)
+  var NEED=3;   // 고침 14: 자기 기록이 이만큼 쌓이면 몸무게 공식을 쓰지 않는다
+  var fin=S.walks.filter(function(w){return w.end&&w.start!==excludeStart;});
+  var all=fin.filter(function(w){return slotOf(w.start)===slot;});
   // 고침 5: 힘든 시간대에 한 산책(꼬리표 hard)은 평소 기준에서 뺀다. 보통 산책이 5번 이상 남을 때만(장마철에 기준이 내려가지 않게)
   var plain=all.filter(function(w){return !w.hard;}), ws=(plain.length>=5?plain:all).slice(0,14);
   var P=provBase();
-  if(!ws.length)return {n:0,ready:true,prov:1,drift:false,
-    dist:P.dist,kkuk:P.kkuk,sniff:P.sniff,poopRate:0,poopCounts:pottyHabit()==="out"};
+  // 고침 14: 임시 쪽 Q = 자기 전체 기록(모든 시간대)의 가운데 값과 몸무게 공식을 섞은 값. 자기 기록의 몫 mixA는 끝낸 산책 수/3. 힘든 날 산책은 위와 같은 규칙으로 뺀다.
+  //   5번이 찬 시간대는 이 계산을 아예 하지 않는다(숫자가 예전과 같다).
+  //   이상한 값이 든 기록(가져온 파일의 글자, 음수, 터무니없이 큰 값)은 여기서 세지 않는다. 0으로 치거나 그대로 쓰면 다른 시간대의 기준이 바닥이나 끝없는 값이 되고 배운 횟수로도 잘못 센다(Codex 11/13).
+  //   세는 범위: 거리 0~200km, 멈춤 0~24시간, 꾹 1000번까지(정한 값 [가정]). 없는 값은 예전처럼 0으로 친다
+  //   하루 링이 '한 번의 몫'을 물을 때(skipDk)는 그날의 산책을 세지 않는다. 세면 저녁 산책을 끝내는 순간 낮 산책의 몫이 바뀌어 걸은 양은 같은데 하루 링이 뛴다(88 → 100, GPT-6-Astra 11/13)
+  var mixA=0, Q=P, nA=NEED;   // nA: 임시 쪽에 센 자기 기록 수(3까지). 산책 중 글 '임시 기준 (n/3회 학습)'의 n
+  if(ws.length<5){
+    var okN=function(v,max){return v==null||(typeof v==="number"&&v>=0&&v<=max);};
+    var good=fin.filter(function(w){return (skipDk==null||dayOf(w.start)!==skipDk)&&okN(w.dist,2e5)&&okN(w.sniff,864e5)&&(w.kkuks==null||(Array.isArray(w.kkuks)&&w.kkuks.length<=1000));});
+    var plainA=good.filter(function(w){return !w.hard;}), wa=(plainA.length>=5?plainA:good).slice(0,14);
+    mixA=Math.min(1,wa.length/NEED); nA=Math.min(NEED,wa.length);
+    if(wa.length){
+      var DA=Math.max(150,median(wa.map(function(w){return w.dist||0;})));
+      var KA=Math.max(1,median(wa.map(function(w){return (w.kkuks||[]).length;})));
+      var NA=Math.max(30000,median(wa.map(function(w){return w.sniff||0;})));
+      Q={dist:DA*mixA+P.dist*(1-mixA), kkuk:KA*mixA+P.kkuk*(1-mixA), sniff:NA*mixA+P.sniff*(1-mixA)};
+    }
+  }
+  if(!ws.length)return {n:0,ready:true,prov:1-mixA,nA:nA,drift:false,
+    dist:Q.dist,kkuk:Q.kkuk,sniff:Q.sniff,poopRate:0,poopCounts:pottyHabit()==="out"};
   var mix=Math.min(1,ws.length/5);
-  function bl(v,p){return v*mix+p*(1-mix);}
+  function bl(v,p){return mix>=1?v:v*mix+p*(1-mix);}   // 고침 14: 5번이 찬 시간대는 임시 쪽을 아예 보지 않는다(숫자가 예전과 같다)
   var poopRate=ws.filter(function(w){return (w.poops||[]).length>0;}).length/ws.length;
   var D=Math.max(150,median(ws.map(function(w){return w.dist||0;})));
   var K=Math.max(1,median(ws.map(function(w){return (w.kkuks||[]).length;})));
@@ -3618,8 +3662,8 @@ function baseline(slot,excludeStart){
     var o=median(ws.slice(5).map(function(w){return w.dist||0;}));
     drift = o>0 && r < o*0.75;
   }
-  return {n:ws.length,ready:true,prov:1-mix,drift:drift,
-    dist:bl(D,P.dist), kkuk:bl(K,P.kkuk), sniff:bl(N,P.sniff),
+  return {n:ws.length,ready:true,prov:(1-mix)*(1-mixA),nA:nA,drift:drift,   // prov: 몸무게 공식이 차지하는 몫(0이면 모두 자기 기록)
+    dist:bl(D,Q.dist), kkuk:bl(K,Q.kkuk), sniff:bl(N,Q.sniff),
     poopRate:poopRate,
     // 0.4.4: 배변 습관을 고르면 그걸 따른다. 밖에서만이면 첫날부터 똥을 채점, 집 안이면 채점하지 않는다. 모르면 예전처럼 기록을 보고 정한다
     poopCounts:pottyHabit()==="out"?true:pottyHabit()==="in"?false:(ws.length>=5&&poopRate>=0.5)};
@@ -3635,7 +3679,8 @@ function gaugeDetail(w){
   // 고침 5: 힘든 시간대의 산책은 덜 걸어도 찬다(1 짧게: 절반이면 참, 2 쉬만: 꾹이나 똥이 있으면 참). 끝난 산책은 꼬리표, 걷는 중은 그 시간대 등급.
   // 등급은 점수를 올리기만 한다(등급 1은 값을 2배로 쳐 주고, 등급 2는 꾹이나 똥이 없으면 보통 계산 그대로)
   var hl=w.end?(w.hard||0):(hardLv(dayOf(w.start)).lv[HARD_SL.indexOf(slot)]||0); if(hl!==1&&hl!==2)hl=0;   // 가져온 파일의 이상한 꼬리표는 등급 없음으로
-  function add(k,v,cap){parts.push({k:k,r:Math.min(cap||1.2,hl===1?v/HARD_F[1]:v)});raw.push(Math.min(cap||1.5,v));}
+  var capP=B.prov>0.01?1:1.2, capR=B.prov>0.01?1:1.5;   // 고침 14: 몸무게 공식이 섞인 임시 기준인 동안은 덤(120%)을 주지 않는다. '넉넉' 판정도 하지 않는다
+  function add(k,v,cap){parts.push({k:k,r:Math.min(cap||capP,hl===1?v/HARD_F[1]:v)});raw.push(Math.min(cap||capR,v));}
   add("꾹",(w.kkuks||[]).length/B.kkuk,1);   // 0.4.5: 꾹은 마킹 횟수라 평소보다 많아도 점수를 더 주지 않는다(1.0에서 자름)
   add("킁킁",(w.sniff||0)/B.sniff);
   add("거리",(w.dist||0)/B.dist);
@@ -3710,7 +3755,8 @@ function dayBaseline(skipDk,refT){
    고침 7: 추위(06 11/12). 기온이 영하 12도 이하면 1 짧게, 영하 15도 이하면 2 쉬만.
      숫자는 기상청 한파주의보(아침 최저기온 영하 12도 이하), 한파경보(영하 15도 이하)에서 빌렸다 [가정].
      강아지가 몇 도부터 위험한지 가른 연구는 찾지 못했다(미국수의사회도 "아주 추운 날은 산책을 줄이라"고만 한다).
-     그래서 위험 판정에는 쓰지 않고(위 날씨 카드는 그대로다), 그 시간대는 덜 걸어도 찬다는 데만 쓴다.
+     그래서 위험 판정에는 쓰지 않고(위 날씨 카드의 더위 판정은 그대로다), 그 시간대는 덜 걸어도 찬다는 데만 쓴다.
+     고침 15부터는 위 날씨 카드도 아래 카드와 같은 말('지금은 추워요')을 한다. 새 판정이 아니라 같은 말을 위로 옮긴 것이다(아래 wxSame).
    걷기 좋은 시간 계산(renderHome)도 '짧게' 단계를 0.5로 친다. 실제 날씨를 받았을 때만 매긴다(추정 날씨로는 깎지 않는다).
    힘든 날 계산은 링을 올리기만 한다: 보통 날 계산과 견줘 높은 쪽을 쓴다(비가 온다고 같은 산책의 점수가 내려가면 안 된다).
    지나간 시간대의 등급과, 이미 끝낸 산책에 붙인 등급은 그날 안에 내리지 않는다(예보가 바뀌어도 다 찬 링이 다시 내려가지 않게).
@@ -3766,11 +3812,45 @@ function hardSync(){       // 날씨를 새로 받을 때마다 오늘 등급을
 function hardNow(now){     // 지금 시간대의 등급
   var h=hardLv(dayOf(now)), i=HARD_SL.indexOf(slotOf(now)); return {l:h.lv[i]||0,why:h.why[i]||""};
 }
-function hardShare(){      // 평소 하루에서 시간대마다 차지하는 몫(항목별): 그 시간대 평소 산책 × 그 시간대에 나간 날의 비율. 기록이 없으면 셋으로 똑같이
+/* ══ 0.5.0 고침 15: 위 날씨 카드도 같은 말(06 11/13: 위 카드도 같은 말) ══════════════════
+   영하 16도나 센 비에도 홈 맨 위 카드는 '지금 나가도 좋아요'(초록)였고 바로 아래 카드만 '비가 많이 와요'라고 해서 두 카드의 말이 어긋났다.
+   지금 시간대의 등급(hardNow)이 비나 추위 때문에 1이나 2면 위 카드가 그 말(HARD_TX의 첫째, 둘째 말)을 제목으로 쓴다.
+   둘째 줄은 지금 시각의 숫자만 적는다(비: 시간당 Nmm와 기온, 추위: 기온). 색은 주의 카드, 그림은 비면 비 그림, 추위면 주의 그림.
+   그때 아래 카드에서는 같은 날씨 말 한 줄만 뺀다(renderToday). 권하는 말은 그대로다.
+   그대로 두는 때: 등급 없음, 더위(위 카드가 이미 말한다), 위 카드가 더위 경고 중일 때, 실제 날씨를 못 받았을 때(추정 날씨에는 비 숫자가 없다), 위치가 없을 때.
+   등급은 읽기만 한다. 미세먼지는 넣지 않았다(보류). 화면에 넣는 글은 정해 둔 말과 숫자로 바꾼 값뿐이다(저장된 글자, 날씨 응답의 글자는 넣지 않는다). */
+IC.rain='<svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7"/><path d="M11 13v2m0 3v2m4 -5v2m0 3v2"/></svg>';
+var WXSAME=null;          // 위 카드가 지금 화면에서 하고 있는 힘든 날 말(없으면 null). renderHomeIn이 위 카드를 그릴 때만 바꾼다. 아래 카드는 이 값을 보고 같은 줄을 뺀다
+function wxSame(){        // 위 카드가 해야 할 말: {l 등급, why 이유, h 제목, n 숫자 줄}. 그대로 둘 때는 null
+  if(!loc||!WX||!WXLIVE||!WX.day0)return null;
+  var d=new Date(), p=function(n){return (n<10?"0":"")+n;}, ymd=function(x){return x.getFullYear()+"-"+p(x.getMonth()+1)+"-"+p(x.getDate());};
+  // 숫자는 등급을 매긴 날씨(hardLive)와 같은 시각의 것을 쓴다: 받은 날씨의 첫날이 오늘이면 그대로, 어제면 둘째 날(자정을 넘겨 켜 둔 앱)
+  var off=WX.day0===ymd(d)?0:(WX.day0===ymd(new Date(d.getFullYear(),d.getMonth(),d.getDate()-1))?24:-1);
+  if(off<0)return null;
+  var c0=gradeAt(d,d.getHours()); if(!c0)return null;   // renderHomeIn이 위 카드를 그릴 때 쓰는 값. 이게 없으면 위 카드는 다시 그려지지 않으니 여기서도 말하지 않는다
+  var i=off+d.getHours(), w=WX.hours[i], c=w?(off?gradeAt(d,i):c0):null;
+  if(!c||c.g!==0)return null;                        // 위 카드가 더위 경고(짧게, 그늘로 / 나가지 마세요)를 하고 있으면 그 말을 그대로 둔다
+  var hn=hardNow(d.getTime());
+  if((hn.l!==1&&hn.l!==2)||(hn.why!=="rain"&&hn.why!=="cold"))return null;
+  var t=Math.round(+w.air); if(!isFinite(t))return null;
+  var n="기온\u00a0"+t+"도";   // 같은 카드의 보통 날 글('바닥 예상 N도', 고침 9)과 단위를 맞춘다
+  if(hn.why==="rain"){ var r=+w.rain;                 // 지금 시각의 비(앞 1시간, mm). 1mm가 안 되면 적지 않는다(등급은 남았는데 비가 잠깐 그친 때 '시간당 0mm'가 뜨지 않게)
+    if(isFinite(r)&&r>=1)n="시간당\u00a0"+Math.round(r)+"mm, "+n; }
+  return {l:hn.l,why:hn.why,h:HARD_TX[hn.why][hn.l-1],n:n};
+}
+function wxKey(x){ return x?x.h+"|"+x.n:""; }
+function wxCan(){         // 위 카드를 지금 다시 그릴 수 있나(renderHomeIn과 같은 조건). 날씨가 아직 없거나 지금 시각의 기온이 비면 위 카드는 예전 글 그대로 남는다
+  var d=new Date(); return !!WX&&(!loc||!!gradeAt(d,d.getHours()));
+}
+function wxTick(){        // 위 카드가 해야 할 말이 화면과 달라졌으면(시간대가 바뀜, 숫자가 바뀜) 홈을 다시 그려 두 카드를 맞춘다. 같으면 예전처럼 아래 카드만 그린다
+  var x=null, can=false; try{ can=wxCan(); if(can)x=wxSame(); }catch(e){ can=false; }
+  if(can&&wxKey(x)!==wxKey(WXSAME))renderHome(); else renderToday();
+}
+function hardShare(skipDk){      // 평소 하루에서 시간대마다 차지하는 몫(항목별): 그 시간대 평소 산책 × 그 시간대에 나간 날의 비율. 기록이 없으면 셋으로 똑같이. 고침 14: skipDk(셈하는 날)의 산책은 임시 쪽 표본에서 뺀다
   var ds=dayStart(Date.now()), from=ds-14*864e5, days={}, has={morning:{},day:{},evening:{}}, KS=["dist","sniff","kkuk"];
   S.walks.forEach(function(w){ if(!w.end||w.start<from||w.start>=ds)return; var k=dayOf(w.start); days[k]=1; has[slotOf(w.start)][k]=1; });
   var nd=Object.keys(days).length, e={}, sum={dist:0,sniff:0,kkuk:0}, out={};
-  HARD_SL.forEach(function(sl){ var p=nd?Object.keys(has[sl]).length/nd:0, b=p?baseline(sl,null):null; e[sl]={};
+  HARD_SL.forEach(function(sl){ var p=nd?Object.keys(has[sl]).length/nd:0, b=p?baseline(sl,null,skipDk):null; e[sl]={};
     KS.forEach(function(k){ e[sl][k]=b?b[k]*p:0; sum[k]+=e[sl][k]; }); });
   HARD_SL.forEach(function(sl){ out[sl]={}; KS.forEach(function(k){ out[sl][k]=sum[k]>0?e[sl][k]/sum[k]:1/3; }); });
   return out;
@@ -3782,7 +3862,7 @@ function dayScore(dk,liveWalk,refT){
   var ph=pottyHabit(), parts=[], raw=[];
   // 고침 5: 힘든 날 등급. 시간대 몫에 등급 값을 곱해 오늘 필요한 양 R을 줄인다(등급이 없으면 R = B). R은 아래 '힘든 날 계산'에서만 쓴다
   var HD=hardLv(dk), R={dist:B.dist,sniff:B.sniff,kkuk:B.kkuk}, hardWhy="";
-  if(HD.lv[0]+HD.lv[1]+HD.lv[2]>0){ var SH=hardShare();
+  if(HD.lv[0]+HD.lv[1]+HD.lv[2]>0){ var SH=hardShare(dk);
     ["dist","sniff","kkuk"].forEach(function(k){ var f=0; HARD_SL.forEach(function(sl,i){ f+=SH[sl][k]*HARD_F[HD.lv[i]]; }); R[k]=B[k]*f; });
     HARD_SL.forEach(function(sl,i){ if(HD.lv[i]&&SH[sl].dist>0&&hardWhy!=="rain")hardWhy=HD.why[i]||"heat"; }); }
   var hardCut=R.dist<B.dist*0.999||R.sniff<B.sniff*0.999, allHard=hardCut&&R.dist<=0&&R.sniff<=0;   // allHard: 평소 나가는 시간대가 모두 쉬만 등급
@@ -3792,7 +3872,7 @@ function dayScore(dk,liveWalk,refT){
   if(usual>=2){
     var U={dist:0,sniff:0,kkuk:0}, KS=RING_KKUK?["dist","sniff","kkuk"]:["dist","sniff"];
     outings(ws).forEach(function(g){ var b={dist:0,sniff:0,kkuk:0};
-      g.forEach(function(w){ var sb=baseline(slotOf(w.start),w.start); KS.forEach(function(k){ b[k]=Math.max(b[k],sb[k]); }); });
+      g.forEach(function(w){ var sb=baseline(slotOf(w.start),w.start,dk); KS.forEach(function(k){ b[k]=Math.max(b[k],sb[k]); }); });   // 고침 14: dk(그날)는 임시 쪽 표본에서 뺀다
       // 한 번의 평소 몫: 그 시간대 평소 산책과 '평소 하루 ÷ 평소 횟수' 가운데 큰 쪽(평소와 다른 시간에 나갔다고 깎이지 않게)
       KS.forEach(function(k){ U[k]+=Math.max(b[k],B[k]/usual); }); });
     KS.forEach(function(k){ var u=Math.min(B[k],U[k]); if(u<B[k]&&T[k]>u)C[k]=u+DAY_MISS*Math.min(T[k]-u,B[k]-u); });
@@ -3810,7 +3890,7 @@ function dayScore(dk,liveWalk,refT){
     else{ var Ch={dist:T.dist,sniff:T.sniff,kkuk:T.kkuk}, KH=RING_KKUK?["dist","sniff","kkuk"]:["dist","sniff"], ps=[];
       if(usual>=2){ var Uh={dist:0,sniff:0,kkuk:0};   // 절반 규칙(고침 4)을 R 기준으로. 힘든 시간대에 나간 산책의 '한 번의 몫'도 등급 값만큼만
         outings(ws).forEach(function(g){ var b={dist:0,sniff:0,kkuk:0}, gf=hf(g[0].start);
-          g.forEach(function(w){ var sb=baseline(slotOf(w.start),w.start); KH.forEach(function(k){ b[k]=Math.max(b[k],sb[k]); }); });
+          g.forEach(function(w){ var sb=baseline(slotOf(w.start),w.start,dk); KH.forEach(function(k){ b[k]=Math.max(b[k],sb[k]); }); });
           KH.forEach(function(k){ Uh[k]+=gf*Math.max(b[k],B[k]/usual); }); });
         KH.forEach(function(k){ var u=Math.min(R[k],Uh[k]); if(u<R[k]&&T[k]>u)Ch[k]=u+DAY_MISS*Math.min(T[k]-u,R[k]-u); }); }
       var nd=function(k,cap){ return Math.min(cap,R[k]>0?Ch[k]/R[k]:1); };   // 그 항목에 필요한 양이 0이면 찬 것으로
@@ -4045,7 +4125,7 @@ function tick(){
     $("gnum").textContent=g;var wsg=$("wseg-g");if(wsg)wsg.textContent=g;
     $("gring").setAttribute("stroke-dashoffset",(615.8*(1-g/100)).toFixed(1));
     var tail="";
-    if(gd.B&&gd.B.prov>0.01)tail=" · 임시 기준 ("+gd.B.n+"/5회 학습)";
+    if(gd.B&&gd.B.prov>0.01)tail=" · 임시 기준 ("+(gd.B.nA||0)+"/3회 학습)";   // 고침 14: 기준에 센 자기 기록 수(시간대와 상관없이, 걷고 있는 산책은 빼고). 3번이면 임시가 아니다
     else if(gd.B&&gd.B.drift)tail=" · 기준선이 내려가는 중이에요";
     $("gmsg").textContent=gmsgOf(g,gd);
     // 0.4.4: 오늘 앞서 다녀온 산책이 있으면 하루 합계도 한 줄에 보여 준다(나눠 걸어도 손해가 없게)
@@ -4679,16 +4759,17 @@ function renderWalks(){
     ? '<div class="lbl" style="margin-bottom:6px">내 기준선</div>'+rows.join("")+
       '<div class="src" style="margin-top:9px"><span class="sn">꾹게이지 100점은 <b>'+esc(kmJosa(S.dog&&S.dog.name?S.dog.name:"우리 아이","이","가"))+
       ' 그 시간대에 평소 하던\u00a0만큼</b>이에요.</span> <span class="sn">논문 배점이 아니라 자기 기록이 기준입니다.</span><br>'+
-      '<span class="sn">처음 5번은 몸무게와 나이로 만든 임시 기준과 섞어요.</span> <span class="sn">똥은 배변 습관이 밖에서만이면 넣고 주로 집 안이면 빼요.</span> <span class="sn">그 밖에는 평소 절반 이상 싸는 시간대에만 넣어요.</span></div>'
+      '<span class="sn">처음 3번은 몸무게와 나이로 만든 임시 기준과 섞어요.</span> <span class="sn">똥은 배변 습관이 밖에서만이면 넣고 주로 집 안이면 빼요.</span> <span class="sn">그 밖에는 평소 절반 이상 싸는 시간대에만 넣어요.</span></div>'
     : '<div class="empty">산책을 하면 시간대별 기준이 생겨요</div>';
   var wl=$("walklist");
   wl.innerHTML=!S.walks.length?'<div class="empty">아직 기록이 없어요</div>':
     S.walks.slice(0,30).map(function(w){var t=new Date(w.start);
-      return '<div class="row tap" data-wid="'+w.start+'"><div class="ic">'+IC.logo+'</div><div class="tx">'+
+      return '<div class="row tap" data-wid="'+w.start+'">'+(pwcKept(w.start)?'<button type="button" class="ic pwth" data-pwc="'+w.start+'" aria-label="남겨 둔 PWC 기록 보기"></button>':'<div class="ic">'+IC.logo+'</div>')+'<div class="tx">'+
         '<div class="a">'+(w.gauge==null?'기준 학습 중':'꾹게이지 '+w.gauge)+' · '+(w.dist/1000).toFixed(2)+'km</div>'+
         '<div class="b cnts">'+cnts(w)+'</div></div>'+
         '<div class="rt">'+(t.getMonth()+1)+'/'+t.getDate()+'<br>'+pad(t.getHours())+':'+pad(t.getMinutes())+'</div></div>';
     }).join("");
+  pwcThumbs(wl);   // 고침 17
 }
 
 /* ── 💧·💩 ── */
@@ -4766,6 +4847,8 @@ press($("logtab"),function(b){
 
 /* ── 산책 상세 시트 ── */
 $("walklist").addEventListener("click",function(e){
+  var k=e.target.closest("[data-pwc]");   // 고침 17: 작은 그림을 누르면 남긴 PWC 기록을 크게 본다
+  if(k){ var kw=S.walks.filter(function(x){return x.start===+k.dataset.pwc;})[0]; if(kw){ pwcOpen(kw); return; } }
   var r=e.target.closest("[data-wid]");if(!r)return;
   openWalk(+r.dataset.wid);
 });
@@ -4774,6 +4857,7 @@ function openWalk(id){
   var w=S.walks.filter(function(x){return x.start===id;})[0];
   if(!w)return;
   curWalk=id;
+  var cb=$("w-card").querySelector("span"); if(cb)cb.textContent=pwcKept(id)?"PWC 기록 보기":"PWC 기록 만들기";   // 고침 17
   var t=new Date(w.start),mins=Math.round(((w.end||w.start)-w.start)/60000);
   $("w-head").innerHTML='<h3 style="font-size:19px">'+(t.getMonth()+1)+'월 '+t.getDate()+'일 '+
     pad(t.getHours())+':'+pad(t.getMinutes())+' <span style="font-size:12px;color:var(--ink-3)">'+
@@ -4805,8 +4889,8 @@ $("w-close").addEventListener("click",function(){$("wsheet").classList.remove("o
 $("wsheet").addEventListener("click",function(e){if(e.target===this)this.classList.remove("on");});
 $("w-del").addEventListener("click",function(){
   if(curWalk==null)return;
-  if(!confirm("이 산책 기록을 지울까요?"))return;
-  S.walks=S.walks.filter(function(x){return x.start!==curWalk;});save(); glForget(curWalk);
+  if(!confirm(pwcKept(curWalk)?"이 산책 기록과 남겨 둔 PWC 기록 그림을 지울까요?":"이 산책 기록을 지울까요?"))return;
+  S.walks=S.walks.filter(function(x){return x.start!==curWalk;});save(); glForget(curWalk); pwcDrop(curWalk);   // 고침 17: 남긴 그림도 함께 지운다
   $("wsheet").classList.remove("on");renderLog();toast("지웠어요");
 });
 
@@ -5477,22 +5561,26 @@ function placeFill(w,lang,cb){
    안드로이드 WebView엔 navigator.share도 <a download>도 없다. 그래서 앱에선 네이티브로 돈다. */
 function blobB64(b){return new Promise(function(res,rej){var r=new FileReader();
   r.onload=function(){var s=String(r.result);res(s.slice(s.indexOf(",")+1));};r.onerror=rej;r.readAsDataURL(b);});}
+/* 고침 17: 공유(저장)를 끝냈는지 돌려준다(끝냄 true, 그냥 닫았거나 못 했음 false). 예전에 부르던 곳은 이 값을 쓰지 않는다.
+   아이폰은 공유를 끝냈을 때, 안드로이드는 보낼 앱을 골랐을 때, 웹은 공유 창이 끝났거나 파일로 받기를 시작했을 때 끝낸 것으로 본다
+   (파일로 받기는 끝났는지 알 길이 없다. 못 받았으면 보기 화면의 공유로 같은 그림을 다시 받는다) */
 function saveShare(b,name,text,title){
   if(NATIVE&&NP.Filesystem&&NP.Share){
-    blobB64(b).then(function(d){return NP.Filesystem.writeFile({path:name,data:d,directory:"CACHE"});})
+    return blobB64(b).then(function(d){return NP.Filesystem.writeFile({path:name,data:d,directory:"CACHE"});})
       .then(function(r){return NP.Share.share({title:title||name,text:text||undefined,files:[r.uri],dialogTitle:title||"공유"});})
+      .then(function(r){return IOS?true:!!(r&&r.activityType);})   // 안드로이드는 고른 앱이 없어도 성공으로 답할 때가 있다(창을 띄운 채 홈에 다녀옴). 고른 앱이 있을 때만 끝낸 것으로 본다
       .catch(function(e){var m=String((e&&(e.message||e.errorMessage))||e);
-        if(!/cancel/i.test(m))toast("공유를 못 했어요");});
-    return;
+        if(!/cancel/i.test(m))toast("공유를 못 했어요");return false;});
   }
   var f=null;try{f=new File([b],name,{type:b.type});}catch(e){}
   if(f&&navigator.canShare&&navigator.canShare({files:[f]})){
-    navigator.share({files:[f],text:text||undefined}).catch(function(){});return;
+    return navigator.share({files:[f],text:text||undefined}).then(function(){return true;},function(){return false;});
   }
   var u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=name;
   document.body.appendChild(a);a.click();a.remove();
   setTimeout(function(){URL.revokeObjectURL(u);},4000);
   toast("파일로 저장했어요");
+  return Promise.resolve(true);
 }
 
 /* ══ PWC 기록, PADD Walk Club ══════════════════════════════════════
@@ -5502,6 +5590,69 @@ function saveShare(b,name,text,title){
    숫자를 머리 뒤로 숨긴다. 오려 내기를 못 하면 깊이 효과만 빼고 그린다.
    좌표는 폭 1080 설계 좌표. 스토리 9:16(1920) · 피드 4:5(1350). */
 var pwcOpen=function(){};
+/* 고침 17(06 11/13 "그래"): 산책 하나에 PWC 기록은 한 장. 공유(저장)를 끝내면 그 그림을 이 폰 안(IndexedDB "kkuk-pwc")에 남기고,
+   그 뒤로 그 산책은 만들기 대신 보기만 된다. 열쇠는 산책의 시작 시각. 그림은 폰 밖으로 나가지 않고 기록 내보내기 파일에도 들어가지 않는다.
+   남기지 못하면(저장소가 막힘, 꽉 참) 잠그지 않는다. 남긴 그림이 이 폰에 없으면(새 폰, 저장소가 비워짐) 다시 만들 수 있다.
+   PWCK.has는 남긴 산책의 목록(앱을 켤 때 한 번 읽는다). 단추 글과 기록 줄의 작은 그림은 이것을 본다 */
+var PWCK={has:{},loaded:false,ready:null,th:{},db:null,conn:null}, pwcView=function(){};
+function pwcDb(){
+  if(PWCK.db)return PWCK.db;
+  var p=new Promise(function(res,rej){
+    var q, late=false, to=setTimeout(function(){ late=true; rej(new Error("idb timeout")); },4000);   // 열기가 끝내 답하지 않는 브라우저에서 끝없이 기다리지 않는다
+    try{ q=indexedDB.open("kkuk-pwc",1); }catch(e){ clearTimeout(to); rej(e); return; }
+    q.onupgradeneeded=function(){ try{ q.result.createObjectStore("cards"); }catch(e){} };
+    q.onsuccess=function(){ clearTimeout(to); var db=q.result; if(late){ try{db.close();}catch(e){} return; }
+      function gone(){ if(PWCK.db===p)PWCK.db=null; if(PWCK.conn===db)PWCK.conn=null; }
+      db.onversionchange=function(){ try{db.close();}catch(e){} gone(); };   // 다른 창이 저장소를 지우려 하면 놓아 준다
+      db.onclose=gone; PWCK.conn=db; res(db); };   // 저장소가 닫히면 다음에 다시 연다
+    q.onerror=function(){ clearTimeout(to); rej(q.error||new Error("idb")); }; q.onblocked=function(){ clearTimeout(to); rej(new Error("blocked")); };
+  });
+  PWCK.db=p; p.catch(function(){ if(PWCK.db===p)PWCK.db=null; });
+  return p;
+}
+function pwcTx(mode,fn){
+  return pwcDb().then(function(db){ return new Promise(function(res,rej){
+    var tx,out,err=null,end=false,to;
+    /* 연결이 끊겼거나 멈춘 것 같으면 버린다. 다음 일은 새로 연 연결로 한다(앱이 뒤로 갔다 오면 쥐고 있던 연결이 죽어 있을 수 있다) */
+    function drop(){ try{db.close();}catch(x){} if(PWCK.conn===db){ PWCK.conn=null; PWCK.db=null; } }
+    try{ tx=db.transaction("cards",mode); }catch(e){ drop(); rej(e); return; }
+    function fin(ok,v){ if(end)return; end=true; clearTimeout(to); if(ok)res(v); else rej(v); }
+    to=setTimeout(function(){ try{tx.abort();}catch(x){} drop(); fin(false,new Error("tx timeout")); },6000);
+    tx.oncomplete=function(){ fin(true,out); };
+    tx.onerror=function(ev){ err=(ev&&ev.target&&ev.target.error)||err; };   // 요청이 실패한 까닭(같은 열쇠가 이미 있음 같은 것)을 적어 두고, 거래가 접힐 때 그 까닭으로 알린다
+    tx.onabort=function(){ var er=tx.error||err||new Error("tx"); if(er.name!=="ConstraintError"&&er.name!=="QuotaExceededError")drop(); fin(false,er); };   // 이미 있음, 꽉 참은 연결 탓이 아니다
+    try{ fn(tx.objectStore("cards"),function(v){ out=v; }); }catch(e){ err=e; try{tx.abort();}catch(x){} fin(false,e); }
+  }); });
+}
+function pwcKept(id){ return !!PWCK.has[String(id)]; }
+function pwcLoad(){
+  var p=pwcTx("readonly",function(st,set){ var q=st.getAllKeys(); q.onsuccess=function(){ set(q.result||[]); }; })
+    .then(function(ks){ var h={}; (ks||[]).forEach(function(k){ h[String(k)]=1; }); PWCK.has=h; },function(){});
+  PWCK.ready=Promise.race([p,new Promise(function(r){ setTimeout(r,1500); })]).then(function(){ PWCK.loaded=true; });
+  return PWCK.ready;
+}
+/* add: 같은 산책에 이미 남긴 그림이 있으면 덮어쓰지 않고 실패한다(ConstraintError). 한 장이라는 약속을 저장소가 지킨다 */
+function pwcAdd(id,rec){ return pwcTx("readwrite",function(st){ st.add(rec,String(id)); }).then(function(){ PWCK.has[String(id)]=1; return true; }); }
+function pwcGet(id){ return pwcTx("readonly",function(st,set){ var q=st.get(String(id)); q.onsuccess=function(){ set(q.result||null); }; }); }
+function pwcDrop(id){ id=String(id); delete PWCK.has[id]; if(PWCK.th[id]){ try{URL.revokeObjectURL(PWCK.th[id]);}catch(e){} delete PWCK.th[id]; }
+  function del(){ return pwcTx("readwrite",function(st){ st.delete(id); }); }
+  return del().catch(function(e){ if(pwcSlow(e))return; return new Promise(function(r){ setTimeout(r,700); }).then(del); }).catch(function(){}); }   // 바로 실패했으면(끊긴 연결) 새 연결로 한 번 더 지운다
+/* 답이 없어서(시간 초과) 실패한 것인가. 그런 실패는 다시 해도 또 기다리기만 하므로 다시 하지 않는다 */
+function pwcSlow(e){ return /timeout/.test(String((e&&e.message)||"")); }
+function pwcWipe(){ PWCK.has={}; return new Promise(function(res){ var fin=function(){ res(); };
+  try{ if(PWCK.conn)PWCK.conn.close(); }catch(e){} PWCK.conn=null; PWCK.db=null;
+  // 열기가 아직 끝나지 않았어도 기다리지 않고 바로 지우기를 낸다(늦게 열린 연결은 지우기 요청을 받고 스스로 닫는다).
+  // 다른 창이 붙잡고 있으면(onblocked) 놓을 때까지 기다리되 길어야 1.5초. 그때까지 못 지워도 다른 창이 놓는 대로 지워진다
+  try{ var q=indexedDB.deleteDatabase("kkuk-pwc"); q.onsuccess=q.onerror=fin; }catch(e){ fin(); }
+  setTimeout(fin,1500); }); }
+/* 기록 탭 줄의 작은 그림: 남긴 그림과 함께 넣어 둔 작은 판(폭 240)을 읽어 붙인다 */
+function pwcThumbs(root){
+  Array.prototype.forEach.call(root.querySelectorAll("[data-pwc]"),function(el){ var id=el.dataset.pwc;
+    function put(){ el.style.backgroundImage='url("'+PWCK.th[id]+'")'; }
+    if(PWCK.th[id]){ put(); return; }
+    pwcGet(id).then(function(r){ if(!r||!r.th||!pwcKept(id))return;   // 읽는 사이에 그 산책을 지웠으면 쥐지 않는다
+      if(!PWCK.th[id])PWCK.th[id]=URL.createObjectURL(new Blob([r.th],{type:"image/jpeg"})); put(); },function(){}); });
+}
 (function(){
 'use strict';
 var CW=1080, INK='#17100A', WHITE='#FFFFFF', ORANGE='#F0952A', BLUE='#3B9DF5', YEL='#EFB02F', GREY='#DAD6D0';
@@ -5726,6 +5877,9 @@ function brand(c,g,col){
 }
 function brandCol(g){ return autoCol(CW-72-g.F(48),g.T,g.F(48),g.F(48)); }
 function lab(k,long){ var st=E.D.st[k]; return long?st.long:st.lab; }
+function gridW(c,items,o){ var ST=E.D.st, t=0;   // 고침 16: 그리기 전에 너비를 잰다(grid와 같은 셈)
+  items.forEach(function(k){ setFont(c,o.vw||700,o.vs,FAM.bar); setLS(c,o.lsv||-0.01,o.vs); var w1=mw(c,ST[k].v); setFont(c,500,o.ls,FAM.kr); noLS(c); t+=Math.max(w1,mw(c,lab(k,o.long))); });
+  return t+o.gap*(items.length-1); }
 function grid(c,items,x,y,o){ // 값 위, 라벨 아래
   var vs=o.vs, ls=o.ls, gap=o.gap, xx=x, maxH=vs+ls*1.3+o.mt, ws=[], ST=E.D.st;
   c.save(); c.textBaseline='alphabetic'; c.fillStyle=o.col; shadowFor(c,o.col);
@@ -5880,7 +6034,32 @@ function stickerLayerOf(c,L){
 
 /* ---------- 그리기 ---------- */
 var order=[];
-function contentOf(c,g,L){ if(L.kind==='block') return blockOf(c,g,L); if(L.kind==='route') return routeOf(c,g); return stickerLayerOf(c,L); }
+/* 고침 16(06 11/13 "크기랑 위치 수정 가능하게"): 이름 줄과 작은 숫자 줄도 끌 수 있는 덩어리다.
+   옮기지 않으면 자리와 색이 예전(고정 글자)과 같다. 색은 놓인 자리의 밝기를 따른다. E.layers에 넣지 않고 E.fix에 따로 둔다 */
+function fixLayers(){ return E.fix||(E.fix={head:{id:'head',kind:'head',x:0,y:0,s:1,r:0},grid:{id:'grid',kind:'grid',x:0,y:0,s:1,r:0}}); }
+/* 글자색을 정하려고 밝기를 재는 네모(x,y,w,h)도 덩어리와 같이 옮기고 키운다(상자 가운데 기준, drawLayer와 같은 셈).
+   옮기지도 키우지도 않았으면 예전과 똑같은 네모다 */
+function fixCol(L,bb,x,y,w,h){
+  if(!L||(L.x===0&&L.y===0&&L.s===1)) return autoCol(x,y,w,h);
+  var cx=bb.x+bb.w/2, cy=bb.y+bb.h/2; return autoCol(cx+L.x+(x-cx)*L.s,cy+L.y+(y-cy)*L.s,w*L.s,h*L.s);
+}
+function headOf(c,g,L){
+  var hw=headerW(c,g), x=72, y=g.Y(256), done=E.tpl==='done'; if(done){ x=Math.min(440,CW-72-hw); y=g.Y(1480); }
+  var bb={x:x-10,y:y-8,w:hw+20,h:g.F(30)*1.2+16};   // 상자는 글자보다 조금 크게(고른 테두리가 글자에 붙지 않게). 가운데는 같다
+  var col=done?fixCol(L,bb,x,y,hw,g.F(40)):fixCol(L,bb,72,y,560,g.F(40));
+  return {bb:bb, paint:function(c){ header(c,g,x,y,col); }};
+}
+function gridOf(c,g,L){
+  var t=E.tpl, items=others(3), x, y, o, rw, rh; if(!items.length) return null;
+  if(t==='done'){ x=72; y=g.Y(250); rw=640; rh=g.F(96); o={vs:g.F(54),ls:g.F(28),gap:g.F(68),mt:g.F(8),vw:600}; }
+  else if(t==='depth'){ x=432; y=g.Y(1458); rw=560; rh=g.F(110); o={vs:g.F(64),ls:g.F(30),gap:g.F(56),mt:g.F(10),long:true}; }
+  else return null;
+  var bb={x:x-10,y:y-8,w:gridW(c,items,o)+20,h:o.vs+o.ls*1.3+o.mt+16}; o.col=fixCol(L,bb,x,y,rw,rh);
+  return {bb:bb, paint:function(c){ grid(c,items,x,y,o); }};
+}
+/* 같이 보일 숫자를 모두 꺼서 작은 숫자 줄이 사라지면 고르기도 푼다(보이지 않는 것을 잡고 있지 않게) */
+function selCheck(){ if(E.sel&&E.sel.kind==='grid'&&!others(3).length) select(null); }
+function contentOf(c,g,L){ if(L.kind==='block') return blockOf(c,g,L); if(L.kind==='route') return routeOf(c,g); if(L.kind==='head') return headOf(c,g,L); if(L.kind==='grid') return gridOf(c,g,L); return stickerLayerOf(c,L); }
 function drawLayer(c,g,L){
   var o=contentOf(c,g,L); if(!o) return; L._bb=o.bb; L._rot=!!o.rot; var cx=o.bb.x+o.bb.w/2, cy=o.bb.y+o.bb.h/2;
   c.save(); c.translate(L.x+cx,L.y+cy); c.rotate(L.r); c.scale(L.s,L.s); c.translate(-cx,-cy); o.paint(c); c.restore(); order.push(L);
@@ -5906,21 +6085,13 @@ function render(c,preview,over){
   var t=E.tpl, behind=function(L){ return cut&&L.kind==='block'; };
   E.layers.forEach(function(L){ if(behind(L)) drawLayer(c,g,L); });
   if(cut) c.drawImage(E.photo.seg.cut,pr.dx,pr.dy,pr.dw,pr.dh);
-  // 고정 글자
-  var bc=brandCol(g);
-  if(t==='done'){
-    var items=others(3), rc=autoCol(72,g.Y(250),640,g.F(96));
-    grid(c,items,72,g.Y(250),{vs:g.F(54),ls:g.F(28),gap:g.F(68),mt:g.F(8),col:rc,vw:600});
-    var hw=headerW(c,g), hx=Math.min(440,CW-72-hw);
-    header(c,g,hx,g.Y(1480),autoCol(hx,g.Y(1480),hw,g.F(40)));
-  } else {
-    header(c,g,72,g.Y(256),autoCol(72,g.Y(256),560,g.F(40)));
-  }
-  if(t==='depth'){ var gi=others(3); if(gi.length) grid(c,gi,432,g.Y(1458),{vs:g.F(64),ls:g.F(30),gap:g.F(56),mt:g.F(10),long:true,col:autoCol(432,g.Y(1458),560,g.F(110))}); }
+  // 이름 줄과 작은 숫자 줄(고침 16: 끌 수 있는 덩어리로 그린다. 그리는 차례는 예전 그대로: done.은 숫자 줄 먼저, 깊이는 이름 줄 먼저)
+  var bc=brandCol(g), FX=fixLayers();
+  if(t==='depth'){ drawLayer(c,g,FX.head); drawLayer(c,g,FX.grid); } else { drawLayer(c,g,FX.grid); drawLayer(c,g,FX.head); }
   brand(c,g,bc);
   E.layers.forEach(function(L){ if(!behind(L)) drawLayer(c,g,L); });
   if(over&&TPL[t].depth) headGuide(c,g);
-  if(preview && E.sel && E.sel._bb) outline(c,E.sel);
+  if(preview && E.sel && E.sel._bb && order.indexOf(E.sel)>=0) outline(c,E.sel);   // 고침 16: 이번에 그리지 않은 것(숫자를 모두 꺼서 사라진 줄)에는 테두리를 치지 않는다
 }
 /* 찍기 전 안내선: 깊이 카드는 머리 꼭대기가 여기 오면 숫자가 머리 뒤로 들어간다 */
 function headGuide(c,g){
@@ -5939,11 +6110,11 @@ function outline(c,L){
 
 /* ---------- 레이어 ---------- */
 function blockLayer(){ return E.layers.filter(function(L){return L.kind==='block';})[0]||null; }
-function resetLayers(keepStickers){
+function resetLayers(keepStickers,keepFix){   // 고침 16: keepFix면 이름 줄과 작은 숫자 줄의 자리는 그대로 둔다(사진만 바꿀 때)
   var st=keepStickers?E.layers.filter(function(L){return L.kind==='sticker';}):[];
   E.layers=[{id:'block',kind:'block',x:0,y:0,s:1,r:E.tpl==='tattoo'?-8*Math.PI/180:0}];
   if(E.routeOn&&E.D.route) E.layers.unshift({id:'route',kind:'route',x:0,y:0,s:1,r:0});
-  E.layers=E.layers.concat(st); gest=null; select(null);
+  E.layers=E.layers.concat(st); if(!keepFix) E.fix=null; gest=null; select(null);
 }
 /* 머리에 맞춰 숫자 자리 잡기. 깊이 카드는 머리 꼭대기가 숫자 아랫부분을 살짝 가리게,
    타투는 가슴께 가운데로. 사람이 옮긴 뒤엔 건드리지 않는다(카드·사진을 바꿀 때만) */
@@ -5982,6 +6153,8 @@ function addSticker(key){
 function hitTest(L,px,py){
   var b=L._bb; if(!b) return false; var cx=b.x+b.w/2, cy=b.y+b.h/2, dx=px-(L.x+cx), dy=py-(L.y+cy), cr=Math.cos(-L.r), sr=Math.sin(-L.r);
   var lx=(dx*cr-dy*sr)/L.s+cx, ly=(dx*sr+dy*cr)/L.s+cy, pd=22/L.s;
+  // 고침 16: 이름 줄과 작은 숫자 줄은 미리보기에서 높이가 8px쯤이라 그대로는 손가락으로 못 잡는다. 닿는 높이가 화면에서 40px이 되게 둘레를 넓힌다
+  if(L.kind==='head'||L.kind==='grid'){ var kk=(cv.getBoundingClientRect().width||CW)/CW; pd=Math.max(22,(40/kk-b.h*L.s)/2)/L.s; }
   return lx>=b.x-pd&&lx<=b.x+b.w+pd&&ly>=b.y-pd&&ly<=b.y+b.h+pd;
 }
 function topHit(p){ for(var i=order.length-1;i>=0;i--){ if(hitTest(order[i],p.x,p.y)) return order[i]; } return null; }
@@ -6003,12 +6176,13 @@ function redraw(lum){ if(lum) lumDirty=true; dirty=true; if(OPEN&&!looping){ loo
 /* ---------- 선택 도구 · 아래 줄(안내 / 선택 막대 / 카메라 단추) ---------- */
 var selbar=$('pw-selbar'), selScale=$('pw-selScale'), selRot=$('pw-selRot'), selDel=$('pw-selDel'), rotWrap=$('pw-rotWrap'), hint=$('pw-hint');
 function underUI(){
-  var L=E.sel, live=E.live, noPic=!E.photo&&!E.bgOff&&!live;
-  selbar.hidden=!L; $('pw-camui').hidden=!!L||!live; $('pw-camfb').hidden=!!L||!noPic; hint.hidden=!!L||live||noPic;
-  $('pw-share').classList.toggle('dim',live);
+  var L=E.sel, live=E.live, noPic=!E.photo&&!E.bgOff&&!live, v=!!VIEW, ask=ASK&&!v, off=ask||v;   // 고침 17: 묻는 줄이나 보기일 때는 다른 줄을 숨긴다
+  selbar.hidden=!L||off; $('pw-camui').hidden=!!L||!live||off; $('pw-camfb').hidden=!!L||!noPic||off; hint.hidden=!!L||live||noPic||off;
+  $('pw-ask').hidden=!ask; $('pw-keptnote').hidden=!v;
+  $('pw-share').classList.toggle('dim',live&&!v);
   requestAnimationFrame(fit);
 }
-function select(L){ E.sel=L; if(L){ selScale.value=Math.round(L.s*100); selRot.value=Math.round(L.r*180/Math.PI); rotWrap.hidden=!(L.kind==='sticker'||(L.kind==='block'&&E.tpl==='tattoo')); selDel.hidden=L.kind!=='sticker'; } underUI(); redraw(); }
+function select(L){ E.sel=L; if(L){ askOff(); selScale.value=Math.round(L.s*100); selRot.value=Math.round(L.r*180/Math.PI); rotWrap.hidden=!(L.kind==='sticker'||(L.kind==='block'&&E.tpl==='tattoo')); selDel.hidden=L.kind!=='sticker'; } underUI(); redraw(); }
 selScale.addEventListener('input',function(){ if(E.sel){ touch(E.sel); E.sel.s=selScale.value/100; redraw(); } });
 selRot.addEventListener('input',function(){ if(E.sel){ touch(E.sel); E.sel.r=selRot.value*Math.PI/180; redraw(); } });
 selDel.addEventListener('click',function(){ if(E.sel&&E.sel.kind==='sticker'){ E.layers=E.layers.filter(function(L){return L!==E.sel;}); select(null); redraw(); } });
@@ -6018,19 +6192,21 @@ $('pw-selDone').addEventListener('click',function(){ select(null); });
 var ptrs=new Map(), gest=null;
 function canPan(){ return bgOn()&&!E.live; }
 function canRot(L){ return L&&L!=='photo'&&(L.kind==='sticker'||(L.kind==='block'&&E.tpl==='tattoo')); }
-function cpt(e){ var r=cv.getBoundingClientRect(), g=geo(); return {x:(e.clientX-r.left)*CW/r.width, y:(e.clientY-r.top)*g.H/r.height}; }
+/* 고침 16: 끌기와 두 손가락은 화면 좌표(cx, cy)의 차이로 센다. 무엇을 처음 잡는 순간 아래 줄이 크기 막대로 바뀌어 미리보기가 커지는데,
+   카드 좌표(x, y)의 차이로 세면 손가락이 가만히 있어도 그만큼 덩어리가 튄다. kx, ky는 지금 미리보기에서 화면 1px이 카드 좌표로 몇인지 */
+function cpt(e){ var r=cv.getBoundingClientRect(), g=geo(); return {x:(e.clientX-r.left)*CW/r.width, y:(e.clientY-r.top)*g.H/r.height, cx:e.clientX, cy:e.clientY, kx:CW/(r.width||CW), ky:g.H/(r.height||g.H)}; }
 function startDrag(p,target){ gest={type:'drag',target:target,p0:p,b:target==='photo'?{x:E.pz.x,y:E.pz.y}:{x:target.x,y:target.y},moved:false}; }
 cv.addEventListener('pointerdown',function(e){
   try{ cv.setPointerCapture(e.pointerId); }catch(er){} var p=cpt(e); ptrs.set(e.pointerId,p);
   if(ptrs.size===1){ var L=topHit(p); startDrag(p,L||'photo'); if(L) select(L); }
   else if(ptrs.size===2){ var a=Array.from(ptrs.values()), tg=gest?gest.target:'photo';
-    gest={type:'pinch',target:tg,d0:Math.hypot(a[1].x-a[0].x,a[1].y-a[0].y)||1,a0:Math.atan2(a[1].y-a[0].y,a[1].x-a[0].x),s0:tg==='photo'?E.pz.z:tg.s,r0:tg==='photo'?0:tg.r}; }
+    gest={type:'pinch',target:tg,d0:Math.hypot(a[1].cx-a[0].cx,a[1].cy-a[0].cy)||1,a0:Math.atan2(a[1].cy-a[0].cy,a[1].cx-a[0].cx),s0:tg==='photo'?E.pz.z:tg.s,r0:tg==='photo'?0:tg.r}; }
 });
 cv.addEventListener('pointermove',function(e){
   if(!ptrs.has(e.pointerId)||!gest) return; var p=cpt(e); ptrs.set(e.pointerId,p);
-  if(gest.type==='drag'&&ptrs.size===1){ var dx=p.x-gest.p0.x, dy=p.y-gest.p0.y; if(Math.abs(dx)+Math.abs(dy)>6) gest.moved=true;
+  if(gest.type==='drag'&&ptrs.size===1){ var dx=(p.cx-gest.p0.cx)*p.kx, dy=(p.cy-gest.p0.cy)*p.ky; if(Math.abs(dx)+Math.abs(dy)>6) gest.moved=true;
     if(gest.target==='photo'){ if(!canPan()) return; E.pz.x=gest.b.x+dx; E.pz.y=gest.b.y+dy; if(gest.moved) E.touched=true; redraw(true); } else { gest.target.x=gest.b.x+dx; gest.target.y=gest.b.y+dy; if(gest.moved){ gest.target.moved=true; touch(gest.target); } redraw(); } }
-  else if(gest.type==='pinch'&&ptrs.size>=2){ var a=Array.from(ptrs.values()), d=Math.hypot(a[1].x-a[0].x,a[1].y-a[0].y), an=Math.atan2(a[1].y-a[0].y,a[1].x-a[0].x);
+  else if(gest.type==='pinch'&&ptrs.size>=2){ var a=Array.from(ptrs.values()), d=Math.hypot(a[1].cx-a[0].cx,a[1].cy-a[0].cy), an=Math.atan2(a[1].cy-a[0].cy,a[1].cx-a[0].cx);
     if(gest.target==='photo'){ if(!canPan()) return; E.pz.z=clamp(gest.s0*d/gest.d0,1,4); E.touched=true; redraw(true); }
     else { touch(gest.target); gest.target.s=clamp(gest.s0*d/gest.d0,0.3,3); if(canRot(gest.target)) gest.target.r=gest.r0+(an-gest.a0); select(gest.target); redraw(); } }
 });
@@ -6047,12 +6223,12 @@ cv.addEventListener('keydown',function(e){ var L=E.sel; if(!L) return; var st=e.
   else if(e.key==='Escape') select(null); else used=false;
   if(used){ e.preventDefault(); touch(L); if(E.sel) select(E.sel); redraw(); } });
 /* 스티커가 아닌 것(숫자 덩어리·경로·사진)을 손댔으면 자동 자리 잡기를 멈춘다 */
-function touch(L){ if(L&&L.kind!=='sticker') E.touched=true; }
+function touch(L){ if(L&&L.kind!=='sticker'&&L.kind!=='head'&&L.kind!=='grid') E.touched=true; }   // 고침 16: 이름 줄과 작은 숫자 줄은 스티커처럼 큰 숫자의 자동 자리 잡기를 멈추지 않는다
 
 /* ---------- 화면 크기 ---------- */
 var stage=$('pw-stage'), frameEl=$('pw-frame'), under=$('pw-under');
-function fit(){ if(!OPEN) return; var g=geo(), r=stage.getBoundingClientRect(), extra=(under.offsetHeight||40)+8; var ah=Math.max(160,r.height-extra-12), aw=r.width;
-  var h=Math.min(ah,aw*g.H/CW), w=h*CW/g.H; frameEl.style.width=Math.floor(w)+'px'; frameEl.style.height=Math.floor(h)+'px'; }
+function fit(){ if(!OPEN&&!VIEW) return; var gH=VIEW?CW*VIEW.H/VIEW.W:geo().H, r=stage.getBoundingClientRect(), extra=(under.offsetHeight||40)+8; var ah=Math.max(160,r.height-extra-12), aw=r.width;
+  var h=Math.min(ah,aw*gH/CW), w=h*CW/gH; frameEl.style.width=Math.floor(w)+'px'; frameEl.style.height=Math.floor(h)+'px'; }
 if(window.ResizeObserver) new ResizeObserver(fit).observe(stage); window.addEventListener('resize',fit);
 
 /* ---------- 카메라: 산책 인증은 그 자리에서 찍는 게 기본 ----------
@@ -6184,10 +6360,10 @@ function buildData(){
   var D=E.D, ST=D.st, hb=$('pw-heroes'); hb.innerHTML=''; var allowed=TPL[E.tpl].heroes;
   $('pw-walkid').innerHTML=esc(D.md+' '+D.dow)+' <span>'+D.start+'</span>~<span>'+D.end+'</span>'+(D.course?' · '+esc(D.course):(D.place?' · '+esc(D.place):''));
   buildPlace();
-  ORDER.forEach(function(k){ var st=ST[k]; var b=btn('pw-chip',st.lab+' <span class="n">'+st.v+(st.u?' km':'')+'</span>',E.hero===k,function(){ E.hero=k; E.heroBy[E.tpl]=k; buildData(); relayout(); redraw(true); });
+  ORDER.forEach(function(k){ var st=ST[k]; var b=btn('pw-chip',st.lab+' <span class="n">'+st.v+(st.u?' km':'')+'</span>',E.hero===k,function(){ E.hero=k; E.heroBy[E.tpl]=k; buildData(); relayout(); selCheck(); redraw(true); });
     if(allowed.indexOf(k)<0||(k==='dist'&&!D.hasDist)){ b.disabled=true; b.title=k==='dist'&&!D.hasDist?'거리가 기록되지 않은 산책이에요':(k==='dist'&&E.tpl==='depth'?'소수점이 머리에 가려져요':'이 카드에는 안 맞아요'); } hb.appendChild(b); });
   var sb=$('pw-stats'); sb.innerHTML='';
-  ORDER.forEach(function(k){ if(k===E.hero) return; var st=ST[k], b=btn('pw-chip',st.lab+' <span class="n">'+st.v+(st.u?' km':'')+'</span>',E.show[k],function(){ E.show[k]=!E.show[k]; buildData(); redraw(); });
+  ORDER.forEach(function(k){ if(k===E.hero) return; var st=ST[k], b=btn('pw-chip',st.lab+' <span class="n">'+st.v+(st.u?' km':'')+'</span>',E.show[k],function(){ E.show[k]=!E.show[k]; buildData(); selCheck(); redraw(); });
     if(k==='dist'&&!D.hasDist){ b.disabled=true; b.title='거리가 기록되지 않은 산책이에요'; } sb.appendChild(b); });
   var hasR=!!D.route; $('pw-routeOn').checked=E.routeOn&&hasR; $('pw-routeOn').disabled=!hasR; $('pw-marks').checked=E.marks&&hasR; $('pw-marks').disabled=!hasR||!D.pee.length;
   $('pw-noroute').hidden=hasR;
@@ -6229,7 +6405,7 @@ function usePhoto(ph,composed){
   E.photo=ph; E.depth=null; E.touched=false; if(ph){ E.bgOff=false; ph.composed=!!composed; } $('pw-bgOff').checked=E.bgOff;
   if(!(ph&&ph.live)) E.layers=E.layers.filter(function(L){ return !(L.kind==='sticker'&&L.key==='shot'); });
   if(composed){ E.pz={x:0,y:0,z:1}; select(null); }
-  else { framePhoto(); resetLayers(true); autoPlace(); }
+  else { framePhoto(); resetLayers(true,true); autoPlace(); }   // 고침 16: 옮겨 둔 이름 줄과 작은 숫자 줄은 스티커처럼 남긴다(큰 숫자만 새로 자리 잡는다)
   buildThumbs(); buildTpls(); buildStickers(); underUI(); redraw(true); kickSeg();
 }
 function pickFile(input,label,live){ var f=input.files&&input.files[0]; input.value=''; if(!f) return;
@@ -6362,15 +6538,93 @@ function prepare(){
     out.toBlob(function(b){ if(b&&k===String(E.ver)){ E.blob=b; E.bkey=k; } },E.bgOff?'image/png':'image/jpeg',0.93); },500);
 }
 function shareText(){ var D=E.D, ST=D.st; return D.dog+' 산책 '+(D.hasDist?ST.dist.v+'km, ':'')+ST.time.v+', 마킹 '+ST.pee.v+'\n#PADDWalkClub\n꾹꾹이 '+DL_LINK+'?r=pwc'; }
+/* 고침 17: 한 산책에 한 장. VIEW는 남긴 그림을 보는 중, ASK는 공유 전에 묻는 줄이 떠 있음, BUSY는 남기는 중.
+   VSEQ는 카드 화면을 열고 닫을 때마다 늘린다. 늦게 끝난 읽기나 남기기가 지금 화면을 바꾸지 못하게 한다 */
+var VIEW=null, ASK=false, ASKOK=false, ASKN=0, BUSY=false, VSEQ=0;   // ASKOK: 묻는 동안 저장소를 읽어 '남긴 그림이 없음'(또는 읽을 수 없음)이 정해졌다
+/* 물음을 접는다. ASKN은 물음마다 올리는 번호: 접은 물음의 늦은 답이 새 물음의 '공유하기'를 풀지 못하게 한다 */
+function askOff(){ ASK=false; ASKOK=false; ASKN++; }
+function bufOfBlob(b){ return new Promise(function(res,rej){ var r=new FileReader(); r.onload=function(){ res(r.result); }; r.onerror=function(){ rej(r.error||new Error('read')); }; r.readAsArrayBuffer(b); }); }
+/* 기록 줄에 붙일 작은 판. 공유한 그림 그대로를 줄인다. 못 만들어도(3초를 넘겨도) 남기기는 한다 */
+function thumbOf(b){ return new Promise(function(res){ var u=URL.createObjectURL(b), im=new Image(), to=setTimeout(function(){ out(null); },3000);
+  function out(v){ clearTimeout(to); try{ URL.revokeObjectURL(u); }catch(e){} res(v); }   // 3초를 넘겨 끝낼 때도 임시 주소는 푼다
+  im.onload=function(){ try{ var t=document.createElement('canvas'); t.width=240; t.height=Math.max(1,Math.round(im.height*240/im.width)); var x=t.getContext('2d'); x.fillStyle='#1d1712'; x.fillRect(0,0,t.width,t.height); x.drawImage(im,0,0,t.width,t.height);
+      t.toBlob(function(tb){ if(!tb){ out(null); return; } bufOfBlob(tb).then(out,function(){ out(null); }); },'image/jpeg',0.8); }catch(e){ out(null); } };
+  im.onerror=function(){ out(null); }; im.src=u; }); }
+/* 그 산책이 아직 있는가(기록 목록에 있거나 이어 걷는 중) */
+function walkAlive(w){ return !!w&&((W&&W.start===w.start)||S.walks.some(function(x){ return x.start===w.start; })); }
+function keep(w,b,m,my){   // my: 공유를 시작할 때의 화면 번호. 그 뒤에 화면이 바뀌었으면 그림만 남기고 화면은 건드리지 않는다
+  BUSY=true; var rec=null, again=false;
+  function done(){ BUSY=false;
+    if(!walkAlive(w)){ pwcDrop(w.start); return; }   // 넣는 사이에 산책을 지웠다: 지우기가 이긴다
+    toast('이 산책의 PWC 기록으로 남겼어요'); try{ renderLog(); }catch(e){}
+    if(my===VSEQ) pwcView(w,rec); }   // 그 사이에 화면을 닫았거나 다른 산책을 열었으면 끼어들지 않는다
+  function fail(e){
+    if(e&&e.name==='ConstraintError'){ BUSY=false; PWCK.has[String(w.start)]=1; try{ renderLog(); }catch(x){} if(my===VSEQ) pwcView(w); return; }   // 다른 창에서 먼저 남겼다: 그 그림을 보여 준다
+    /* 바로 실패했으면 연결이 끊긴 것일 수 있다(공유하느라 앱이 뒤로 갔다 온 뒤). 잠깐 뒤에 새 연결로 한 번만 다시 넣는다.
+       꽉 찼거나 답이 없어서 실패한 것은 다시 해도 같으므로 바로 알린다 */
+    if(rec&&!again&&!(e&&e.name==='QuotaExceededError')&&!pwcSlow(e)){ again=true;
+      setTimeout(function(){ if(!walkAlive(w)){ BUSY=false; return; } pwcAdd(w.start,rec).then(done,fail); },700); return; }
+    BUSY=false; toast('그림을 폰에 남기지 못했어요. 이 산책은 다시 만들 수 있어요',3600); }
+  Promise.all([bufOfBlob(b),thumbOf(b)]).then(function(a){
+      if(!walkAlive(w)){ BUSY=false; return; }   // 그 사이에 산책을 지웠다: 그림을 넣지 않는다
+      rec={t:Date.now(),tpl:m.tpl,type:b.type,w:m.w,h:m.h,name:m.name,text:m.text,buf:a[0],th:a[1]};
+      return pwcAdd(w.start,rec).then(done,fail); },fail);
+}
+function viewOff(){ if(VIEW){ try{ URL.revokeObjectURL(VIEW.url); }catch(e){} VIEW=null; } $('pwc').classList.remove('view'); $('pw-kept').removeAttribute('src'); }
+/* 남긴 그림 보기. rec를 주면 다시 읽지 않는다. 이 폰에 그림이 없으면 잠금을 풀고 만들기로 간다 */
+pwcView=function(w,rec){
+  if(!w) return; var id=String(w.start), my=++VSEQ;
+  function show(r){
+    if(my!==VSEQ||!walkAlive(w)) return;   // 읽는 사이에 다른 화면을 열었거나 닫았다, 또는 그 산책을 지웠다
+    if(!r||!r.buf){ delete PWCK.has[id]; toast('남겨 둔 그림을 이 폰에서 찾지 못했어요. 다시 만들 수 있어요',3600); try{ renderLog(); }catch(e){} pwcOpen(w); return; }
+    if(OPEN) pwcClose(); viewOff();
+    var blob=new Blob([r.buf],{type:r.type||'image/jpeg'}), D=walkData(w);
+    VIEW={w:w, blob:blob, url:URL.createObjectURL(blob), name:r.name||('pwc_'+D.ymd+'.jpg'), text:r.text||'', W:r.w||CW, H:r.h||1920};
+    $('pw-kept').src=VIEW.url; $('pw-sub').textContent=D.dog+' · '+D.md+' '+D.tod+' 산책';
+    $('pwc').classList.add('on','view'); document.body.classList.add('pwc-on'); underUI();
+  }
+  if(rec){ show(rec); return; }
+  pwcGet(id).then(show,function(){ if(my===VSEQ) toast('남겨 둔 그림을 열지 못했어요. 잠시 뒤에 다시 눌러 주세요',3200); });
+};
 $('pw-share').addEventListener('click',function(){
-  var b0=this; if(!E.w||b0.disabled) return;
+  var b0=this; if(b0.disabled||BUSY) return;
+  if(VIEW){ saveShare(VIEW.blob,VIEW.name,VIEW.text,'PWC 기록'); return; }   // 보기: 남긴 그림을 그대로 다시 보낸다(새로 남기지 않는다)
+  if(!E.w) return;
   if(E.live){ toast('먼저 찍어 주세요'); return; }
-  var name='pwc_'+E.D.ymd+'_'+E.tpl+(E.bgOff?'.png':'.jpg');
-  function go(b){ prefSave(); beta('cardShare'); beta('f_'+E.tpl); if(E.photo) beta('cardPhoto'); hk('card_share',{card:E.tpl}); saveShare(b,name,shareText(),'PWC 기록'); }
-  if(E.blob&&E.bkey===String(E.ver)){ go(E.blob); return; }
-  b0.disabled=true;
-  var k=String(E.ver);
-  outCanvas().toBlob(function(b){ b0.disabled=false; if(!b){ toast('카드를 못 만들었어요'); return; } E.blob=b; E.bkey=k; go(b); },E.bgOff?'image/png':'image/jpeg',0.93);
+  var w=E.w, id=String(w.start), my=VSEQ;
+  if(pwcKept(id)){ pwcView(w); return; }   // 이미 남긴 산책
+  if(E.sel) select(null);   // 고른 것이 있을 때만 푼다(다시 그리면 준비해 둔 그림을 새로 만들어야 해서 공유 창이 늦게 뜬다)
+  ASK=true; ASKOK=false; var n=++ASKN; underUI();   // 한 번 묻는다: 공유를 끝내면 이 그림이 이 산책의 한 장으로 남는다
+  /* 묻는 동안 저장소를 한 번 더 읽는다(다른 창에서 먼저 남겼거나, 켤 때 목록을 다 읽지 못한 경우). 이미 있으면 묻는 줄을 접고 그 그림을 보여 준다.
+     답이 오기 전에는 '공유하기'가 보내지 않는다. 읽기가 바로 실패하면(끊긴 연결) 새 연결로 한 번 더 읽는다: 못 읽은 것이 없다는 뜻은 아니다.
+     그래도 읽을 수 없으면(저장소가 막힘, 답이 없음) 공유까지 막을 수는 없으므로 예전처럼 보내기만 한다.
+     '공유하기'를 누른 뒤에 읽지 않는 까닭: 공유 창은 누른 그 자리에서 띄워야 한다(늦게 띄우면 사파리가 사용자 동작으로 쳐 주지 않을 수 있다) */
+  (function read(again){
+    pwcGet(id).then(function(r){ if(n!==ASKN||my!==VSEQ||!ASK) return;   // 접었거나 다시 띄운 물음의 답은 버린다
+        if(r&&r.buf){ PWCK.has[id]=1; try{ renderLog(); }catch(e){} pwcView(w,r); return; }
+        ASKOK=true; },
+      function(e){ if(n!==ASKN||my!==VSEQ||!ASK) return;
+        if(again&&!pwcSlow(e)){ setTimeout(function(){ if(n===ASKN&&my===VSEQ&&ASK) read(false); },300); return; }
+        ASKOK=true; });
+  })(true);
+});
+$('pw-ask-no').addEventListener('click',function(){ askOff(); underUI(); });
+$('pw-ask-go').addEventListener('click',function(){
+  var b0=this, w=E.w, my=VSEQ; if(!w||!ASK||b0.disabled||BUSY) return;
+  if(E.live){ askOff(); underUI(); toast('먼저 찍어 주세요'); return; }
+  if(pwcKept(w.start)){ pwcView(w); return; }
+  if(!ASKOK){ toast('잠시만요. 남겨 둔 그림이 있는지 보고 있어요'); return; }
+  var tpl=E.tpl, name='pwc_'+E.D.ymd+'_'+tpl+(E.bgOff?'.png':'.jpg'), text=shareText(), gH=geo().H, png=E.bgOff, k=String(E.ver);
+  var ready=(E.blob&&E.bkey===k)?E.blob:null, cvs=ready?null:outCanvas();
+  function fin(){ b0.disabled=false; }
+  function go(b){ prefSave(); beta('cardShare'); beta('f_'+tpl); if(E.photo) beta('cardPhoto'); hk('card_share',{card:tpl});
+    Promise.resolve(saveShare(b,name,text,'PWC 기록')).then(function(ok){ fin(); if(ok) keep(w,b,{tpl:tpl,name:name,text:text,w:CW,h:gH},my); },fin); }
+  /* 보내기 시작: 묻는 줄을 접는다. 보내는 동안 '더 고치기'를 누르거나, 늦게 끝난 공유가 그 사이 새로 띄운 물음을 접는 일이 없게 한다 */
+  b0.disabled=true; askOff(); underUI();
+  if(ready){ go(ready); return; }
+  cvs.toBlob(function(b){ if(!b){ fin(); toast('카드를 못 만들었어요'); return; }
+    if(my!==VSEQ){ fin(); return; }   // 그림을 만드는 사이에 화면을 닫았거나 다른 산책을 열었다: 보내지 않는다
+    E.blob=b; E.bkey=k; go(b); },png?'image/png':'image/jpeg',0.93);
 });
 
 /* ---------- 열기·닫기 ---------- */
@@ -6378,6 +6632,10 @@ function prefSave(){ S.pwcPref={tpl:E.tpl,color:E.color,ratio:E.ratio}; save(); 
 function sub(){ var D=E.D; $('pw-sub').textContent=D.dog+' · '+D.md+' '+D.tod+' 산책'; }
 pwcOpen=function(w){
   if(!w) return;
+  // 고침 17: 남긴 산책이면 만들기 대신 보기. 남긴 산책 목록을 아직 못 읽었으면 읽은 뒤에 연다(길어야 1.5초)
+  if(!PWCK.loaded&&PWCK.ready){ var my=++VSEQ; PWCK.ready.then(function(){ if(my===VSEQ) pwcOpen(w); }); return; }   // 기다리는 동안 또 열면 나중 것만 연다
+  if(pwcKept(w.start)){ pwcView(w); return; }
+  viewOff(); askOff(); VSEQ++;
   var same=E.w===w; E.w=w; E.D=walkData(w);
   if(!same){ E.photo=null; E.photos=[]; }
   var p=S.pwcPref||{};
@@ -6394,9 +6652,9 @@ pwcOpen=function(w){
   // 막 끝난 산책이면 카메라부터. 그 자리에서 찍은 사진이 인증이다
   if(!E.photo&&camOK()&&Date.now()-(w.end||w.start)<3*3600e3) camStart();
 };
-function pwcClose(){ camStop(); CAM.resume=false; OPEN=false; $('pwc').classList.remove('on'); document.body.classList.remove('pwc-on'); E.sel=null; }
+function pwcClose(){ camStop(); CAM.resume=false; OPEN=false; askOff(); VSEQ++; viewOff(); $('pwc').classList.remove('on'); document.body.classList.remove('pwc-on'); E.sel=null; }
 $('pwc-close').addEventListener('click',pwcClose);
-window.__pwc={get E(){return E;}, render:function(){ return outCanvas(); }, segRun:segRun, close:pwcClose};
+window.__pwc={get E(){return E;}, render:function(){ return outCanvas(); }, segRun:segRun, close:pwcClose, get K(){return PWCK;}, get view(){return VIEW;}};
 })();
 
 
@@ -6476,8 +6734,10 @@ $("gpsexport").addEventListener("click",function(){
 });
 $("reset").addEventListener("click",function(){
   // 0.5.0: 한 번 누르면 묻지 않고 모든 기록이 지워졌다. 지우기 전에 묻는다(가져오기와 같은 방식)
-  if(!confirm("산책 기록과 꾹꾹로, 강아지 정보를 이 기기에서 모두 지워요. 되돌릴 수 없어요.\n먼저 기록 내보내기로 저장해 두셨나요? 정말 지울까요?"))return;
-  try{localStorage.removeItem(KEY);glDrop();}catch(e){}rvBump();location.reload();});
+  if(!confirm("산책 기록과 꾹꾹로, 강아지 정보, 남겨 둔 PWC 기록 그림을 이 기기에서 모두 지워요. 되돌릴 수 없어요.\n먼저 기록 내보내기로 저장해 두셨나요? 정말 지울까요?"))return;
+  // 고침 17: 남긴 그림을 먼저 지운다. 그 사이(길어야 1.5초) 앱이 기록을 저장해도 되살아나지 않게, 기록 지우기와 다시 켜기는 예전처럼 한 번에 한다
+  toast("지우는 중이에요");
+  pwcWipe().then(function(){ try{localStorage.removeItem(KEY);glDrop();}catch(e){}rvBump();location.reload(); });});
 
 /* ══ 탭 ══ */
 
