@@ -3181,7 +3181,9 @@ function renderToday(){
   // 고침 5: 지금 시간대가 힘든 등급이면 권하는 말의 둘째, 셋째 줄을 그 사실로 바꾼다(밤, 쉬는 날, 숨긴 시간, 사실만 보이는 안은 그대로).
   // 산책 전 카드에는 둘 다, 오늘 다녀온 뒤의 '나가고 싶어요' 줄에는 셋째 줄('쉬만 하고 와도 돼요')이 'N시간 전 다녀왔어요' 자리에 나온다
   if(wc&&ws&&G.copy==="A"&&!ws.off&&!ws.night&&!ws.rest&&!ws.quiet){ var hn=hardNow(now);
-    if(hn.l)wc={t:wc.t,s:hardTx(hn.why)[hn.l===2?1:0],   // 고침 7: 이유마다의 말은 HARD_TX에(비, 추위, 더위)
+    // 고침 15(06 11/13: 위 카드도 같은 말): 위 카드가 지금 같은 날씨 말을 하고 있으면 여기서는 그 한 줄만 뺀다. 위 카드가 다른 말을 하고 있으면(더위 경고, 날씨를 못 받음, 아직 다시 그리지 않음) 예전처럼 여기서 말한다
+    var topSays=!!WXSAME&&WXSAME.l===hn.l&&WXSAME.why===hn.why;
+    if(hn.l)wc={t:wc.t,s:topSays?"":hardTx(hn.why)[hn.l===2?1:0],   // 고침 7: 이유마다의 말은 HARD_TX에(비, 추위, 더위)
       m:hn.l===2?"쉬만 하고 와도 돼요":"짧게 다녀와도 돼요"}; }
   function j2(a,b){ return a&&b?'<span class="l2">'+a+'</span><span class="l2">'+b+'</span>':(a||b||''); }   // 좁은 칸에서 가운뎃점이 줄 머리나 꼬리에 걸리지 않게 한 줄씩
   var wishLine=wc&&ws&&!ws.off&&!ws.quiet?'<div class="wish">'+(G.copy==="B"?wc.t:G.copy==="C"?j2(wc.t,wc.s):j2(wc.t,wc.m))+'</div>':'';
@@ -3229,8 +3231,8 @@ $("todaycard").addEventListener("click",function(e){
 /* 0.4.4: 나가고 싶어요는 시간이 지나며 바뀌니 홈에 있을 때 1분마다, 앱으로 돌아올 때 다시 그린다 */
 setInterval(function(){ var el=$("todaycard");
   if(W||!$("v-home")||!$("v-home").classList.contains("on")||(el&&el.contains(document.activeElement)))return;   // 버튼에 포커스가 있으면 건드리지 않는다
-  renderToday(); },60000);
-document.addEventListener("visibilitychange",function(){ if(!document.hidden&&!W)renderToday(); });
+  wxTick(); },60000);   // 고침 15: 위 카드가 할 말이 바뀌었으면 홈을 다시, 아니면 예전처럼 이 카드만
+document.addEventListener("visibilitychange",function(){ if(!document.hidden&&!W)wxTick(); });
 
 /* 0.5.0 고침 3: 홈이 스크롤 없이 한 화면에 들어오게, 산책 시작 단추 크기를 남은 자리에 맞춘다(120px에서 256px 사이).
    카드가 많아 120px로도 넘치면 그때만 스크롤된다. 펼친 '안전 정보' 안쪽은 세지 않는다(사용자가 펼친 것이라 스크롤이 맞다) */
@@ -3257,6 +3259,9 @@ try{ if(window.ResizeObserver)new ResizeObserver(fitStart).observe($("v-home"));
 window.addEventListener("resize",fitStart);
 function renderHome(){ renderHomeIn(); fitNow(); }
 function renderHomeIn(){
+  // 고침 15: 위 카드가 할 말을 아래 카드(renderToday)보다 먼저 정한다. 아래 카드가 같은 줄을 빼야 해서다.
+  //   위 카드를 이번에 다시 그릴 수 있을 때만 바꾼다. 못 그리면 화면에 남아 있는 말 그대로 둔다(같은 말이 두 카드에 겹치지 않게, Codex 11/13)
+  try{ if(wxCan())WXSAME=wxSame(); }catch(e){}
   resumeRender();renderToday();
   if(!WX)return;
   var el=$("light");
@@ -3343,6 +3348,10 @@ function renderHomeIn(){
     side.innerHTML="해가 "+COMPASS[Math.round((sun.az/45))%8]+"쪽에 있어요 · <b>길 "+shadeSide(sun.az)+"쪽</b>에 붙어 걸으세요";
   } else side.style.display="none";
   renderTip(c);
+  // 고침 15(06 11/13: 위 카드도 같은 말): 지금 시간대가 비나 추위로 힘든 등급이면 제목은 그 말, 둘째 줄은 숫자, 색은 주의 카드. 덧붙임 글(해 방향, 더 좋은 시간, 진드기)은 그때 보이지 않는다
+  if(WXSAME){ el.className="light warn"; $("l-dot").innerHTML=WXSAME.why==="rain"?IC.rain:IC.alert;
+    $("l-h").textContent=WXSAME.h; $("l-why").textContent=WXSAME.n;
+    side.style.display="none"; when.style.display="none"; $("l-tip").style.display="none"; }
   renderWinter(c);
   $("sig").style.display=c.g>0?"":"none";
   renderPick();
@@ -3733,7 +3742,8 @@ function dayBaseline(skipDk,refT){
    고침 7: 추위(06 11/12). 기온이 영하 12도 이하면 1 짧게, 영하 15도 이하면 2 쉬만.
      숫자는 기상청 한파주의보(아침 최저기온 영하 12도 이하), 한파경보(영하 15도 이하)에서 빌렸다 [가정].
      강아지가 몇 도부터 위험한지 가른 연구는 찾지 못했다(미국수의사회도 "아주 추운 날은 산책을 줄이라"고만 한다).
-     그래서 위험 판정에는 쓰지 않고(위 날씨 카드는 그대로다), 그 시간대는 덜 걸어도 찬다는 데만 쓴다.
+     그래서 위험 판정에는 쓰지 않고(위 날씨 카드의 더위 판정은 그대로다), 그 시간대는 덜 걸어도 찬다는 데만 쓴다.
+     고침 15부터는 위 날씨 카드도 아래 카드와 같은 말('지금은 추워요')을 한다. 새 판정이 아니라 같은 말을 위로 옮긴 것이다(아래 wxSame).
    걷기 좋은 시간 계산(renderHome)도 '짧게' 단계를 0.5로 친다. 실제 날씨를 받았을 때만 매긴다(추정 날씨로는 깎지 않는다).
    힘든 날 계산은 링을 올리기만 한다: 보통 날 계산과 견줘 높은 쪽을 쓴다(비가 온다고 같은 산책의 점수가 내려가면 안 된다).
    지나간 시간대의 등급과, 이미 끝낸 산책에 붙인 등급은 그날 안에 내리지 않는다(예보가 바뀌어도 다 찬 링이 다시 내려가지 않게).
@@ -3788,6 +3798,40 @@ function hardSync(){       // 날씨를 새로 받을 때마다 오늘 등급을
 }
 function hardNow(now){     // 지금 시간대의 등급
   var h=hardLv(dayOf(now)), i=HARD_SL.indexOf(slotOf(now)); return {l:h.lv[i]||0,why:h.why[i]||""};
+}
+/* ══ 0.5.0 고침 15: 위 날씨 카드도 같은 말(06 11/13: 위 카드도 같은 말) ══════════════════
+   영하 16도나 센 비에도 홈 맨 위 카드는 '지금 나가도 좋아요'(초록)였고 바로 아래 카드만 '비가 많이 와요'라고 해서 두 카드의 말이 어긋났다.
+   지금 시간대의 등급(hardNow)이 비나 추위 때문에 1이나 2면 위 카드가 그 말(HARD_TX의 첫째, 둘째 말)을 제목으로 쓴다.
+   둘째 줄은 지금 시각의 숫자만 적는다(비: 시간당 Nmm와 기온, 추위: 기온). 색은 주의 카드, 그림은 비면 비 그림, 추위면 주의 그림.
+   그때 아래 카드에서는 같은 날씨 말 한 줄만 뺀다(renderToday). 권하는 말은 그대로다.
+   그대로 두는 때: 등급 없음, 더위(위 카드가 이미 말한다), 위 카드가 더위 경고 중일 때, 실제 날씨를 못 받았을 때(추정 날씨에는 비 숫자가 없다), 위치가 없을 때.
+   등급은 읽기만 한다. 미세먼지는 넣지 않았다(보류). 화면에 넣는 글은 정해 둔 말과 숫자로 바꾼 값뿐이다(저장된 글자, 날씨 응답의 글자는 넣지 않는다). */
+IC.rain='<svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7"/><path d="M11 13v2m0 3v2m4 -5v2m0 3v2"/></svg>';
+var WXSAME=null;          // 위 카드가 지금 화면에서 하고 있는 힘든 날 말(없으면 null). renderHomeIn이 위 카드를 그릴 때만 바꾼다. 아래 카드는 이 값을 보고 같은 줄을 뺀다
+function wxSame(){        // 위 카드가 해야 할 말: {l 등급, why 이유, h 제목, n 숫자 줄}. 그대로 둘 때는 null
+  if(!loc||!WX||!WXLIVE||!WX.day0)return null;
+  var d=new Date(), p=function(n){return (n<10?"0":"")+n;}, ymd=function(x){return x.getFullYear()+"-"+p(x.getMonth()+1)+"-"+p(x.getDate());};
+  // 숫자는 등급을 매긴 날씨(hardLive)와 같은 시각의 것을 쓴다: 받은 날씨의 첫날이 오늘이면 그대로, 어제면 둘째 날(자정을 넘겨 켜 둔 앱)
+  var off=WX.day0===ymd(d)?0:(WX.day0===ymd(new Date(d.getFullYear(),d.getMonth(),d.getDate()-1))?24:-1);
+  if(off<0)return null;
+  var c0=gradeAt(d,d.getHours()); if(!c0)return null;   // renderHomeIn이 위 카드를 그릴 때 쓰는 값. 이게 없으면 위 카드는 다시 그려지지 않으니 여기서도 말하지 않는다
+  var i=off+d.getHours(), w=WX.hours[i], c=w?(off?gradeAt(d,i):c0):null;
+  if(!c||c.g!==0)return null;                        // 위 카드가 더위 경고(짧게, 그늘로 / 나가지 마세요)를 하고 있으면 그 말을 그대로 둔다
+  var hn=hardNow(d.getTime());
+  if((hn.l!==1&&hn.l!==2)||(hn.why!=="rain"&&hn.why!=="cold"))return null;
+  var t=Math.round(+w.air); if(!isFinite(t))return null;
+  var n="기온\u00a0"+t+"도";   // 같은 카드의 보통 날 글('바닥 예상 N도', 고침 9)과 단위를 맞춘다
+  if(hn.why==="rain"){ var r=+w.rain;                 // 지금 시각의 비(앞 1시간, mm). 1mm가 안 되면 적지 않는다(등급은 남았는데 비가 잠깐 그친 때 '시간당 0mm'가 뜨지 않게)
+    if(isFinite(r)&&r>=1)n="시간당\u00a0"+Math.round(r)+"mm, "+n; }
+  return {l:hn.l,why:hn.why,h:HARD_TX[hn.why][hn.l-1],n:n};
+}
+function wxKey(x){ return x?x.h+"|"+x.n:""; }
+function wxCan(){         // 위 카드를 지금 다시 그릴 수 있나(renderHomeIn과 같은 조건). 날씨가 아직 없거나 지금 시각의 기온이 비면 위 카드는 예전 글 그대로 남는다
+  var d=new Date(); return !!WX&&(!loc||!!gradeAt(d,d.getHours()));
+}
+function wxTick(){        // 위 카드가 해야 할 말이 화면과 달라졌으면(시간대가 바뀜, 숫자가 바뀜) 홈을 다시 그려 두 카드를 맞춘다. 같으면 예전처럼 아래 카드만 그린다
+  var x=null, can=false; try{ can=wxCan(); if(can)x=wxSame(); }catch(e){ can=false; }
+  if(can&&wxKey(x)!==wxKey(WXSAME))renderHome(); else renderToday();
 }
 function hardShare(skipDk){      // 평소 하루에서 시간대마다 차지하는 몫(항목별): 그 시간대 평소 산책 × 그 시간대에 나간 날의 비율. 기록이 없으면 셋으로 똑같이. 고침 14: skipDk(셈하는 날)의 산책은 임시 쪽 표본에서 뺀다
   var ds=dayStart(Date.now()), from=ds-14*864e5, days={}, has={morning:{},day:{},evening:{}}, KS=["dist","sniff","kkuk"];
