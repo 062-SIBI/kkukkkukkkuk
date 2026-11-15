@@ -1636,9 +1636,10 @@ a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}
 .km-leg{position:absolute;left:10px;bottom:24px;display:flex;align-items:center;gap:10px;padding:7px 11px;border-radius:999px;color:#1B1712;
   background:rgba(255,255,255,.94);box-shadow:0 1px 3px rgba(60,40,20,.15);font-size:12.5px;font-weight:700;pointer-events:none}
 .km-leg span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+/* 고침 19(P01 11/14 "사라지는 게 좀 불편해"): '내 위치로'는 늘 보인다. 따라가는 중에는 흐리게, 지도를 끌어 따라가기가 풀리면(moved) 또렷하게. 누르면 다시 따라간다 */
 .km-me{position:absolute;right:10px;bottom:40px;width:44px;height:44px;border-radius:50%;border:0;background:#FFFFFF;color:#1B1712;
-  display:none;place-items:center;box-shadow:0 1px 3px rgba(60,40,20,.2),0 6px 16px -8px rgba(60,40,20,.35)}
-.km-ui.moved .km-me{display:grid}
+  display:grid;place-items:center;box-shadow:0 1px 3px rgba(60,40,20,.2),0 6px 16px -8px rgba(60,40,20,.35);opacity:.55;transition:opacity .2s ease}
+.km-ui.moved .km-me{opacity:1}
 .km-me:active{transform:scale(.95)}
 .km-pal{position:absolute;left:10px;bottom:40px;display:flex;align-items:center;gap:6px;pointer-events:auto}
 .km-palb{width:44px;height:44px;border-radius:50%;border:0;padding:0;background:#FFFFFF;display:grid;place-items:center;
@@ -1841,6 +1842,20 @@ details.setd[open]>summary i{transform:rotate(90deg)}
 .calib.setd>.body{padding:0 2px 16px}
 #statsnote{margin:-6px 0 0;padding:0 2px 14px;border-bottom:1px solid var(--line)}
 .set-del{display:block;width:100%;min-height:44px;margin-top:16px;padding:12px 0;background:none;border:0;font:inherit;font-size:13.5px;color:var(--clay);text-align:center;cursor:pointer}
+/* 고침 19(P01 11/14 피드백, 06 11/16 '듣기') */
+/* 2번 굳기 고르기: 굳기 창이 닫힌 뒤 산책이 끝날 때까지 똥 단추 위에 남는다. 그동안 '그거 아세요?' 한 줄은 쉬어서 화면 높이가 거의 그대로다(11px 늘어남).
+   킁킁 단추는 9px 올라가 있어서 좁은 폰에서 칩 끝이 그 위에 오므로 아래 틈을 7px 둔다 */
+#v-walk .acts.pfx>.act{grid-row:2}
+#poopfix{grid-column:1/-1;grid-row:1;justify-self:start;display:inline-flex;align-items:center;gap:7px;min-height:44px;margin:0 0 7px;padding:0 16px 0 13px;border:1.5px solid var(--line);border-radius:99px;background:var(--panel);color:var(--ink);font:inherit;font-size:14px;font-weight:700;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#poopfix i{flex:none;width:10px;height:10px;border-radius:50%;background:var(--coral)}
+#poopfix:active{transform:scale(.97)}
+#poopfix[hidden]{display:none}
+/* 3번 산책 중 화면 켜 두기(앱에서만 보인다) */
+#awakeopt{border-bottom:1px solid var(--line)}
+#awakeopt[hidden]{display:none}
+/* 20번: 단추를 빨리 두 번 누르면 화면이 커지던 것(아이폰). 두 번 누르기 확대만 막는다(밀기와 두 손가락 확대는 그대로).
+   아이폰은 안에서 스크롤되는 상자(시트, 카드 편집 칸)부터 다시 세므로 그 상자와 단추에도 준다. 따로 정한 곳(끝내기, 지도, 카드 미리보기)은 그대로 */
+html,.sheet .in,.picks,#pwc .pw-tabp,#pwc .pw-row,#pwc .pw-thumbs,button,a,summary,label,input,select,textarea,[role="button"],.tap{touch-action:manipulation}
 </style>
 </head>
 <body>
@@ -2034,6 +2049,7 @@ details.setd[open]>summary i{transform:rotate(90deg)}
     <div class="gtip" id="gtip" hidden></div>
     <div class="acts">
       <div class="undo" id="undo" role="status" aria-live="polite"><i class="ud"></i><span class="um" id="undo-m"></span><button type="button" id="undo-b">되돌리기</button><span class="up"></span></div>
+      <button type="button" id="poopfix" hidden><i aria-hidden="true"></i>굳기 고르기</button>
       <button class="act a-poop" id="b-poop" aria-label="똥 기록"><span class="pad"></span><span class="ac"><svg class="gi brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 10.5h13l-1.2 9a2.2 2.2 0 0 1 -2.2 1.9h-6.2a2.2 2.2 0 0 1 -2.2 -1.9z"/><path d="M8.6 10.5l-1.8 -6l4.4 2.6"/><path d="M15.4 10.5l1.8 -6l-4.4 2.6"/><path d="M11.2 7.1h1.6"/></svg><b id="c-poop">0</b></span></button>
       <button class="act a-sniff" id="b-sniff" aria-label="킁킁 기록, 오래 맡는 곳에서 한 번"><span class="pad"></span><span class="ac"><svg class="gi brand" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 19.6C9 19.6 2.8 16.4 2.8 10.8C2.8 7.2 6.6 4.8 12 4.8C17.4 4.8 21.2 7.2 21.2 10.8C21.2 16.4 15 19.6 12 19.6Z"/><ellipse cx="7.6" cy="8.6" rx="2.3" ry="1.25" transform="rotate(-18 7.6 8.6)" fill="#fff"/><ellipse cx="10.7" cy="7.9" rx=".75" ry=".6" fill="#fff"/></svg><b id="c-sniff">0</b></span></button>
       <button class="act a-pee" id="b-pee" aria-label="꾹 기록"><span class="pad"></span><span class="ac"><svg class="gi brand" viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(0 1)"><ellipse cx="22" cy="58" rx="13" ry="16" transform="rotate(-22 22 58)" fill="currentColor"/><ellipse cx="50" cy="40" rx="13" ry="16" fill="currentColor"/><ellipse cx="78" cy="58" rx="13" ry="16" transform="rotate(22 78 58)" fill="currentColor"/></g></svg><b id="c-pee">0</b></span></button>
@@ -2173,6 +2189,7 @@ details.setd[open]>summary i{transform:rotate(90deg)}
       <summary><span>숫자의 근거<small>꾹게이지와 바닥 온도가 어디서 왔는지</small></span><i aria-hidden="true">›</i></summary>
       <div class="body"><p class="src" style="margin:4px 0 6px" id="method"></p></div>
     </details>
+    <button class="set-row" id="awakeopt" type="button" aria-pressed="false" hidden><span>산책 중 화면 켜 두기<small>켜 두면 배터리가 더 닳아요</small></span><span class="val" id="awakeval">꺼짐</span></button>
     <button class="set-row" id="statsopt" type="button" aria-pressed="true" hidden><span>사용 통계 보내기<small>위치와 이름은 보내지 않아요</small></span><span class="val" id="statsval">켜짐</span></button>
     <p class="src" id="statsnote" hidden><span class="sn">앱을 고치려고 산책 수, 시간, 거리 같은 숫자와 기기 종류(브라우저, 화면&nbsp;<span class="nb">크기)를</span> 핵클(분석 도구)로 보냅니다.</span> <span class="sn">위치와 경로, 강아지 이름과 사진은 보내지&nbsp;않고 끄면 바로 멈춰요.</span> <a href="privacy/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:3px">처리방침 보기</a></p>
     <details class="calib setd" id="toolbox">
@@ -2549,7 +2566,7 @@ function dropWalk(){
   RV_DROP=false; if(!W)return;
   try{ pocketOff(); undoHide(); poopClose(); kmLiveStop(); }catch(e){}
   clearInterval(timer); try{ stopGPS(); }catch(e){}
-  GL=null; W=null; lastFix=null; S.live=null;
+  GL=null; W=null; lastFix=null; S.live=null; poopChip(); if(NATIVE)wakeFree();
   try{ tab("home"); renderLog(); renderHome(); }catch(e){}
   toast("이 산책은 다른 창에서 이미 끝냈어요",3500);
   rvReload();
@@ -2823,6 +2840,22 @@ function statsRender(){
   b.hidden=n.hidden=!HACKLE_KEY;
   b.setAttribute("aria-pressed",statsOffNow()?"false":"true");
   $("statsval").textContent=statsOffNow()?"꺼짐":"켜짐";   // 고침 18: 줄 오른쪽의 작은 글만 바꾼다
+}
+/* 고침 19(3번): 산책 중 화면 켜 두기. 앱에서만 보인다(웹은 예전처럼 늘 화면을 붙잡는다). 기본은 꺼짐.
+   켤 수 없는 폰(wakeLock이 없음)이면 켜지 않고 폰 설정을 알려 준다. 값은 기록(S.awake)에 두어 파일로 저장과 불러오기에 같이 간다 */
+function awakeRender(){
+  var b=$("awakeopt"); if(!b)return;
+  if(NATIVE&&S.awake&&!(navigator.wakeLock&&navigator.wakeLock.request)){ delete S.awake; save(); }   // Codex 3차: 켤 수 없는 폰에서 켜진 기록(백업)을 열면 끈다
+  b.hidden=!NATIVE; b.setAttribute("aria-pressed",S.awake?"true":"false");
+  $("awakeval").textContent=S.awake?"켜짐":"꺼짐";
+}
+function awakeToggle(){
+  if(!S.awake&&!(navigator.wakeLock&&navigator.wakeLock.request)){
+    toast("이 폰에서는 켤 수 없어요 · "+wakeHow(),4500); return; }
+  if(S.awake)delete S.awake; else S.awake=1;
+  save(); awakeRender();
+  if(S.awake)holdScreen(); else wakeFree();
+  toast(S.awake?"산책 중에는 화면을 켜 둬요":"화면이 꺼져도 기록은 이어져요");
 }
 (function(){
   try{var r=new URLSearchParams(location.search).get("r");
@@ -3651,6 +3684,7 @@ function boot(){
     toast(off&&!kept?"저장 공간이 꽉 차서 끈 상태를 기억하지 못했어요. 기록을 조금 줄인 뒤 다시 꺼 주세요":(off?"사용 통계를 보내지 않아요":"사용 통계를 다시 보내요"));
   });
   statsRender();
+  $("awakeopt").addEventListener("click",awakeToggle); awakeRender();   // 고침 19
   hk("app_open",{where:hkWhere(),src:String(S.src||""),ref:String(S.ref||"")});
   if(typeof S.K==="number"&&S.K>0&&S.K<0.12)K_ROAD=S.K;
   if(S.manual&&S.manual.lat!=null)loc={lat:S.manual.lat,lng:S.manual.lng};
@@ -3764,8 +3798,11 @@ function gaugeDetail(w){
 }
 function gmsgOf(t,gd){var n=S.dog?S.dog.name:"우리 아이";
   if(gd&&gd.hard&&t>=85&&!(t>=100&&gd.avgRaw>=1.10))return "이 산책 몫은 다 채웠어요";   // 고침 5: 줄어든 몫을 채운 것이라 '평소만큼'이라고 하지 않는다
-  return (t>=100&&gd&&gd.avgRaw>=1.10)?"평소보다 넉넉했어요":t>=85?"평소만큼 했어요":t>=60?"조금만 더?":
+  return (t>=100&&gd&&gd.avgRaw>=1.10)?"평소보다 넉넉했어요":t>=85?"평소만큼 했어요":t>=60?"평소에 가까워요":   // 고침 19(P01 11/14): 재촉하던 물음 대신 평소에 견준 말
          t>=30?n+" 아직 안 끝났대요":"이제 막 나왔네요";}
+/* 고침 19(P01 11/14 "평가받는 느낌", 06 "그래 좋아"): 산책 중 꾹게이지가 100인 채로 10분이 지나면 이제 쉬어도 된다고 말한다.
+   10분은 저희가 정한 값이다 [가정]. 숫자와 계산은 그대로이고 기록에는 아무것도 남기지 않는다(앱을 다시 켜거나 이어 걸으면 새로 센다) */
+var REST_MS=10*60e3, G100={at:0};
 /* ══ 0.4.4 하루 산책량 ════════════════════════════════════════
    나눠 걸은 산책을 하루로 더한다. 하루는 새벽 4시에 바뀐다(밤 산책이 다음 날로 넘어가지 않게).
    0.5.0 고침 4부터는 나간 횟수도 본다(아래 DAY_MISS). 그 전에는 길게 한 번이든 짧게 여러 번이든 같은 하루였다.
@@ -4180,15 +4217,15 @@ function tick(){
       : (W.gaps?"끊긴 구간 "+W.gaps+"곳 · 그 사이 경로는 비어 있어요":"");
   }
   // 고침 6: GPS 알림 줄이 비어 있을 때만 그 자리에 '그거 아세요?' 한 줄. 문장은 TIPS에서만 가져온다(저장된 글자를 화면에 넣지 않는다)
-  var tp=$("gtip");
-  if(tp){ var tip=wn.textContent?null:tipById(W.tip);
+  var tp=$("gtip"), pf=poopChip();   // 고침 19: 굳기 고르기가 보이는 동안은 '그거 아세요?' 한 줄이 쉰다(화면 높이가 그대로이게)
+  if(tp){ var tip=(wn.textContent||pf)?null:tipById(W.tip);
     if(tip&&tp.getAttribute("data-id")!==tip.id){ tp.setAttribute("data-id",tip.id); tp.innerHTML="<b>그거 아세요?</b>"+tip.t; }
-    tp.hidden=!tip; wn.hidden=!!tip; }
+    tp.hidden=!tip; wn.hidden=!!tip||(pf&&!wn.textContent); }
   var gd=gaugeDetail(W);
   if(!gd.ready){
     $("gnum").textContent="-";var wsg0=$("wseg-g");if(wsg0)wsg0.textContent="-";
     $("gring").setAttribute("stroke-dashoffset","615.8");
-    $("gmsg").textContent=SLOTS[gd.slot]+" 산책 기준을 배우는 중";$("gsub").textContent=gd.n+"/5회";
+    $("gmsg").textContent=SLOTS[gd.slot]+" 산책 기준을 배우는 중";$("gsub").textContent=gd.n+"/5회";G100.at=0;
   } else {
     var g=gd.score;
     $("gnum").textContent=g;var wsg=$("wseg-g");if(wsg)wsg.textContent=g;
@@ -4196,7 +4233,8 @@ function tick(){
     var tail="";
     if(gd.B&&gd.B.prov>0.01)tail=" · 임시 기준 ("+(gd.B.nA||0)+"/3회 학습)";   // 고침 14: 기준에 센 자기 기록 수(시간대와 상관없이, 걷고 있는 산책은 빼고). 3번이면 임시가 아니다
     else if(gd.B&&gd.B.drift)tail=" · 기준선이 내려가는 중이에요";
-    $("gmsg").textContent=gmsgOf(g,gd);
+    if(g>=100){ if(!G100.at)G100.at=Date.now(); } else G100.at=0;   // 고침 19: 100에 닿은 때부터 센다
+    $("gmsg").textContent=(G100.at&&Date.now()-G100.at>=REST_MS)?"충분히 했어요, 이제 쉬어도 돼요":gmsgOf(g,gd);
     // 0.4.4: 오늘 앞서 다녀온 산책이 있으면 하루 합계도 한 줄에 보여 준다(나눠 걸어도 손해가 없게)
     var dk0=dayOf(W.start), dsc=(dk0===dayOf(Date.now())&&dayWalks(dk0).length)?dayScore(dk0,W).score:null;
     $("gsub").textContent=[gd.hard===2?"쉬만 해도 차요":gd.hard===1?"절반만 걸어도 차요":"",dsc!=null?"오늘 전체 "+dsc:"",gd.bonusPoop?"똥 보너스":"",gd.bonusSpot?"새 꾹자리":"",tail.replace(/^ · /,"")].filter(Boolean).join(", ");   // 0.4.4: 항목이 늘어 가운뎃점 대신 쉼표
@@ -4340,7 +4378,7 @@ function stopGPS(){
 }
 /* iOS Safari는 화면이 꺼지거나 앱이 뒤로 가면 GPS를 끊는다.
    화면 잠금을 붙잡아 두고, 돌아왔을 때 다시 잡는다. 그래도 끊기면 솔직히 말한다. (웹만) */
-var wake=null;
+var wake=null, wakeAsk=false, wakeTry=0, wakeGen=0;
 /* localStorage가 꽉 차면 save()는 false를 돌려준다. 그걸 버리면
    "기록했어요"라고 말해놓고 실제로는 아무것도 안 남는다. 한 번만 말한다. */
 var quotaWarned=false;
@@ -4350,14 +4388,27 @@ function persistLive(){
     toast("저장 공간이 꽉 찼어요 · 기록 탭의 설정과 백업에서 파일로 저장을 먼저 해 주세요",4000);}
   return false;
 }
+/* 고침 19(P01 11/14 "화면이 자꾸 꺼지는 것도 불편해", 06 "직접 설정할 수 있게 하자"): 앱은 화면이 꺼져도 기록이 이어져서 화면을 붙잡지 않았다.
+   '산책 중 화면 켜 두기'(S.awake)를 켜면 앱에서도 산책 중에만 붙잡는다. 앱에서는 하나만 쥐고(끌 때 놓을 수 있게) 산책이 끝나거나 끄면 놓는다.
+   화면이 가려지면 브라우저가 놓고 돌아오면 다시 청한다. 웹은 예전 그대로 */
 function holdScreen(){
-  if(NATIVE)return;
+  if(NATIVE&&!(S.awake&&W))return;
   if(!navigator.wakeLock||!navigator.wakeLock.request)return;
-  navigator.wakeLock.request("screen").then(function(s){wake=s; s.addEventListener("release",function(){ if(W&&document.visibilityState==="visible")setTimeout(holdScreen,500); });}).catch(function(){});
+  if(NATIVE){ if(wakeAsk||(wake&&!wake.released))return; wakeAsk=true; }
+  var gen=++wakeGen;                               // 앱: 요청마다 번호. 끄거나 산책을 끝낸 뒤 늦게 온 옛 요청은 놓기만 하고 세지 않는다(Codex 3차)
+  navigator.wakeLock.request("screen").then(function(s){
+    if(NATIVE){ if(gen!==wakeGen){ wakeLet(s); return; }
+      wakeAsk=false; wakeTry=0; if(!(S.awake&&W)||(wake&&!wake.released&&wake!==s)){ wakeLet(s); return; } }   // 청하는 사이 껐거나 산책이 끝났다
+    wake=s; s.addEventListener("release",function(){ if(W&&document.visibilityState==="visible")setTimeout(holdScreen,500); });}).catch(function(){ if(NATIVE&&gen!==wakeGen)return; wakeAsk=false;
+    // Codex 2차: 앱에서 거절되면(청하는 사이 가려졌거나 폰이 막음) 보이는 동안 한 번 더 청하고, 그래도 안 되면 한 번만 알린다(되풀이해 청하지 않는다)
+    if(NATIVE&&S.awake&&W&&document.visibilityState==="visible"){ wakeTry++; if(wakeTry===1)setTimeout(holdScreen,500); else if(wakeTry===2)toast("화면을 켜 두지 못했어요 · "+wakeHow(),4500); } });
 }
+function wakeHow(){ return IOS?"폰 설정에서 자동 잠금을 바꿔 주세요":"폰 설정에서 화면 자동 꺼짐을 바꿔 주세요"; }
+function wakeLet(s){ if(s&&!s.released){ try{ var p=s.release(); if(p&&p.catch)p.catch(function(){}); }catch(e){} } }
+function wakeFree(){ var s=wake; wake=null; wakeAsk=false; wakeTry=0; wakeGen++; wakeLet(s); }
 document.addEventListener("visibilitychange",function(){
   if(document.visibilityState==="visible"&&W){
-    if(NATIVE){tick();return;}                     // 앱은 서비스가 계속 받고 있다. 다시 걸 필요 없음
+    if(NATIVE){if(S.awake)holdScreen();tick();return;}   // 앱은 서비스가 계속 받고 있다. GPS는 다시 걸 필요 없음. 고침 19: 화면 켜 두기를 켰으면 가려질 때 놓인 것을 다시 청한다
     holdScreen();
     /* iOS는 뒤로 가면 watch 콜백을 죽이지만 watchId 값은 그대로 남는다.
        살아 있든 죽었든 무조건 걷어내고 새로 건다. 죽은 id를 clear해도 안전하다. */
@@ -4437,7 +4488,7 @@ function tipPick(now){     // 이번 산책에 보일 줄의 id. 본 순서를 S
   return best.id;
 }
 function begin(w){
-  W=w;lastSave=0;
+  W=w;lastSave=0;G100.at=0;   // 고침 19: 이어 걷기와 다시 켠 산책도 100인 채로 10분을 새로 센다(Codex 1차)
   if(!tipById(W.tip)){ try{ W.tip=tipPick(Date.now()); }catch(e){ W.tip=null; } }   // 고침 6: 이 산책의 한 줄(다시 켜도 같은 줄, 이어 걷기는 새 줄)
   tab("walk");startGPS();tick();headListen();
   clearInterval(timer);timer=setInterval(tick,1000);
@@ -4547,6 +4598,7 @@ function endWalk(){
   var ok=save();
   var hadPts=(W.pts||[]).length>4;
   W=null;lastFix=null;
+  poopChip(); if(NATIVE)wakeFree();                // 고침 19: 굳기 고르기를 거두고, 앱은 산책 중에만 화면을 붙잡는다
   widgetPush();
   tab("home");renderLog();renderHome();
   toast(ok?((g==null?"기록했어요 · 기준 학습 중":"꾹게이지 "+g)+
@@ -4702,26 +4754,40 @@ function poopSheetSync(){
 function poopTick(){
   clearTimeout(PS.t);
   if(!PS.rec)return;
-  if(PS.rec.odd){$("poop-left").textContent="";return;}      // 색 이상을 고르면 안내를 읽을 시간을 준다(저절로 닫지 않음)
+  if(PS.rec.odd||PS.keep){$("poop-left").textContent="";return;}      // 색 이상을 고르면 안내를 읽을 시간을 준다(저절로 닫지 않음). 고침 19: 나중에 고르려고 다시 연 창도
   if(PS.hold){PS.t=setTimeout(poopTick,400);return;}           // 손가락을 대고 있는 동안은 세지 않는다
   if(PS.left<=0){poopClose(true);return;}
   $("poop-left").textContent=PS.left+"초 뒤 닫혀요";
   PS.left--; PS.t=setTimeout(poopTick,1000);
 }
 var FIRMN={4:"단단",3:"보통",2:"묽음"};
-function poopOpen(rec){
-  PS.rec=rec; $("poop-h").textContent="똥 "+(W.poops.indexOf(rec)+1)+"번째, "+(PS.fail?"저장 못 했어요":"저장했어요");
+function poopOpen(rec,keep){                      // keep: 나중에 고르려고 다시 연 창(굳기 고르기, 고치기). 초를 세지 않는다
+  PS.rec=rec; PS.keep=!!keep; $("poop-h").textContent="똥 "+(W.poops.indexOf(rec)+1)+"번째, "+(PS.fail?"저장 못 했어요":"저장했어요");
   poopSheetSync(); $("sheet").classList.add("on"); poopTouch();
   try{$("poop-h").focus({preventScroll:true});}catch(e){}   // 화면 읽기가 "저장했어요"를 읽게
 }
 function poopClose(auto){
   var r=PS.rec;
-  clearTimeout(PS.t); PS.rec=null; PS.hold=false; if(auto)PS.autoAt=Date.now();
-  if(auto&&r&&W&&W.poops.indexOf(r)>=0)undoShow("poop","똥 "+(W.poops.indexOf(r)+1)+"번째, "+(PS.fail?"저장 못 했어요":(FIRMN[r.f]||"보통")+"으로 저장했어요"),function(){poopOpen(r);return false;},"고치기");
+  clearTimeout(PS.t); PS.rec=null; PS.hold=false; PS.keep=false; if(auto)PS.autoAt=Date.now();
+  if(auto&&r&&W&&W.poops.indexOf(r)>=0)undoShow("poop","똥 "+(W.poops.indexOf(r)+1)+"번째, "+(PS.fail?"저장 못 했어요":(FIRMN[r.f]||"보통")+"으로 저장했어요"),function(){poopOpen(r,true);return false;},"고치기");   // 고침 19: 고치려고 다시 연 창은 초를 세지 않는다
   var sh=$("sheet"), had=sh.contains(document.activeElement); sh.classList.remove("on");
   if(had){try{$("b-poop").focus({preventScroll:true});}catch(e){}}
 }
 function poopTouch(){ PS.left=5; poopTick(); }
+/* 고침 19(P01 11/14 "똥 보고 누르려고 했는데 얘가 도망갔어", 06 "닫히되 나중에 고르기"): 굳기 창은 5초 뒤 '보통'으로 닫히는 그대로 두고
+   산책이 끝날 때까지 똥 단추 위에 '굳기 고르기'를 남긴다. 누르면 가장 최근 똥의 굳기 창을 초 없이 다시 연다.
+   고른 값은 창의 단추가 그 똥 기록에 덮어쓴다(처음 뜬 창, 되돌리기 알림의 고치기와 같은 길이라 묽은 변 경고와 꾹게이지가 같다).
+   위젯으로 누른 똥, 앱을 다시 켠 뒤, 이어 걷기도 걷는 산책의 똥(W.poops)에서 고르므로 같다 */
+function poopLast(){ var a=(W&&W.poops)||[], r=null; for(var i=0;i<a.length;i++){ var p=a[i]; if(p&&(!r||(+p.t||0)>=(+r.t||0)))r=p; } return r; }
+function poopChip(){
+  var b=$("poopfix"); if(!b)return false;
+  var r=poopLast(), on=!!r, l=on?"똥 "+(W.poops.indexOf(r)+1)+"번째 굳기 고르기":"";
+  if(b.hidden===on)b.hidden=!on;
+  b.parentNode.classList.toggle("pfx",on);
+  if(on&&b.getAttribute("aria-label")!==l)b.setAttribute("aria-label",l);
+  return on;
+}
+$("poopfix").addEventListener("click",function(){ var r=poopLast(); if(!W||!r)return; undoHide(); poopOpen(r,true); });
 $("b-poop").addEventListener("click",function(){
   if(!W)return;
   headListen();                                    // iOS 나침반 권한, 사용자 제스처인 지금만 요청 가능
