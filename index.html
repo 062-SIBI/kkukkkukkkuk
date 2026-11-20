@@ -906,6 +906,8 @@ details.sig .last{padding:0 16px 14px; font-size:calc(11.5px*var(--fs,1)); color
 .tabs{position:fixed; bottom:0; left:0; right:0; background:var(--panel); border-top:1px solid var(--line);
   display:none; z-index:20; padding-bottom:env(safe-area-inset-bottom)}
 .tabs.on{display:flex}
+/* 0.5.0 빌드 3.17: 아이폰 앱은 파티꾹 탭을 숨긴다(같이 걷기가 '준비 중'인 동안. 앱스토어 지침 2.1). 웹과 안드로이드는 그대로 */
+html.ios .tabs button[data-v="party"]{display:none}
 .tabs button{flex:1; background:none; border:none; padding:9px 0 11px; color:var(--ink-3); font-size:calc(10.5px*var(--fs,1))}
 .tabs button i{display:block; font-size:calc(18px*var(--fs,1)); font-style:normal; margin-bottom:1px}
 .tabs button.on{color:var(--brand); font-weight:600}
@@ -3149,7 +3151,7 @@ function beta(k,n){S.beta=S.beta||{since:Date.now()};S.beta[k]=(S.beta[k]||0)+(n
    0.4.5에서 더한 walk_endsig, newroute_nudge(이 둘은 방침을 알린 지 30일 뒤부터), 그리고 아래 숫자 속성뿐이다.
    위치, 경로, 좌표, 강아지 이름, 사진, 메모는 어떤 속성에도 넣지 않는다. 사용자 구분은 핵클 기기 ID만 쓴다.
    기록 탭 '설정과 백업'의 '사용 통계 보내기'를 끄면 SDK를 부르지 않는다. */
-var HK_IOS=true;   // 아이폰 앱에서도 사용 통계를 켠다(안드로이드 앱, 웹과 같게). 끄려면 false로 바꾸고 앱스토어 개인정보 답에서 기기 ID와 제품 상호 작용을 뺀다(위치는 남는다). 앱 안의 개인정보 파일은 ios-kit이 이 줄을 읽어 맞춘다
+var HK_IOS=true;   // 아이폰 앱에서도 사용 통계를 켠다(안드로이드 앱, 웹과 같게). 끄려면 false로 바꾸고 앱스토어 개인정보 답에서 기기 ID, 제품 상호 작용, 피트니스를 뺀다(위치는 남는다). 앱 안의 개인정보 파일은 ios-kit이 이 줄을 읽어 맞춘다
 var HACKLE_KEY=(location.hostname==="062-sibi.github.io"||(IOS&&HK_IOS))?"1P4Ki8uNp9DPaLtyXTafjyPj4AdYuwyr":"";   // 배포 주소(웹과 안드로이드 앱)에서만 켠다. 폰 미리보기(raw.githack.com)와 내 컴퓨터 시험에서는 보내지 않는다
 var HK={c:null,q:[],loading:false,failed:false};
 var HK_OFF=(function(){try{return localStorage.getItem("kkuk.statsOff")==="1";}catch(e){return false;}})();   // 끄기는 기록과 따로 저장한다(가져오기와 저장 실패에도 남게)
@@ -3199,7 +3201,12 @@ function hkLoad(){
   document.head.appendChild(el);
 }
 function hkSend(ev){ if(!HK.c||!statsOn())return; try{HK.c.track(ev);}catch(e){} }
+/* 3.17: 앱 열기는 한 번 연 화면에서 한 번만 보낸다. 처음 켠 사람은 '시작하기'(동의)를 누를 때, 이미 동의한 사람은 켤 때.
+   동의만 하고 강아지 정보를 적기 전에 앱을 닫았다가 다시 열어 '시작하기'를 또 눌러도 두 번 세지 않는다 */
+var HK_OPENED=false;
+function hkOpen(){ if(HK_OPENED||!S.user)return; HK_OPENED=true; hk("app_open",{where:hkWhere(),src:String(S.src||""),ref:String(S.ref||"")}); }
 function hk(key,props){
+  if(!S.user)return;   // 3.17: 첫 화면의 '시작하기'(처리방침 동의)를 누르기 전에는 SDK도 부르지 않는다. 앱 열기는 누를 때 보낸다
   if(!statsOn())return;
   if(PRIV_NEW[key]&&!privNewOk())return;   // 0.5.0: 새 항목은 알린 지 30일 뒤부터
   var ev={key:key,properties:props||{}};
@@ -3261,7 +3268,7 @@ function betaText(){
     .slice(0,3).map(function(k){var id=k.slice(2),n={photo:"포토",done:"done.",depth:"깊이",tattoo:"타투"}[id];
       return (n||id)+" "+B[k];}).join(", ");
   var gs=S.walks.filter(function(w){return w.gauge!=null;}).slice(0,14).map(function(w){return w.gauge;});
-  return ["꾹꾹이 베타 기록 · "+d.getFullYear()+"."+(d.getMonth()+1)+"."+d.getDate(),
+  return ["꾹꾹이 써 본 기록 · "+d.getFullYear()+"."+(d.getMonth()+1)+"."+d.getDate(),
     "쓰는 곳: "+(NATIVE?(IOS?"아이폰 앱":"안드로이드 앱")+(S.app?" v"+S.app.v:""):(/iPhone|iPad/.test(navigator.userAgent)?"아이폰 웹":"웹")),
     "알게 된 곳: "+(S.src||"안 고름")+(S.ref?" ("+S.ref+")":""),
     "산책 "+n+"회 · 산책당 탭 "+(n?((B.walkTaps||0)/n).toFixed(1):"-")+"회",
@@ -3274,7 +3281,7 @@ function betaText(){
 }
 function betaSend(){
   var t=betaText();
-  if(NATIVE&&NP.Share){NP.Share.share({title:"꾹꾹이 베타 기록",text:t,dialogTitle:"써 본 기록 보내기"}).catch(function(){});return;}
+  if(NATIVE&&NP.Share){NP.Share.share({title:"꾹꾹이 써 본 기록",text:t,dialogTitle:"써 본 기록 보내기"}).catch(function(){});return;}
   if(navigator.share){navigator.share({text:t}).catch(function(){});return;}
   if(navigator.clipboard&&navigator.clipboard.writeText)
     navigator.clipboard.writeText(t).then(function(){toast("복사했어요 · 카톡에 붙여넣어 보내 주세요");},function(){toast("복사를 못 했어요");});
@@ -3965,7 +3972,9 @@ function step(n){document.querySelectorAll(".step").forEach(function(s){s.classL
   $("st"+n).classList.add("on");window.scrollTo(0,0);}
 document.querySelectorAll("[data-go]").forEach(function(b){b.addEventListener("click",function(){step(+b.dataset.go);});});
 document.querySelectorAll("[data-sso]").forEach(function(b){b.addEventListener("click",function(){
-  S.user={via:b.dataset.sso,at:Date.now()};S.priv={v:PRIV_VER,at:0,ok:1};save();step(2);});});
+  S.user={via:b.dataset.sso,at:Date.now()};S.priv={v:PRIV_VER,at:0,ok:1};save();
+  hkOpen();   // 3.17: 처음 켠 사람의 앱 열기는 동의한 뒤에 한 번
+  step(2);});});
 var avaSel="🐕";
 press($("avapick"),function(b){avaSel=b.textContent;});
 /* 0.4.4 배변 습관: 하나만 고르고, 다시 누르면 고르지 않은 상태로 */
@@ -4256,7 +4265,7 @@ function boot(){
   });
   statsRender();
   $("awakeopt").addEventListener("click",awakeToggle); awakeRender();   // 고침 19
-  hk("app_open",{where:hkWhere(),src:String(S.src||""),ref:String(S.ref||"")});
+  hkOpen();   // 3.17: 앱 열기는 동의한 뒤 한 번만
   if(typeof S.K==="number"&&S.K>0&&S.K<0.12)K_ROAD=S.K;
   if(S.manual&&S.manual.lat!=null)loc={lat:S.manual.lat,lng:S.manual.lng};
   if(S.user&&S.dog){LOCWAIT=!S.locDefer&&!loc;enterMain();if(!S.locDefer)getLoc(function(p){LOCWAIT=false;loc=p;loadWeather();});else loadWeather();}
