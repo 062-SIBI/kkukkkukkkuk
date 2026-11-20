@@ -1866,6 +1866,87 @@ details.setd[open]>summary i{transform:rotate(90deg)}
    아이폰은 안에서 스크롤되는 상자(시트, 카드 편집 칸)부터 다시 세므로 그 상자와 단추에도 준다. 따로 정한 곳(끝내기, 지도, 카드 미리보기)은 그대로 */
 html,.sheet .in,.picks,#pwc .pw-tabp,#pwc .pw-row,#pwc .pw-thumbs,button,a,summary,label,input,select,textarea,[role="button"],.tap{touch-action:manipulation}
 </style>
+<style id="kc">
+/* ══ 꾹게이지 캐릭터(디자인 3차 11/19): 06이 시안 3에서 고른 게이지 3. 링 가운데의 숫자 자리에 강아지 그림을 둔다 ══
+   숫자 글자(산책 화면의 #gnum과 '꾹게이지', 홈 오늘 카드의 .n)는 화면 읽기를 위해 자리와 크기를 그대로 둔 채 투명하게만 한다. 산책 화면의 숫자는 위의 '꾹게이지 N' 탭에 보인다.
+   그림 안의 이름은 모두 kc로 시작한다(홈 카드의 .s 같은 짧은 이름 규칙에 걸리지 않게). 그림은 circle을 쓰지 않는다(링의 circle 굵기 규칙에 걸린다).
+   자세는 data-pose, 돌리는 각도는 그림마다 계산해 넣은 값(--sit 등)이다. 폰의 '동작 줄이기'는 앞의 모든 것 규칙(*)이 움직임을 끈다.
+   그림 안의 변형은 rotate(각도)만 쓴다(px 길이와 translate는 쓰지 않는다: 사파리 계열은 쪽을 확대하면 그 길이가 어긋난다). 위아래로 옮기는 것도 아주 먼 축(20000)으로 조금 돌려서 한다: 1을 옮기려면 0.00285도 */
+#v-walk .ring .ctr .n,#v-walk .ring .ctr .u,.today .ring .n{opacity:0;pointer-events:none;-webkit-user-select:none;user-select:none}
+.ring .kcw{position:absolute;pointer-events:none}
+#v-walk .ring .kcw{left:4.5%;width:94%;top:14.5%;height:57.4%}   /* 그림 틀(190x116)은 앉고 누울 자리까지 잡은 것이라 강아지는 이 틀의 6할쯤이다. 발이 링 높이의 7할쯤에 오게 둔다(왼쪽 아래 굳기 단추보다 위) */
+#v-walk.fit .ring .kcw{left:12%;width:82%;top:24%;height:50.1%}   /* 세로가 짧은 화면(링을 줄이는 화면)은 굳기 단추가 링에 비해 커서, 꼬리 끝이 단추에 닿지 않게 조금 작게 오른쪽으로 */
+.today .ring .kcw{left:5%;width:92%;top:15%;height:56.2%}
+.ring .kcw svg.kc,.kcprev .kcw svg.kc{position:static;display:block;width:100%;height:100%;overflow:visible;transform:none}
+.kc .kcT,.kc .kcN,.kc .kcD,.kc .kcTl{transition:transform .55s cubic-bezier(.34,1.25,.5,1)}
+.kc .kcL,.kc .kcH,.kc .kcP,.kc .kcEo,.kc .kcEc,.kc .kcTg,.kc .kcZ{transition:opacity .25s,transform .55s cubic-bezier(.34,1.25,.5,1)}
+.kc .kcH,.kc .kcP,.kc .kcEc,.kc .kcTg,.kc .kcZ{opacity:0}
+.kc[data-pose="sit"] .kcT{transform:rotate(var(--sit))}
+.kc[data-pose="sit"] .kcN{transform:rotate(var(--situp))}
+.kc[data-pose="sit"] .kcTl{transform:rotate(var(--tailsit))}
+.kc[data-pose="sniff"] .kcN{transform:rotate(var(--sniff))}
+.kc[data-pose="sniff"] .kcTl{transform:rotate(10deg)}
+.kc[data-pose="lie"] .kcD{transform:rotate(var(--dropa))}
+.kc[data-pose="lie"] .kcN{transform:rotate(var(--rest))}
+.kc[data-pose="lie"] .kcTl{transform:rotate(var(--taillie))}
+.kc[data-pose="lie"] .kcL.kcF.kcNr{transform:rotate(-90deg)}
+.kc[data-pose="lie"] .kcL.kcF.kcFr{transform:rotate(-83deg)}
+.kc[data-pose="sit"] .kcL.kcB,.kc[data-pose="lie"] .kcL.kcB{opacity:0}
+.kc[data-pose="sit"] .kcH,.kc[data-pose="lie"] .kcH{opacity:1}
+.kc[data-pose="sit"] .kcP.kcPs,.kc[data-pose="lie"] .kcP.kcPl{opacity:1}
+.kc[data-pose="lie"] .kcEo{opacity:0}
+.kc[data-pose="lie"] .kcEc,.kc[data-pose="lie"] .kcZ{opacity:1}
+.kc[data-pose="sit"] .kcTg{opacity:1}
+.kc .kcEo{transform-box:fill-box;transform-origin:center}
+.kc .kcTg{transform-box:fill-box;transform-origin:50% 0}
+.kc.anim .kcEo{animation:kc-blink 4.4s infinite}
+.kc.anim[data-pose="stand"] .kcW{animation:kc-wag .42s ease-in-out infinite}
+.kc.anim[data-pose="stand"] .kcW2{animation:kc-wag2 .42s ease-in-out -.32s infinite}
+.kc.anim[data-pose="stand"] .kcNod{animation:kc-nod 2.4s ease-in-out infinite}
+.kc.anim[data-pose="sniff"] .kcW{animation:kc-wag 1s ease-in-out infinite}
+.kc.anim[data-pose="sniff"] .kcW2{animation:kc-wag2 1s ease-in-out -.78s infinite}
+.kc.anim[data-pose="sniff"] .kcNod{animation:kc-sniff .46s ease-in-out infinite}
+.kc.anim[data-pose="walk"] .kcSa{animation:kc-swa .66s ease-in-out infinite}
+.kc.anim[data-pose="walk"] .kcSb{animation:kc-swb .66s ease-in-out infinite}
+.kc.anim[data-pose="walk"] .kcBob{animation:kc-bob .33s ease-in-out infinite}
+.kc.anim[data-pose="walk"] .kcW{animation:kc-wag .5s ease-in-out infinite}
+.kc.anim[data-pose="walk"] .kcW2{animation:kc-wag2 .5s ease-in-out -.38s infinite}
+.kc.anim[data-pose="walk"] .kcE{animation:kc-ear .33s ease-in-out infinite}
+.kc.anim[data-pose="walk"] .kcNod{animation:kc-nod .66s ease-in-out infinite}
+.kc.anim[data-pose="sit"] .kcW{animation:kc-wag 1.1s ease-in-out infinite}
+.kc.anim[data-pose="sit"] .kcW2{animation:kc-wag2 1.1s ease-in-out -.85s infinite}
+.kc.anim[data-pose="sit"] .kcTg{animation:kc-pant .5s ease-in-out infinite}
+.kc.anim[data-pose="lie"] .kcBob{animation:kc-breath 3.2s ease-in-out infinite}
+.kc.anim[data-pose="lie"] .kcZ{animation:kc-zz 3.2s ease-in-out infinite}
+@keyframes kc-wag{0%,100%{transform:rotate(calc(var(--wa,13deg) * -1))}50%{transform:rotate(var(--wa,13deg))}}
+@keyframes kc-wag2{0%,100%{transform:rotate(calc(var(--wb,12deg) * -1))}50%{transform:rotate(var(--wb,12deg))}}
+@keyframes kc-ear{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(7deg)}}
+@keyframes kc-nod{0%,100%{transform:rotate(-2.4deg)}50%{transform:rotate(2.4deg)}}
+@keyframes kc-sniff{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(3deg)}}
+@keyframes kc-swa{0%,100%{transform:rotate(21deg)}50%{transform:rotate(-21deg)}}
+@keyframes kc-swb{0%,100%{transform:rotate(-21deg)}50%{transform:rotate(21deg)}}
+@keyframes kc-bob{50%{transform:rotate(-.00485deg)}}
+@keyframes kc-breath{50%{transform:rotate(-.00314deg)}}
+@keyframes kc-blink{0%,93%,100%{transform:scaleY(1)}96.5%{transform:scaleY(.12)}}
+@keyframes kc-pant{50%{transform:scaleY(.72)}}
+@keyframes kc-zz{0%,100%{opacity:.25;transform:rotate(0deg)}50%{opacity:1;transform:rotate(-.00855deg)}}
+/* 프로필의 '캐릭터 꾸미기': 눌러서 펼쳐야 보인다. 미리보기, 털 색, 주둥이와 다리 막대, 귀, 꼬리 모양, 꼬리 털, 몸통 */
+details.kcset{border-bottom:1px solid var(--line);margin:-6px 0 12px}
+details.kcset>summary::-webkit-details-marker{display:none}
+details.kcset>.body{padding:0 2px 16px}
+details.kcset .srcq{margin-top:14px}
+.kcprev{display:flex;align-items:center;justify-content:center;height:136px;border-radius:14px;background:var(--panel-2)}
+.kcprev .kcw{width:190px;height:116px;max-width:76%}
+.kcsw{display:grid;grid-template-columns:repeat(7,44px);justify-content:space-between;margin:0 -5px}   /* 누르는 자리는 44px, 보이는 동그라미는 34px. 일곱 색이 한 줄에 들어간다(동그라미가 글 줄과 왼쪽 끝이 맞게 5px 당김) */
+.kcsw button{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:0;border-radius:50%;padding:0;background:none;cursor:pointer}
+.kcsw button i{display:block;box-sizing:border-box;width:34px;height:34px;border-radius:50%;border:2px solid var(--line)}
+.kcsw button[aria-pressed="true"] i{box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--ink)}
+@media (max-width:343px){.kcsw{grid-template-columns:repeat(4,44px);justify-content:start;gap:4px 14px}}   /* 일곱이 한 줄에 안 들어가는 좁은 폰은 넷, 셋 두 줄로(하나만 떨어져 내려가지 않게) */
+.kcsw button:focus-visible,.kcset input[type=range]:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.kcset label.lbl2{display:block}
+.kcset input[type=range]{display:block;width:100%;height:32px;margin:0;accent-color:var(--ink)}
+.kcset .kcnote{font-size:calc(11.5px*var(--fs,1));color:var(--ink-3);margin:9px 0 0;line-height:1.5;word-break:keep-all}
+</style>
 <style id="fs">
 /* ══ 글자 크기(보통, 크게) 11/19: 06이 시안 6에서 고른 '가'(이름은 글자 크기, 보통과 크게 두 단계) ══
    글자 크기 선언 가운데 24px 미만은 모두 calc(Npx*var(--fs,1)) 꼴이다. 크게는 1.5배(폭 339 이하의 아주 좁은 폰은 1.3배). 처음에는 1.15배였는데 06이 11/19 낮에 "거의 차이가 없네"라며 후보 가운데 '다'(1.5배)를 골랐다. 24px 이상(꾹게이지 숫자, 산책 시간, 화면 제목 같은 큰 글자)은 그대로 둔다.
@@ -2138,6 +2219,7 @@ html[data-fs="big"] .set-two .big{flex:1 1 auto;width:auto;padding-left:14px;pad
                 stroke-dasharray="615.8" stroke-dashoffset="615.8" id="gring"></circle>
       </svg>
       <div class="ctr"><div class="n" id="gnum">0</div><div class="u">꾹게이지</div></div>
+      <div class="kcw" id="gdog" aria-hidden="true"></div>
     </div>
     <div class="pfa"><button type="button" id="poopfix" aria-label="굳기 고르기" hidden><span class="pad"></span></button></div>
     <div class="gmsg" id="gmsg">이제 막 나왔네요</div>
@@ -2553,6 +2635,21 @@ html[data-fs="big"] .set-two .big{flex:1 1 auto;width:auto;padding-left:14px;pad
     <div class="grab"></div>
     <h3 style="font-size:calc(19px*var(--fs,1));margin-bottom:4px" id="d-title">프로필</h3>
     <div class="km-prof"><button type="button" class="km-ava" id="d-photo" aria-label="강아지 사진 고르기"><span id="d-ava"></span></button><div class="t"><b>강아지 사진</b><span><span class="sn">얼굴이 잘 보이는 사진 한&nbsp;장이면&nbsp;돼요.</span> <span class="sn">이 폰 안에만 저장돼요.</span></span><div class="row"><button type="button" id="d-photo-b">사진 넣기</button><button type="button" id="d-photo-x" hidden>지우기</button></div></div><input type="file" id="d-file" accept="image/*" hidden></div>
+    <details class="setd kcset" id="d-look">
+      <summary><span>캐릭터 꾸미기<small>산책 화면의 강아지를 우리 아이처럼 바꿔요</small></span><i aria-hidden="true">›</i></summary>
+      <div class="body">
+        <div class="kcprev"><div class="kcw" id="k-prev" aria-hidden="true"></div></div>
+        <div class="srcq"><div class="lbl2">털 색 <span id="k-coatn"></span></div><div class="kcsw" id="k-coat" role="group" aria-label="털 색"></div></div>
+        <div class="srcq"><label class="lbl2" for="k-snout">주둥이 길이 <span id="k-snoutn"></span></label><input type="range" id="k-snout" min="0" max="100" step="5" value="50"></div>
+        <div class="srcq"><label class="lbl2" for="k-leg">다리 길이 <span id="k-legn"></span></label><input type="range" id="k-leg" min="0" max="100" step="5" value="50"></div>
+        <div class="srcq"><div class="lbl2">귀</div><div class="chips" id="k-ear" role="group" aria-label="귀"><button type="button" aria-pressed="false" data-v="up">선 귀</button><button type="button" aria-pressed="false" data-v="semi">반쯤 접힌 귀</button><button type="button" aria-pressed="false" data-v="flop">접힌 귀</button></div></div>
+        <div class="srcq"><div class="lbl2">꼬리 모양</div><div class="chips" id="k-tail" role="group" aria-label="꼬리 모양"><button type="button" aria-pressed="false" data-v="up">세운 꼬리</button><button type="button" aria-pressed="false" data-v="curl">말린 꼬리</button><button type="button" aria-pressed="false" data-v="down">내린 꼬리</button></div></div>
+        <div class="srcq"><div class="lbl2">꼬리 털</div><div class="chips" id="k-fur" role="group" aria-label="꼬리 털"><button type="button" aria-pressed="false" data-v="full">풍성하게</button><button type="button" aria-pressed="false" data-v="mid">보통</button><button type="button" aria-pressed="false" data-v="thin">얇게</button></div></div>
+        <div class="srcq"><div class="lbl2">몸통</div><div class="chips" id="k-waist" role="group" aria-label="몸통"><button type="button" aria-pressed="false" data-v="0">핫도그</button><button type="button" aria-pressed="false" data-v="1">허리 들어감</button></div></div>
+        <button type="button" class="big ghost" id="k-reset" style="margin-top:16px">기본형으로</button>
+        <p class="kcnote">저장을 눌러야 바뀌어요. 이 폰 안에만 저장돼요.</p>
+      </div>
+    </details>
     <p class="tiernote" style="margin-bottom:13px">체중과 코 길이는 <b>위험 기준</b>을 정해요.
     나이와 관절은 <b>안내 문구</b>만 바꿔요.</p>
     <div class="field"><label for="d-name">이름</label>
@@ -2675,7 +2772,7 @@ function rvFresh(){
   if(W){ if(rvWalkGone(load())){ dropWalk(); return true; } return false; }
   return rvReload();
 }
-function save(){
+function save(soft){   // soft===true: 자리가 모자라도 GPS 원본을 비우지 않고 null만 돌려준다(디자인 3차의 프로필 저장이 먼저 해 보는 저장)
   if(RV_DEAD)return false;                              // 새로 불러오는 중인 탭은 쓰지 않는다
   if(rvRead()>RV){                                      // 다른 탭이 더 새 기록을 썼다
     if(!W){ if(!rvReload())rvTell(); return false; }    // 걷는 중이 아니면 쓰지 않는다
@@ -2684,6 +2781,7 @@ function save(){
     if(n&&typeof n==="object"&&Array.isArray(n.walks))rvMerge(n);
   }
   try{localStorage.setItem(KEY,JSON.stringify(S));rvBump();return true;}catch(e){
+  if(soft===true)return null;
   /* 0.4.3: 꽉 찼으면 GPS 원본 점(시험용)부터 비우고 한 번 더. 본 기록이 먼저다 */
   try{ if(localStorage.getItem(GPSK)!=null||localStorage.getItem(GPSK+".live")!=null){ glDrop(); localStorage.setItem(KEY,JSON.stringify(S)); rvBump(); return true; } }catch(e2){}
   return false;}}
@@ -3410,7 +3508,7 @@ function renderToday(){
     // 고침 4: 나가고 싶어요 줄이 뜨면 둘째 줄(평소엔 하루 N번, 임시 기준)은 숨긴다. 둘 다 보이면 작은 폰에서 카드가 한 줄 길어져 스크롤이 생겼다
     var wl=(ws&&(G.copy==="B"||ws.stage>0||ws.night||ws.rest))?wishLine:'';
     el.innerHTML='<div class="ring"><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="36" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="7"/>'+
-      '<circle cx="42" cy="42" r="36" fill="none" stroke="#EFB02F" stroke-width="7" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 42 42)"/></svg><div class="n">'+g+'</div></div>'+
+      '<circle cx="42" cy="42" r="36" fill="none" stroke="#EFB02F" stroke-width="7" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 42 42)"/></svg><div class="n">'+g+'</div>'+kcHome(g)+'</div>'+
       '<div class="tx"><div class="k"><span class="dot2"><span class="in"><span>오늘 꾹게이지</span><span><span class="sep"> · </span>'+(D.outs||D.n)+'번</span></span></span></div>'+
       '<div class="v">'+km+'<small>km</small>'+mins+'<small>분</small></div>'+
       '<div class="s">'+j2(dayMsg(D),wl?'':(D.hard?(D.hard===2?'쉬만 해도 링이 차요':hardTx(D.why)[2]):(D.usual&&D.outs<D.usual?'평소엔 하루 '+D.usual+'번':(D.B.prov>0.01?'임시 기준':''))))+'</div>'+
@@ -3926,6 +4024,191 @@ function gmsgOf(t,gd){var n=S.dog?S.dog.name:"우리 아이";
 /* 고침 19(P01 11/14 "평가받는 느낌", 06 "그래 좋아"): 산책 중 꾹게이지가 100인 채로 10분이 지나면 이제 쉬어도 된다고 말한다.
    10분은 저희가 정한 값이다 [가정]. 숫자와 계산은 그대로이고 기록에는 아무것도 남기지 않는다(앱을 다시 켜거나 이어 걸으면 새로 센다) */
 var REST_MS=10*60e3, G100={at:0};
+/* ══ 꾹게이지 캐릭터(디자인 3차, 06 11/19) ══════════════════════════
+   06이 시안 3에서 게이지 3(캐릭터)을 골랐다: 앱 화면은 캐릭터, 위젯과 사진은 숫자 없이 링만(이 판은 앱 화면: 산책 화면의 링과 홈의 오늘 카드).
+   모습은 꾹게이지의 말이 바뀌는 문턱(gmsgOf의 30, 60, 85, 100)을 따른다. 표정으로 좋고 나쁨을 나타내지 않고 몸짓만 바꾼다(덜 찬 날에도 시무룩해 보이지 않게).
+   처음에는 누구에게나 기본형(흰색, 선 귀, 세운 꼬리, 꼬리 털 보통, 핫도그 몸통)이 보이고, 프로필의 '캐릭터 꾸미기'에서 모두 바꿀 수 있다(06 11/19 밤).
+   꾸민 값은 S.dog.look에만 남는다(기본형이면 남기지 않는다). 그림은 표에 있는 값으로만 그린다: 저장된 글자를 그림에 넣지 않고 kcLook이 표에서 고른다.
+   계산과 기록은 건드리지 않는다. 밖으로 보내는 것도 없다. 그림 안의 이름은 모두 kc로 시작하고 circle은 쓰지 않는다(링과 홈 카드의 꾸밈 규칙에 걸리지 않게).
+   그림 안의 CSS 변형에는 px 길이를 쓰지 않는다: 사파리 계열은 쪽을 확대하면 그 길이를 확대만큼 더 키워 다리와 머리가 흩어진다(11/19 WebKitGTK 2.52.6으로 확인).
+   돌리는 축은 SVG 속성(translate)으로 제자리에 옮겨 두고 CSS로는 각도만 주며(piv), 위아래로 옮기는 것은 아주 먼 축으로 조금 돌려서 한다(far) */
+var KC_COAT={black:"#1B1712",brown:"#5B3A29",chestnut:"#96603B",ocher:"#D09A55",cream:"#EBDDBF",white:"#FBF8F1",gray:"#8C8881"};
+var KC_COATN={black:"검정",brown:"고동",chestnut:"밤색",ocher:"황토",cream:"크림",white:"흰색",gray:"회색"};
+var KC_DEF={coat:"white",snout:50,leg:50,ear:"up",tail:"up",fur:"mid",waist:0};
+// 귀 모양: 머리 반지름을 1로 본 좌표(오른쪽 +x, 아래 +y). b는 머리 뒤에, f는 머리 앞에 그린다. far는 먼 쪽 귀, sway는 걸을 때 흔들리는 축
+var KC_EAR={
+  up:{b:[{far:1,p:["M",-.30,-.95,"L",-.02,-1.50,"L",.22,-.97,"Z"]},{p:["M",-.80,-.60,"L",-.52,-1.68,"L",-.12,-.99,"Z"]}]},
+  semi:{b:[{far:1,p:["M",-.32,-.52,"L",-.068,-1.348,"L",.364,-1.024,"L",.076,-1.114,"L",.274,-.866,"Z"]},{p:["M",-.80,-.60,"L",-.52,-1.52,"L",-.04,-1.16,"L",-.36,-1.26,"L",-.14,-.985,"Z"]}]},
+  flop:{f:[{sway:[-.30,-.95],soft:0,p:["M",-.12,-.98,"C",-.52,-1.20,-1.30,-1.16,-1.60,-.74,"C",-1.82,-.40,-1.86,-.02,-1.66,.04,"C",-1.42,.10,-1.28,-.20,-1.20,-.48,"C",-1.12,-.72,-.90,-.82,-.62,-.76,"Z"]}]}
+};
+// 꼬리 모양: 꼬리 뿌리에서 잰 가운데 줄(b는 곡선 네 점, s는 소용돌이)과 털 굵기 [뿌리, 가운데 부풂, 끝]. wa와 wb는 뿌리와 끝 마디가 흔들리는 각도
+var KC_TAIL={
+  up:{b:[[0,0],[-6,-10],[-9,-21],[-4,-31]],w:{thin:[7,0,2.2],mid:[10,1,3.2],full:[10.5,8,5.5]},wa:13,wb:12},
+  curl:{s:{c:[13,-17],r0:12,r1:6.5,a0:115,a1:410},w:{thin:[6.5,0,3],mid:[9.5,.5,5],full:[11.5,4.5,7]},wa:6,wb:5},
+  down:{b:[[0,0],[-8,-1],[-13,9],[-12,24]],w:{thin:[6.5,0,2.2],mid:[9,1,3.4],full:[10,7,5.5]},wa:9,wb:10}
+};
+function kcHas(t,k){ return typeof k==="string"&&Object.prototype.hasOwnProperty.call(t,k); }
+/* 저장된 값(가져온 파일일 수도 있다)을 그릴 수 있는 값으로 고른다. 표에 없는 이름, 숫자가 아닌 길이, 0~100 밖의 길이는 기본값으로 */
+function kcLook(o){
+  var d=KC_DEF; o=(o&&typeof o==="object"&&!Array.isArray(o))?o:{};
+  function n(v,z){ return (typeof v==="number"&&v>=0&&v<=100)?Math.round(v):z; }
+  return {coat:kcHas(KC_COAT,o.coat)?o.coat:d.coat, snout:n(o.snout,d.snout), leg:n(o.leg,d.leg),
+    ear:kcHas(KC_EAR,o.ear)?o.ear:d.ear, tail:kcHas(KC_TAIL,o.tail)?o.tail:d.tail, fur:(o.fur==="thin"||o.fur==="full")?o.fur:"mid", waist:o.waist===1?1:0};
+}
+function kcKey(l){ return [l.coat,l.snout,l.leg,l.ear,l.tail,l.fur,l.waist].join(","); }
+function kcPose(score,ready){ return !ready?"stand":score>=100?"lie":score>=85?"sit":score>=60?"walk":score>=30?"sniff":"stand"; }
+function kcDark(){ var t=document.documentElement.getAttribute("data-theme"); return t==="dark"||(t!=="light"&&!!window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches); }
+function kcHex(h){ return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]; }
+function kcMix(a,b,t){ var x=kcHex(a),y=kcHex(b); return "#"+x.map(function(v,i){ return ("0"+Math.round(v+(y[i]-v)*t).toString(16)).slice(-2); }).join(""); }
+function kcLum(h){ var c=kcHex(h); return (0.2126*c[0]+0.7152*c[1]+0.0722*c[2])/255; }
+/* 강아지 한 마리의 그림(svg 글). look: 생김새, pose: stand, sniff, walk, sit, lie. anim: 움직임, dark: 어두운 바탕(어두운 화면과 홈의 오늘 카드)
+   먼저 테두리 색으로 한 번(조금 굵게), 그 위에 털 색으로 한 번 그려 바깥 테두리만 남긴다. 자세는 꾸밈 규칙이 data-pose를 보고 돌리고, 돌리는 각도는 그림마다 계산해 넣는다(--sit 등) */
+function kcSvg(look,pose,anim,dark){
+  var c=kcLook(look), coat=KC_COAT[c.coat], G=150;
+  var L=12+24*c.leg/100, SN=5+18*c.snout/100, BL=72, BH=30, LW=9.5, HR=16;
+  var bx0=78, bx1=bx0+BL, by1=G-L, by0=by1-BH, hipY=by1-7, bhx=bx0+13, fhx=bx1-13, D=fhx-bhx, legH=L+7;
+  var nbx=bx1-11, nby=by0+11, hx=bx1+5, hy=by0-4, snx=hx+HR*0.3, sny=hy+4.5, snh=12.5, tipx=snx+SN+snh/2, tipy=sny;
+  function f(n){ return (Math.round(n*10)/10).toString(); }
+  // 축(x,y)을 제자리(0 0)로 옮긴 묶음 안에서 c1(과 c2)을 돌린다. 꾸밈 규칙은 c1, c2에 rotate(각도)만 준다
+  function piv(c1,c2,x,y,inner){ var px=Math.round(x*10)/10, py=Math.round(y*10)/10;
+    return '<g transform="translate('+px+' '+py+')"><g class="'+c1+'">'+(c2?'<g class="'+c2+'">':'')+'<g transform="translate('+(-px)+' '+(-py)+')">'+inner+'</g>'+(c2?'</g>':'')+'</g></g>'; }
+  // 위아래로 옮기기: 왼쪽으로 FR만큼 떨어진 축으로 아주 조금 돌리면 그림은 거의 곧게 내려간다(기울기 0.1도 미만). 꾸밈 규칙은 cls에 rotate(각도)만 준다
+  var FR=20000;
+  function far(cls,inner){ return '<g transform="translate(-'+FR+' 0)"><g class="'+cls+'"><g transform="translate('+FR+' 0)">'+inner+'</g></g></g>'; }
+  function rot(px,py,deg){ var a=deg*Math.PI/180, dx=px-nbx, dy=py-nby; return [nbx+dx*Math.cos(a)-dy*Math.sin(a), nby+dx*Math.sin(a)+dy*Math.cos(a)]; }
+  function solve(ty,max){ var best=0; for(var a=0;a<=max;a+=1){ best=a; if(rot(tipx,tipy,a)[1]>=ty)break; } return best; }   // 코끝이 그 높이에 닿는 고개 각도
+  var sniff=solve(G-6,74), sitA=Math.asin(Math.max(.14,Math.min(.9,(L-3)/D)))*180/Math.PI, dropy=L-2, rest=solve(G-10-dropy,60);
+  var bxw=fhx-D*Math.cos(sitA*Math.PI/180);
+  var dk=kcLum(coat)<.42, fill=dark?kcMix(coat,"#FFFFFF",.22):coat;
+  var eye=dk?"#FFFDF8":"#1B1712", nose=kcMix(coat,dk?"#FFFFFF":"#000000",.34);
+  var edge=dark?kcMix(coat,"#FFFFFF",.5):kcMix(coat,"#1B1712",kcLum(coat)>.8?.62:.45), ew=2.4;   // 흰색처럼 아주 밝은 털은 밝은 바탕에서 묻히지 않게 테두리를 더 짙게
+  // 칠: pass 1은 테두리(뒤에 깔림), pass 0은 털 색. soft는 모서리를 둥글리는 같은 색 선의 굵기
+  function stp(pass,soft){ return pass?' fill="'+edge+'" stroke="'+edge+'" stroke-width="'+f(ew+(soft||0))+'" stroke-linejoin="round" stroke-linecap="round"':' fill="'+fill+'"'+(soft?' stroke="'+fill+'" stroke-width="'+soft+'" stroke-linejoin="round"':''); }
+  function pth(pts){ return "M"+pts.map(function(p){ return f(p[0])+" "+f(p[1]); }).join("L")+"Z"; }
+  function dot(x,y,r,cls,a){ return '<ellipse'+(cls?' class="'+cls+'"':'')+' cx="'+f(x)+'" cy="'+f(y)+'" rx="'+f(r)+'" ry="'+f(r)+'"'+a+'/>'; }
+  function leg(cls,x,fr,ab){ var ox=x+(fr?5.5:0);
+    return function(pass){ var a=stp(pass);
+      return piv('kcL '+cls+(fr?' kcFr':' kcNr'),'kcS '+ab,ox,hipY,
+        '<rect x="'+f(ox-LW/2)+'" y="'+f(hipY)+'" width="'+f(LW)+'" height="'+f(legH)+'" rx="'+f(LW/2)+'"'+a+'/>'+
+        '<ellipse cx="'+f(ox+1.6)+'" cy="'+f(G-3.2)+'" rx="'+f(LW*.72)+'" ry="3.3"'+a+'/>'); }; }
+  var Lff=leg("kcF",fhx,true,"kcSb"), Lfb=leg("kcB",bhx,true,"kcSa"), Lnf=leg("kcF",fhx,false,"kcSa"), Lnb=leg("kcB",bhx,false,"kcSb");
+  // 몸통: 핫도그(일자) 또는 허리가 들어간 모양(가슴은 깊고 배가 뒤로 갈수록 올라붙는다)
+  var tk=c.waist?7.5:0, r1=BH/2, r2=(BH-tk)/2;
+  var bodyD="M"+f(bx0+r2)+" "+f(by0)+"H"+f(bx1-r1)+"A"+f(r1)+" "+f(r1)+" 0 0 1 "+f(bx1-r1)+" "+f(by1)+"C"+f(bx1-r1-BL*.30)+" "+f(by1)+" "+f(bx0+r2+BL*.22)+" "+f(by1-tk)+" "+f(bx0+r2)+" "+f(by1-tk)+"A"+f(r2)+" "+f(r2)+" 0 0 1 "+f(bx0+r2)+" "+f(by0)+"Z";
+  // 꼬리: 가운데 줄을 따라 뿌리는 굵고 끝은 가늘게. 두 마디로 나눠 끝 마디가 한 박자 늦게 따라온다(탄력 있게 흔들리게, 06 11/19)
+  var TS=KC_TAIL[c.tail], TW=TS.w[c.fur], tb=[bx0+5.5,by0+8];
+  function cl(t){ var q; if(TS.s){ var sp=TS.s, an=(sp.a0+(sp.a1-sp.a0)*t)*Math.PI/180, rr=sp.r0+(sp.r1-sp.r0)*t; q=[sp.c[0]+rr*Math.cos(an),sp.c[1]+rr*Math.sin(an)]; }
+    else { var P=TS.b,u=1-t,k0=u*u*u,k1=3*u*u*t,k2=3*u*t*t,k3=t*t*t; q=[k0*P[0][0]+k1*P[1][0]+k2*P[2][0]+k3*P[3][0],k0*P[0][1]+k1*P[1][1]+k2*P[2][1]+k3*P[3][1]]; }
+    return [tb[0]+q[0],tb[1]+q[1]]; }
+  function wf(t){ return TW[0]+(TW[2]-TW[0])*t+TW[1]*Math.sin(Math.PI*Math.pow(t,.8)); }
+  function seg(t0,t1){ var n=16,A=[],B=[],i; for(i=0;i<=n;i++){ var t=t0+(t1-t0)*i/n, p=cl(t), q1=cl(Math.min(1,t+.02)), q0=cl(Math.max(0,t-.02)), dx=q1[0]-q0[0], dy=q1[1]-q0[1], dd=Math.sqrt(dx*dx+dy*dy)||1, w=wf(t)/2; A.push([p[0]-dy/dd*w,p[1]+dx/dd*w]); B.push([p[0]+dy/dd*w,p[1]-dx/dd*w]); }
+    return pth(A.concat(B.reverse())); }
+  var J=cl(.54), T1=cl(1), T0=cl(0);
+  function tail(pass){ var a=stp(pass);
+    return piv("kcTl","kcW",T0[0],T0[1],dot(T0[0],T0[1],wf(0)/2,"",a)+'<path d="'+seg(0,.58)+'"'+a+'/>'+
+      piv("kcW2","",J[0],J[1],dot(J[0],J[1],wf(.54)/2,"",a)+'<path d="'+seg(.5,1)+'"'+a+'/>'+dot(T1[0],T1[1],wf(1)/2,"",a))); }
+  // 귀: 머리 밖으로 나오게 그린다(한 가지 색이어도 귀 모양이 보이게, 06 11/19)
+  var ES=KC_EAR[c.ear];
+  function hpath(p){ var o="",i=0; while(i<p.length){ if(typeof p[i]==="string"){ o+=p[i]; i++; } else { o+=f(hx+p[i]*HR)+" "+f(hy+p[i+1]*HR)+" "; i+=2; } } return o; }
+  function ears(list,pass){ return (list||[]).map(function(e){ var m='<path class="kcEar" d="'+hpath(e.p)+'"'+stp(pass,e.soft==null?2.2:e.soft)+'/>';
+    if(e.sway)m=piv("kcE","",hx+e.sway[0]*HR,hy+e.sway[1]*HR,m); return m; }).join(""); }
+  var nx=nbx+(hx-nbx)*.5, ny=nby+(hy+5-nby)*.5, na=Math.atan2(hy+5-nby,hx-2-nbx), nw=16.5;
+  function rig(pass){ var a=stp(pass);
+    return far("kcD",Lff(pass)+
+      piv("kcT","",fhx,hipY,tail(pass)+Lfb(pass)+Lnb(pass)+
+        '<path'+(pass?'':' class="kcBody"')+' d="'+bodyD+'"'+a+'/>'+
+        (tk?'<ellipse class="kcTh" cx="'+f(bhx+1.5)+'" cy="'+f(hipY-4)+'" rx="9.5" ry="10.5"'+a+'/>':'')+
+        '<ellipse class="kcH" cx="'+f(bhx+3)+'" cy="'+f(hipY+1)+'" rx="14" ry="10.5"'+a+'/>'+
+        piv("kcN","kcNod",nbx,nby,
+          '<line x1="'+f(nbx)+'" y1="'+f(nby)+'" x2="'+f(hx-2)+'" y2="'+f(hy+5)+'" stroke="'+(pass?edge:fill)+'" stroke-width="'+f(nw+(pass?ew:0))+'" stroke-linecap="round"/>'+
+          (pass?'':'<line x1="'+f(nx-Math.sin(na)*nw*.48)+'" y1="'+f(ny+Math.cos(na)*nw*.48)+'" x2="'+f(nx+Math.sin(na)*nw*.48)+'" y2="'+f(ny-Math.cos(na)*nw*.48)+'" stroke="#FF6B57" stroke-width="4.2" stroke-linecap="butt"/>')+   // 목줄
+          ears(ES.b,pass)+
+          '<ellipse cx="'+f(hx)+'" cy="'+f(hy)+'" rx="'+f(HR)+'" ry="'+f(HR*.93)+'"'+a+'/>'+
+          '<rect x="'+f(snx)+'" y="'+f(sny-snh/2)+'" width="'+f(SN+snh/2)+'" height="'+f(snh)+'" rx="'+f(snh/2)+'"'+a+'/>'+
+          ears(ES.f,pass)+
+          (pass?'':'<ellipse cx="'+f(tipx-1)+'" cy="'+f(tipy-1.2)+'" rx="3.3" ry="2.8" fill="'+nose+'"/>'+
+            '<ellipse class="kcTg" cx="'+f(tipx-5)+'" cy="'+f(sny+snh/2+2.2)+'" rx="2.6" ry="4" fill="#FF6B57"/>'+
+            dot(hx+HR*.36,hy-HR*.2,2.3,"kcEo",' fill="'+eye+'"')+
+            '<path class="kcEc" d="M'+f(hx+HR*.36-3)+' '+f(hy-HR*.2)+'q3 2.6 6 0" fill="none" stroke="'+eye+'" stroke-width="1.7" stroke-linecap="round"/>')))+
+      '<ellipse class="kcP kcPs" cx="'+f(bxw+15)+'" cy="'+f(G-3.3)+'" rx="'+f(LW*.9)+'" ry="3.5"'+a+'/>'+
+      '<ellipse class="kcP kcPl" cx="'+f(bhx+17)+'" cy="'+f(G-3.3-dropy)+'" rx="'+f(LW*.9)+'" ry="3.5"'+a+'/>'+
+      Lnf(pass)); }
+  // 자세마다 꼬리를 돌리는 각도: 내린 꼬리와 세운 꼬리가 땅을 뚫지 않게 끝이 땅에 닿는 각도를 푼다(dir 1은 시계 방향)
+  function toGround(baseY,dir,max){ var tx=T1[0]-T0[0], ty=T1[1]-T0[1], goal=G-wf(1)/2-1.5, best=0, a;
+    for(a=0;a<=max;a+=1){ var r=a*dir*Math.PI/180, y=baseY+tx*Math.sin(r)+ty*Math.cos(r); best=a*dir; if(dir>0?y<=goal:y>=goal)break; } return best; }
+  var sr=-sitA*Math.PI/180, sitY=hipY+(T0[0]-fhx)*Math.sin(sr)+(T0[1]-hipY)*Math.cos(sr), kind=TS.s?"curl":(T1[1]>T0[1]?"down":"up");
+  var tailsit=kind==="down"?sitA+toGround(sitY,1,120):kind==="curl"?sitA*.55:sitA*.2;
+  var taillie=kind==="down"?toGround(T0[1]+dropy,1,120):kind==="curl"?0:toGround(T0[1]+dropy,-1,170);
+  var zx=hx+HR+4, zy=hy-HR+dropy-9;
+  return '<svg class="kc'+(anim?' anim':'')+'" data-pose="'+(/^(stand|sniff|walk|sit|lie)$/.test(pose)?pose:"stand")+'" data-look="'+kcKey(c)+'"'+(dark?' data-dark="1"':'')+' viewBox="34 40 190 116" aria-hidden="true" focusable="false" '+
+    'style="--sit:'+f(-sitA)+'deg;--situp:'+f(sitA*.88)+'deg;--tailsit:'+f(tailsit)+'deg;--taillie:'+f(taillie)+'deg;--sniff:'+sniff+'deg;--rest:'+rest+'deg;--dropa:'+(dropy/(FR+(bx0+bx1)/2)*180/Math.PI).toFixed(5)+'deg;--wa:'+TS.wa+'deg;--wb:'+TS.wb+'deg">'+
+    '<ellipse cx="'+f((bx0+bx1)/2+6)+'" cy="'+(G+1)+'" rx="'+f(BL*.62+8)+'" ry="3.4" fill="'+(dark?"#000000":"#1B1712")+'" opacity="'+(dark?".35":".08")+'"/>'+
+    far("kcBob",rig(1)+rig(0))+
+    far("kcZ",'<path d="M'+f(zx)+' '+f(zy)+'h5l-5 6h5M'+f(zx+8.5)+' '+f(zy-5)+'h4l-4 5h4" fill="none" stroke="'+(dark?"#CFC8BC":"#6F685D")+'" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>')+'</svg>';
+}
+/* 산책 화면의 링: 1초마다(tick) 불리지만 생김새나 화면 밝기가 바뀔 때만 새로 그린다. 모습이 바뀔 때는 data-pose만 바꿔 움직임이 처음으로 돌아가지 않게 한다.
+   주머니 모드에서는 움직임을 멈춘다(화면은 켜져 있지만 보지 않는 동안). 화면에만 닿는 줄이라 실패해도 뒤의 갱신은 이어진다 */
+var KCW={k:""};
+function kcWalk(gd){
+  try{
+    var el=$("gdog"); if(!el)return;
+    var look=kcLook(S.dog&&S.dog.look), dark=kcDark(), anim=!pkOn, pose=kcPose(gd&&gd.ready?gd.score:0,!!(gd&&gd.ready));
+    var k=kcKey(look)+"|"+(dark?1:0), sv=el.firstChild;
+    if(!sv||KCW.k!==k){ el.innerHTML=kcSvg(look,pose,anim,dark); KCW.k=k; return; }
+    if(sv.getAttribute("data-pose")!==pose)sv.setAttribute("data-pose",pose);
+    if(sv.classList.contains("anim")!==anim)sv.classList.toggle("anim",anim);
+  }catch(e){}
+}
+/* 홈의 오늘 카드 링 안: 카드가 늘 어두운 바탕이라 어두운 쪽 색으로 그린다. 모습은 오늘 숫자의 문턱을 따른다 */
+function kcHome(score){ try{ return '<div class="kcw" aria-hidden="true">'+kcSvg(kcLook(S.dog&&S.dog.look),kcPose(score,true),true,true)+'</div>'; }catch(e){ return ""; } }
+/* 프로필의 '캐릭터 꾸미기': 고치는 중인 값(KCU)은 저장을 눌러야 S.dog.look에 들어간다(d-save). 닫으면 버린다 */
+var KCU=null;
+function kcUiDraw(){
+  var l=KCU; if(!l||!$("k-prev"))return;
+  $("k-prev").innerHTML=kcSvg(l,"stand",true,kcDark());
+  function pick(id,v){ Array.prototype.forEach.call($(id).querySelectorAll("button"),function(b){ b.setAttribute("aria-pressed",b.dataset.v===String(v)?"true":"false"); }); }
+  pick("k-coat",l.coat); pick("k-ear",l.ear); pick("k-tail",l.tail); pick("k-fur",l.fur); pick("k-waist",l.waist);
+  function lv(v){ return v<34?"짧은 편":v<67?"보통":"긴 편"; }
+  $("k-coatn").textContent=KC_COATN[l.coat]; $("k-snout").value=l.snout; $("k-leg").value=l.leg; $("k-snoutn").textContent=lv(l.snout); $("k-legn").textContent=lv(l.leg);
+}
+/* 프로필 저장(d-save)에서 쓴다. 꾸민 모습은 다른 값과 함께 한 번에 저장하되, 자리가 모자라면 꾸밈만 포기한다(꾸밈 때문에 GPS 원본을 비우지 않는다).
+   kcPut: 고치던 모습(KCU)을 S.dog.look에 넣는다. 바뀐 것이 없으면 null, 바뀌었으면 되돌릴 때 쓸 예전 값을 돌려준다(기본형은 따로 남기지 않는다)
+   kcUndo: kcPut이 바꾼 것을 되돌린다
+   kcDogSame(앞, 지금): 꾸민 모습 말고 프로필에서 사용자가 바꾼 것이 없는가. 아홉 값(이름, 체중, 나이, 코, 관절, 배변, 간격, 숨길 시간, 견종 크기)을 하나씩 본다.
+              값마다 둘 가운데 하나면 바꾸지 않은 것이다: 그 칸이 시트를 열었을 때 그대로다(kcForm을 KCF와 견줌. 저장할 때 값이 다듬어지는 것, 곧 긴 이름 자르기나
+              고를 수 없는 값 비우기는 사용자가 바꾼 것이 아니다) / 칸을 건드렸어도 저장될 값이 지금 저장된 값과 같다. "같다"는 앱이 가르지 못하는 만큼만 넓게 본다:
+              이름과 체중은 글자 그대로, 나이는 없는 값끼리만(빈 글자 ""는 앱이 0살로 읽으니 없는 값과 다르다), 코와 관절은 참거짓으로,
+              고르는 넷(배변, 간격, 숨길 시간, 견종 크기)은 아직 저장한 적 없는 빈 값과 ""를 같게. 글자, 숫자, 참거짓이 아닌 값(목록)은 같다고 치지 않는다.
+              사용자가 바꾼 값이 하나라도 있으면 예전처럼 저장하는 길로 간다 */
+function kcPut(){
+  if(!KCU||!S.dog)return null;
+  var had=Object.prototype.hasOwnProperty.call(S.dog,"look"), was=S.dog.look, want=kcLook(KCU), def=kcKey(want)===kcKey(KC_DEF);
+  if(def?!had:(had&&JSON.stringify(was)===JSON.stringify(want)))return null;
+  if(def)delete S.dog.look; else S.dog.look=want;
+  return {had:had,was:was};
+}
+function kcUndo(u){ if(!u||!S.dog)return; if(u.had)S.dog.look=u.was; else delete S.dog.look; }
+var KCF=null;   // 시트를 열었을 때 프로필의 아홉 칸에 적혀 있던 것
+function kcForm(){ try{ var bad=function(id){ var e=$(id); return (e.validity&&e.validity.badInput)?"!":""; };   // 숫자 칸은 숫자가 아닌 글자만 적혀 있으면 값이 빈 글자로 읽힌다. 그것도 적힌 것으로 본다
+  return [$("d-name").value,$("d-weight").value+bad("d-weight"),$("d-age").value+bad("d-age"),$("d-brachy").getAttribute("aria-pressed"),$("d-joint").getAttribute("aria-pressed"),pottyVal($("d-potty")),pottyVal($("d-gap")),pottyVal($("d-quiet")),pottyVal($("d-bsize"))]; }catch(e){ return null; } }
+function kcDogSame(a,b){
+  if(!a||!b)return false;
+  var f=kcForm(), o=KCF; if(!f||!o||f.length!==o.length){ f=[]; o=[]; }   // 칸을 읽지 못했으면 값으로만 본다
+  function s(v){ return v==null?"":(typeof v==="string"||typeof v==="number"||typeof v==="boolean")?String(v):"!"+typeof v; }
+  function u(i,same){ return same||(i<f.length&&f[i]===o[i]); }
+  return u(0,a.name===b.name)&&u(1,a.kg===b.kg)&&u(2,(a.age==null&&b.age==null)||a.age===b.age)&&u(3,!!a.brachy===!!b.brachy)&&u(4,!!a.joint===!!b.joint)&&u(5,s(a.potty)===s(b.potty))&&u(6,s(a.gap)===s(b.gap))&&u(7,s(a.quiet)===s(b.quiet))&&u(8,s(a.bsize)===s(b.bsize));
+}
+function kcUiOpen(){ KCF=kcForm(); try{ KCU=kcLook(S.dog&&S.dog.look); var d=$("d-look"); if(d)d.open=false; kcUiDraw(); }catch(e){ KCU=null; } }
+(function(){
+  var box=$("d-look"); if(!box)return;
+  $("k-coat").innerHTML=Object.keys(KC_COAT).map(function(k){ return '<button type="button" data-v="'+k+'" aria-label="'+KC_COATN[k]+'" aria-pressed="false"><i style="background:'+KC_COAT[k]+'"></i></button>'; }).join("");
+  box.addEventListener("click",function(e){
+    var b=e.target.closest("button"); if(!b||!KCU)return; var p=b.parentNode.id, v=b.dataset.v;
+    if(b.id==="k-reset")KCU=kcLook(null);
+    else if(p==="k-coat")KCU.coat=v; else if(p==="k-ear")KCU.ear=v; else if(p==="k-tail")KCU.tail=v; else if(p==="k-fur")KCU.fur=v; else if(p==="k-waist")KCU.waist=v==="1"?1:0; else return;
+    KCU=kcLook(KCU); kcUiDraw(); });
+  ["snout","leg"].forEach(function(k){ $("k-"+k).addEventListener("input",function(){ if(!KCU)return; KCU[k]=+this.value; KCU=kcLook(KCU); kcUiDraw(); }); });
+})();
 /* ══ 0.4.4 하루 산책량 ════════════════════════════════════════
    나눠 걸은 산책을 하루로 더한다. 하루는 새벽 4시에 바뀐다(밤 산책이 다음 날로 넘어가지 않게).
    0.5.0 고침 4부터는 나간 횟수도 본다(아래 DAY_MISS). 그 전에는 길게 한 번이든 짧게 여러 번이든 같은 하루였다.
@@ -4362,6 +4645,7 @@ function tick(){
     var dk0=dayOf(W.start), dsc=(dk0===dayOf(Date.now())&&dayWalks(dk0).length)?dayScore(dk0,W).score:null;
     $("gsub").textContent=[gd.hard===2?"쉬만 해도 차요":gd.hard===1?"절반만 걸어도 차요":"",dsc!=null?"오늘 전체 "+dsc:"",gd.bonusPoop?"똥 보너스":"",gd.bonusSpot?"새 꾹자리":"",tail.replace(/^ · /,"")].filter(Boolean).join(", ");   // 0.4.4: 항목이 늘어 가운뎃점 대신 쉼표
   }
+  kcWalk(gd);   // 디자인 3차: 링 가운데의 캐릭터(생김새가 바뀔 때만 새로 그리고, 모습은 표시만 바꾼다)
   $("w-time").textContent=ms2t(Date.now()-W.start);
   $("w-km").textContent=((W.dist||0)/1000).toFixed(2)+" km";
   // 고침 21: 위 띠(시간, 거리, 주머니, 끝내기)가 한 줄에 다 안 들어가면 주머니 단추를 그림만 남긴다. 줄바꿈을 막은 채(.probe) 남는 자리를 소수점까지 재고(0.3px만 모자라도 줄이 갈린다) 0.5px보다 작으면 .long
@@ -5585,6 +5869,7 @@ function openProfile(){
   pottySet($("d-potty"),d.potty||"");
   pottySet($("d-gap"),d.gap||"auto"); pottySet($("d-quiet"),d.quiet||"none"); pottySet($("d-bsize"),d.bsize||"");
   dSizeHint();dAgeHint();
+  kcUiOpen();   // 디자인 3차: 꾸미기 칸을 지금 모습으로 맞추고 접어 둔다
   $("dsheet").classList.add("on");
 }
 $("hdr").style.cursor="pointer";
@@ -5610,10 +5895,20 @@ $("d-save").addEventListener("click",function(){
   var qv=pottyVal($("d-quiet")); S.dog.quiet=/^wd\d+-\d+$/.test(qv)?qv:"";
   var bv=pottyVal($("d-bsize")); S.dog.bsize=/^[sml]$/.test(bv)?bv:(bv==="x"?"x":"");   // 0.4.5 견종 크기: 기록만
   S.dog.age=(a>=0&&a<=25)?a:null;
-  if(!save()){ S.dog=before; toast("저장 못 했어요. 저장 공간을 확인해 주세요"); return; }   // 0.4.4: 실패를 '저장했어요'로 덮지 않는다
+  /* 디자인 3차: 꾸민 모습을 함께 넣어, 자리가 모자라도 GPS 원본을 비우지 않는 저장(save(true))을 먼저 해 본다. 평소에는 이 한 번으로 끝난다.
+     자리가 모자라면(null. 이때는 아무것도 쓰이지 않았다) 둘로 나뉜다. 꾸밈이나 빈 저장 때문에 GPS 원본을 비우지 않는다.
+     (가) 사용자가 프로필에서 바꾼 것이 없으면: 저장하며 다듬어진 값은 버리고 꾸밈만 넣어 한 번 더 해 본다. 그래도 모자라면 꾸밈을 포기하고 그렇게 알린다
+     (나) 바꾼 것이 있으면: 꾸밈은 포기하고 바꾼 값을 예전처럼 저장한다(0.4.3: 꽉 찼으면 GPS 원본을 비우고 한 번 더) */
+  var lkU=kcPut(), sv=save(true), lkMiss=false;
+  if(sv===null){
+    if(kcDogSame(before,S.dog)){ S.dog=before; sv=true;
+      if(lkU){ lkU=kcPut(); var sv2=lkU?save(true):true; if(sv2!==true){ kcUndo(lkU); if(sv2===null)lkMiss=true; else sv=false; } } }   // 둘째도 자리가 모자라면 꾸밈만 포기. 거절(다른 창이 더 새 기록을 씀)이면 예전처럼 실패로
+    else { if(lkU){ kcUndo(lkU); lkMiss=true; } sv=save(); }
+  }
+  if(!sv){ S.dog=before; toast("저장 못 했어요. 저장 공간을 확인해 주세요"); return; }   // 0.4.4: 실패를 '저장했어요'로 덮지 않는다
   $("dsheet").classList.remove("on");
   $("hdr").textContent=S.dog.name;
-  renderHome();renderLog();toast("저장했어요");
+  renderHome();renderLog();toast(lkMiss?"저장했어요. 저장 공간이 모자라 꾸민 모습은 못 바꿨어요":"저장했어요",lkMiss?3500:0);
 });
 
 /* ══ 파티꾹 ══════════════════════════════════════
@@ -8282,7 +8577,7 @@ document.querySelectorAll("#tabs button").forEach(function(b){
     else renderHome();});});
 /* 자동 테스트용 훅. 앱은 이걸 쓰지 않는다. 헤드리스 브라우저에서 계산을 검증하려고 연다.
    저장되는 값은 전부 이 기기 localStorage 안에 있고 새로 노출되는 비밀은 없다. */
-window.__kk={get S(){return S;},get HK(){return HK;},hk:function(k,p){hk(k,p);},get KM(){return {A:KMA,W:KMW,L:KML,R:KMR,reco:kmReco,recos:kmRecos,net:kmNet,theme:kmTheme,pal:kmPal,cleared:kmCleared,home:kmHome,name:kmSpotName,fogWalk:kmFogWalk,lib:KM,pins:KMR_PINS,list:function(){return KMR_LIST;}};},get W(){return W;},widgetDrain:widgetDrain,widgetPush:widgetPush,gpsFix:gpsFix,placeParse:placeParse,betaText:betaText,pwcOpen:function(w){pwcOpen(w);},
+window.__kk={kc:{pose:kcPose,look:kcLook,svg:kcSvg,def:KC_DEF},get S(){return S;},get HK(){return HK;},hk:function(k,p){hk(k,p);},get KM(){return {A:KMA,W:KMW,L:KML,R:KMR,reco:kmReco,recos:kmRecos,net:kmNet,theme:kmTheme,pal:kmPal,cleared:kmCleared,home:kmHome,name:kmSpotName,fogWalk:kmFogWalk,lib:KM,pins:KMR_PINS,list:function(){return KMR_LIST;}};},get W(){return W;},widgetDrain:widgetDrain,widgetPush:widgetPush,gpsFix:gpsFix,placeParse:placeParse,betaText:betaText,pwcOpen:function(w){pwcOpen(w);},
   baseline:baseline,gaugeDetail:gaugeDetail,gmsgOf:gmsgOf,slimWalks:slimWalks,glAll:glAll,glPut:glPut,glForget:glForget,glFinish:glFinish,
   slotOf:slotOf,gradeAt:gradeAt,roadTemp:roadTemp,solar:solar,renderHome:renderHome,
   get ios(){return {IOS:IOS,NATIVE:NATIVE,plugins:Object.keys(NP),wg:WG.on,where:hkWhere(),key:!!HACKLE_KEY,stats:statsOn(),loc:loc,err:LOCERR};}};
