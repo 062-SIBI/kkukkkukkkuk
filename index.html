@@ -1947,6 +1947,74 @@ details.kcset .srcq{margin-top:14px}
 .kcset input[type=range]{display:block;width:100%;height:32px;margin:0;accent-color:var(--ink)}
 .kcset .kcnote{font-size:calc(11.5px*var(--fs,1));color:var(--ink-3);margin:9px 0 0;line-height:1.5;word-break:keep-all}
 </style>
+<style id="tutcss">
+/* ══ 튜토리얼(디자인 4차 11/20): 06이 시안 5에서 고른 '다'. 처음 한 번 뜨는 카드 2장(.tut)과, 그 화면을 처음 쓸 때 그 자리를 밝히는 말풍선(.tutc) ══
+   글자 크기는 모두 --fs를 따른다(크게에서 넘치면 카드 안에서만 스크롤되고 아래 단추는 늘 보인다). 움직임은 넣지 않았다.
+   말풍선의 어두운 덮개는 산책 화면에서는 아래 단추 셋(똥, 킁킁, 꾹) 위까지만 덮는다: 단추는 가려지지 않고 그대로 눌린다. 덮개의 아래 끝과 말풍선 자리는 코드가 잰다(tutPlace) */
+.tut{position:fixed;inset:0;z-index:90;background:var(--ground);color:var(--ink);display:flex;justify-content:center;word-break:keep-all;overflow-wrap:break-word}
+.tut[hidden],.tutc[hidden]{display:none}
+.tut,.tut-body,.tutc,.tutc-in{touch-action:manipulation}   /* 두 번 누르기 확대를 막는다(고침 19의 20번과 같은 까닭: 안에서 스크롤되는 상자에도 준다) */
+.tut-in{box-sizing:border-box;width:100%;max-width:440px;min-height:0;display:flex;flex-direction:column;padding:calc(8px + env(safe-area-inset-top,0px)) 20px calc(16px + env(safe-area-inset-bottom,0px))}
+.tut-top{flex:none;display:flex;align-items:center;gap:14px;min-height:44px}
+.tut-bars{flex:1;display:flex;gap:6px}
+.tut-bars i{flex:1;height:4px;border-radius:9px;background:var(--line)}
+.tut-bars i.on{background:var(--ink)}
+.tut-skip{flex:none;border:0;background:none;font:inherit;font-size:calc(14.5px*var(--fs,1));font-weight:600;color:var(--ink-3);padding:0 2px;min-height:44px;cursor:pointer}
+.tut-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:6px 0 8px}
+.tut-pg[hidden]{display:none}
+.tut-body.more{-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 34px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 34px),transparent)}   /* 아래에 글이 더 있을 때 끝을 흐리게(카드 안에서 밀어 본다) */
+.tut-pg h2{font-size:calc(23px*var(--fs,1));font-weight:800;letter-spacing:-.02em;line-height:1.3;margin:20px 0 8px;outline:0}
+.tut-p{font-size:calc(16px*var(--fs,1));line-height:1.55;color:var(--ink-2);margin:0}
+/* 1장: 단추 셋. 단추 그림은 산책 화면의 진짜 단추를 베껴 작게 놓는다(.act 를 그대로 쓴다) */
+.tut-row{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:6px 16px 6px 8px;min-height:116px;box-shadow:var(--shadow)}
+.tut-row+.tut-row{margin-top:12px}
+.tut-mini{position:relative;flex:none;width:92px;height:104px}
+.tut-mini .act{position:absolute;left:50%;top:50%;width:117px;height:140px;transform:translate(-50%,-50%) scale(.74);pointer-events:none;cursor:default}
+.tut-mini .act .ac .gi{width:46px;height:46px}
+.tut-rt{min-width:0}
+.tut-rt b{display:block;font-size:calc(20px*var(--fs,1));font-weight:800;line-height:1.25;margin-bottom:3px}
+.tut-rt>span{display:block;font-size:calc(15px*var(--fs,1));line-height:1.45;color:var(--ink-2)}
+html[data-fs="big"] .tut-rt{padding:6px 0}   /* 크게: 글이 단추 그림보다 길어져 줄이 늘어날 때 글이 줄 테두리에 붙지 않게(보통 크기에서는 그대로) */
+/* 2장: 꾹게이지(글은 06이 11/20에 정한 것. 이 카드만 '~습니다') */
+.tut-tag{display:inline-block;font-size:calc(12.5px*var(--fs,1));font-weight:700;line-height:1.3;color:var(--ink);background:var(--panel-2);border-radius:99px;padding:5px 11px;margin-top:4px}
+.tut-pg[data-pg="2"] h2{margin-top:10px}
+.tut-ks{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:2px 16px;margin-top:16px;box-shadow:var(--shadow)}
+.tut-k{padding:12px 0 13px}
+.tut-k+.tut-k{border-top:1px solid var(--line)}
+.tut-k b{display:flex;align-items:center;gap:7px;font-size:calc(13px*var(--fs,1));font-weight:700;line-height:1.3;color:var(--ink-3);margin-bottom:3px}
+.tut-k b::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--coral)}
+.tut-k:nth-child(2) b::before{background:var(--sun)}
+.tut-k:nth-child(3) b::before{background:var(--sky)}
+.tut-k>span{display:block;font-size:calc(15px*var(--fs,1));line-height:1.5;color:var(--ink)}
+.tut-dark{background:#1B1712;color:#fff;border-radius:18px;padding:15px 16px;margin:12px 0 0;font-size:calc(15.5px*var(--fs,1));font-weight:700;line-height:1.5;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+.tut-small{font-size:calc(13.5px*var(--fs,1));line-height:1.5;color:var(--ink-3);margin:12px 2px 0}
+.tut-foot{flex:none;padding-top:8px}
+.tut-note{font-size:calc(13px*var(--fs,1));line-height:1.45;color:var(--ink-3);text-align:center;margin:0 0 10px}
+.tut-note[hidden]{display:none}
+.tut .big{margin:0}
+/* 세로가 중간인 폰(흔한 안드로이드 360x800에서 위아래 띠를 뺀 크기쯤)부터: 2장의 틈을 줄여 검은 칸의 마지막 줄이 접히는 자리에 걸리지 않게 한다(그래도 넘치면 카드 안에서 민다) */
+@media (max-height:780px){.tut-pg[data-pg="2"] h2{margin-top:8px}.tut-ks{margin-top:12px}.tut-k{padding:9px 0 10px}.tut-dark{padding:12px 16px;margin-top:10px}.tut-small{margin-top:9px}}
+/* 세로가 짧은 폰: 1장이 스크롤 없이 들어가게 단추 줄을 낮춘다 */
+@media (max-height:700px){.tut-row{min-height:96px}.tut-row+.tut-row{margin-top:9px}.tut-mini{width:80px;height:88px}.tut-mini .act{transform:translate(-50%,-50%) scale(.64)}.tut-pg h2{margin-top:14px}.tut-pg[data-pg="2"] h2{margin-top:8px}}
+@media (max-height:600px){.tut-row{min-height:84px;padding-top:4px;padding-bottom:4px}.tut-row+.tut-row{margin-top:8px}.tut-mini{width:70px;height:76px}.tut-mini .act{transform:translate(-50%,-50%) scale(.56)}.tut-pg h2{margin-top:12px;margin-bottom:6px}}
+.tut-skip:focus-visible,#tutc-ok:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+/* 설정과 백업의 '사용법 다시 보기' 줄: 아래 접힌 칸들과 같은 모양 */
+#tut-again{border-bottom:1px solid var(--line)}
+#tut-again i{flex:none;font-style:normal;font-size:calc(18px*var(--fs,1));color:var(--ink-3)}
+/* 짚어 주기: 그 자리(.tutc-hole)만 밝히고 나머지를 어둡게. 아무 데나 누르면 닫힌다 */
+.tutc{position:fixed;left:0;top:0;right:0;bottom:0;z-index:80;overflow:hidden;padding-top:env(safe-area-inset-top,0px);word-break:keep-all;overflow-wrap:break-word;-webkit-tap-highlight-color:transparent}
+.tutc-hole{position:absolute;border-radius:18px;box-shadow:0 0 0 3000px rgba(20,17,13,.62),inset 0 0 0 2px rgba(255,255,255,.3);pointer-events:none}   /* 안쪽의 옅은 흰 테는 어두운 화면에서 밝힌 자리가 보이게 */
+.tutc-ring{position:absolute;box-sizing:border-box;border:3px solid var(--sky);border-radius:50%;box-shadow:0 0 0 4px rgba(59,157,245,.25);pointer-events:none}
+.tutc-tag{position:absolute;background:#1B1712;color:#fff;border-radius:99px;padding:7px 12px;font-size:calc(13.5px*var(--fs,1));font-weight:700;line-height:1.3;white-space:nowrap;box-shadow:0 2px 8px rgba(27,23,18,.25);pointer-events:none}
+.tutc-ring[hidden],.tutc-tag[hidden],.tutc-bub .ar[hidden]{display:none}
+.tutc-bub{position:absolute;box-sizing:border-box;background:var(--panel);color:var(--ink);border-radius:20px;box-shadow:0 12px 32px -8px rgba(0,0,0,.45),0 0 0 1px var(--line)}
+.tutc-in{position:relative;box-sizing:border-box;padding:16px 18px 14px;overflow-y:auto;overscroll-behavior:contain;border-radius:20px;background:var(--panel)}
+.tutc-bub .t{display:block;font-size:calc(18px*var(--fs,1));font-weight:800;line-height:1.3;letter-spacing:-.01em}
+.tutc-bub p{font-size:calc(15px*var(--fs,1));line-height:1.5;color:var(--ink-2);margin:6px 0 0}
+.tutc-f{display:flex;justify-content:flex-end;margin-top:12px}
+#tutc-ok{border:0;background:var(--cta);color:var(--cta-ink);font:inherit;font-size:calc(15px*var(--fs,1));font-weight:700;border-radius:99px;padding:0 20px;min-height:44px;cursor:pointer}
+.tutc-bub .ar{position:absolute;width:16px;height:16px;background:var(--panel);transform:rotate(45deg);border-radius:3px}
+</style>
 <style id="fs">
 /* ══ 글자 크기(보통, 크게) 11/19: 06이 시안 6에서 고른 '가'(이름은 글자 크기, 보통과 크게 두 단계) ══
    글자 크기 선언 가운데 24px 미만은 모두 calc(Npx*var(--fs,1)) 꼴이다. 크게는 1.5배(폭 339 이하의 아주 좁은 폰은 1.3배). 처음에는 1.15배였는데 06이 11/19 낮에 "거의 차이가 없네"라며 후보 가운데 '다'(1.5배)를 골랐다. 24px 이상(꾹게이지 숫자, 산책 시간, 화면 제목 같은 큰 글자)은 그대로 둔다.
@@ -2330,6 +2398,39 @@ html[data-fs="big"] .set-two .big{flex:1 1 auto;width:auto;padding-left:14px;pad
 </div>
 </div>
 
+<!-- 튜토리얼(디자인 4차 11/20, 06이 시안 5에서 고른 '다'): 처음 한 번 뜨는 카드 2장. 단추 그림 자리(.tut-mini)는 열 때 산책 화면의 진짜 단추를 베껴 채운다. 2장의 글은 06이 11/20에 정한 것 -->
+<div class="tut" id="tut" role="dialog" aria-modal="true" aria-labelledby="tut-h1" data-pg="1" hidden>
+  <div class="tut-in">
+    <div class="tut-top"><div class="tut-bars" aria-hidden="true"><i class="on"></i><i></i></div><button type="button" class="tut-skip" id="tut-skip">건너뛰기</button></div>
+    <div class="tut-body" id="tut-body">
+      <section class="tut-pg" data-pg="1">
+        <div class="tut-row"><span class="tut-mini" data-b="b-poop" aria-hidden="true"></span><span class="tut-rt"><b>똥</b><span><span class="sn">똥을 누면 눌러요.</span> <span class="sn">이어서 굳기를 골라요.</span></span></span></div>
+        <div class="tut-row"><span class="tut-mini" data-b="b-sniff" aria-hidden="true"></span><span class="tut-rt"><b>킁킁</b><span><span class="sn">3초 넘게 냄새 맡는 곳에서</span> <span class="sn">한 번 눌러요.</span></span></span></div>
+        <div class="tut-row"><span class="tut-mini" data-b="b-pee" aria-hidden="true"></span><span class="tut-rt"><b>꾹</b><span><span class="sn">쉬하거나 마킹할 때마다</span> <span class="sn">눌러요.</span></span></span></div>
+        <h2 id="tut-h1" tabindex="-1">산책 중엔 단추 셋만 눌러요</h2>
+        <p class="tut-p">잘못 눌러도 바로 되돌릴 수 있어요.</p>
+      </section>
+      <section class="tut-pg" data-pg="2" hidden>
+        <span class="tut-tag">꾹게이지</span>
+        <h2 id="tut-h2" tabindex="-1">꾹게이지는 거리와 시간만 재지 않습니다</h2>
+        <p class="tut-p"><span class="sn">PADD는 눈에 보이지 않는 반려견의 만족감을 보이게 만들어,</span> <span class="sn">보호자와 반려견의 산책을 더 좋게 만들고 싶습니다.</span></p>
+        <div class="tut-ks">
+          <div class="tut-k"><b>첫 기준선</b><span>나이와 몸무게에 맞춰 시작합니다.</span></div>
+          <div class="tut-k"><b>우리 아이의 평소</b><span><span class="sn">걸은 거리, 마킹, 노즈워크, 배변 습관,</span> <span class="sn">산책하는 시간대와 횟수까지 배웁니다.</span></span></div>
+          <div class="tut-k"><b>날씨와 안전</b><span><span class="sn">덥고 춥고 비 오는 날엔 기준을 낮춰</span> <span class="sn">무리하지 않게 합니다.</span></span></div>
+        </div>
+        <p class="tut-dark"><span class="sn">그래서 꾹게이지는 우리 아이만을 위한 PADD의 새로운 산책 기준입니다.</span> <span class="sn">85를 넘으면 안심하고 끝내도 됩니다.</span></p>
+        <p class="tut-small"><span class="sn">꾹꾹이를 쓰면 쓸수록 꾹게이지는</span> <span class="sn">우리 아이에게 더 꼭 맞아집니다.</span> <span class="sn">더 정확한 기준이 되도록</span> <span class="sn">PADD도 연구를 이어 가겠습니다.</span></p>
+      </section>
+    </div>
+    <div class="tut-foot"><p class="tut-note" id="tut-note" hidden><span class="sn">지도와 끝내기는 처음 쓸 때</span> <span class="sn">그 화면에서 알려 드립니다.</span></p><button type="button" class="big" id="tut-next">다음</button></div>
+  </div>
+</div>
+<!-- 짚어 주기(지도, 끝내기, 기록): 그 화면을 처음 쓸 때 한 번. 글과 자리는 코드가 넣는다(tutCoach, tutPlace) -->
+<div class="tutc" id="tutc" hidden><div class="tutc-hole"></div><span class="tutc-ring" hidden></span><span class="tutc-tag" hidden></span>
+  <div class="tutc-bub" role="dialog" aria-labelledby="tutc-t"><i class="ar" aria-hidden="true"></i><div class="tutc-in"><b class="t" id="tutc-t"></b><p id="tutc-p"></p><div class="tutc-f"><button type="button" id="tutc-ok">알겠어요</button></div></div></div>
+</div>
+
 <!-- 설정과 백업 (고침 18): 기록 탭 아래에 늘어서 있던 단추와 접힌 칸을 시트 하나로 모았다. 단추 id와 하는 일은 그대로다 -->
 <div class="sheet" id="ssheet" role="dialog" aria-modal="true" aria-label="설정과 백업">
   <div class="in">
@@ -2345,6 +2446,7 @@ html[data-fs="big"] .set-two .big{flex:1 1 auto;width:auto;padding-left:14px;pad
     <p class="src" style="margin:9px 0 0"><span class="sn">폰을 바꾸거나 <span class="web-i">브라우저 기록을 지우면</span><span class="app-i">앱을 지우면</span> <b>기록이 사라져요.</b></span>
     <span class="sn">가끔 파일로 저장해&nbsp;두세요.</span> <span class="sn">기록을 받아 두는 서버가 없어서 이 기기에만 저장돼요.</span></p>
     <div class="set-h">더 보기</div>
+    <button class="set-row" id="tut-again" type="button"><span>사용법 다시 보기<small>단추 셋과 꾹게이지 안내를 다시 봐요</small></span><i aria-hidden="true">›</i></button>
     <details class="calib setd" id="srr">
       <summary><span>잘 때 숨 세기<small>30초 동안 숨을 세서 기록해요</small></span><i aria-hidden="true">›</i></summary>
       <div class="body">
@@ -2850,6 +2952,7 @@ function nativeInit(){
   if(!NATIVE)return;
   if(NP.App){
     NP.App.addListener("backButton",function(){
+      if(tutBack())return;   // 디자인 4차: 튜토리얼 카드나 말풍선이 떠 있으면 그것부터
       if($("pwc").classList.contains("on")){$("pwc-close").click();return;}
       var open=document.querySelector(".sheet.on");
       if(open){var c=open.querySelector('[id$="close"],#cancelpoop');if(c)c.click();else open.classList.remove("on");return;}
@@ -3835,6 +3938,164 @@ $("askperm").addEventListener("click",function(){
   });
 });
 $("skipperm").addEventListener("click",function(){enterMain();loadWeather();});
+
+/* ══ 튜토리얼(디자인 4차 11/20): 06이 시안 5에서 고른 '다' ══════════════════════════════════════
+   처음 '시작'을 누른 사람에게 카드 2장(단추 셋, 꾹게이지)을 한 번 보여 준다. 지도, 끝내기, 기록은 그 화면을 처음 쓸 때 그 자리를 밝히고 말풍선으로 알려 준다.
+   본 것은 이 폰의 kkuk.tut 에만 적는다(글자 크기 kkuk.fs 와 같은 방식. 기록 파일 kkuk.v3 과 백업에는 넣지 않고, 기록을 저장하는 함수도 부르지 않는다).
+   kkuk.tut 이 없는데 강아지 정보가 이미 있으면(이미 쓰던 사람) 모두 본 것으로 친다: 저절로 뜨지 않고 설정과 백업의 '사용법 다시 보기'로만 다시 본다.
+   산책 기록, GPS, 꾹게이지 계산에는 손대지 않는다. 밖으로 보내는 것도 없다. 어디서 틀어져도 앱은 예전처럼 돌게 모두 try 로 감쌌다. */
+var TUT=null, TUTK="kkuk.tut", TUT_BACK=null, TUTC={k:null,at:0,back:null,iv:0};
+var TUT_TX={
+  map:{t:"걸은 곳만 안개가 걷혀요",p:["뿌연 곳은 아직 안 걸은 곳이에요.","동그란 단추를 누르면 지도가 지금 있는 자리로 돌아와요."],tag:"지금 자리로"},
+  end:{t:"끝낼 땐 1.5초 동안 누르고 있어요",p:["살짝 누르면 안 끝나요.","끝내면 오늘 산책을 카드 한 장으로 남길 수 있어요."]},
+  rec:{t:"기록은 이 폰에만 남아요",p:["지난 산책이 여기 모여요.","이 안내는 '설정과 백업'에서 다시 볼 수 있어요."]}};   // p 는 문장마다 한 덩어리(.sn): 줄은 문장 사이에서 먼저 바뀐다
+function tutRead(){ try{ var o=JSON.parse(localStorage.getItem(TUTK)); return (o&&typeof o==="object"&&o.v===1)?{v:1,cards:o.cards?1:0,map:o.map?1:0,end:o.end?1:0,rec:o.rec?1:0}:null; }catch(e){ return null; } }
+function tutWrite(){ try{ if(TUT)localStorage.setItem(TUTK,JSON.stringify(TUT)); }catch(e){} }   // 저장이 막힌 브라우저에서는 조용히 넘어간다(이번에 켠 동안만 기억)
+function tutSeen(k){ try{ if(TUT&&!TUT[k]){ TUT[k]=1; tutWrite(); } }catch(e){} }
+function tutFresh(){ TUT={v:1,cards:0,map:0,end:0,rec:0}; tutWrite(); }
+/* 카드 2장 */
+function tutCardPg(n){
+  var t=$("tut"); if(!t)return;
+  Array.prototype.forEach.call(t.querySelectorAll(".tut-pg"),function(p){ p.hidden=p.getAttribute("data-pg")!==String(n); });
+  var bars=t.querySelectorAll(".tut-bars i"); for(var i=0;i<bars.length;i++)bars[i].classList.toggle("on",i<n);
+  var last=n>=2;
+  $("tut-skip").style.visibility=last?"hidden":"";   // 마지막 장에서는 건너뛰기를 숨긴다(자리는 남겨 진행 줄이 움직이지 않게)
+  $("tut-note").hidden=!last; $("tut-next").textContent=last?"알겠어요":"다음";
+  t.setAttribute("data-pg",String(n)); t.setAttribute("aria-labelledby","tut-h"+n);
+  var b=$("tut-body"); if(b)b.scrollTop=0;
+  try{ $("tut-h"+n).focus({preventScroll:true}); }catch(e){}
+  tutMore();
+}
+function tutMore(){ try{ var b=$("tut-body"); b.classList.toggle("more",b.scrollHeight-b.scrollTop-b.clientHeight>4); }catch(e){} }   // 아래에 글이 더 있으면 끝을 흐리게
+function tutCards(back){
+  try{
+    var t=$("tut"); if(!t)return false;
+    // 단추 그림은 산책 화면의 진짜 단추를 그대로 베껴 온다(그림이 바뀌면 함께 바뀐다). 숫자는 뺀다
+    Array.prototype.forEach.call(t.querySelectorAll(".tut-mini"),function(m){ var src=$(m.getAttribute("data-b")); if(!src)return;
+      var c=document.createElement("span"); c.className=src.className; c.innerHTML=src.innerHTML;
+      Array.prototype.forEach.call(c.querySelectorAll("[id]"),function(e){ e.removeAttribute("id"); });
+      var n=c.querySelector(".ac b"); if(n)n.parentNode.removeChild(n);
+      m.innerHTML=""; m.appendChild(c); });
+    tutCoachEnd(); TUT_BACK=(back&&back.focus)?back:null; t.hidden=false; tutCardPg(1); tutFoldWatch(); return true;
+  }catch(e){ try{ $("tut").hidden=true; }catch(_){} return false; }
+}
+/* 카드가 떠 있는 채로 산책이 시작되면(위젯으로 시작한 산책) 카드를 접는다: 산책 화면과 단추를 가리지 않게. 본 것으로 치지 않으므로 다음에 켤 때 홈에서 다시 뜬다.
+   걷는 중에 스스로 연 카드는 접지 않는다(TUTF.w0). 카드가 떠 있는 동안에만 0.4초마다 본다 */
+var TUTF={iv:0,w0:false};
+function tutFoldWatch(){ clearInterval(TUTF.iv); TUTF.w0=!!W;
+  TUTF.iv=setInterval(function(){ try{ var t=$("tut"); if(!t||t.hidden){ clearInterval(TUTF.iv); TUTF.iv=0; return; } if(W&&!TUTF.w0)tutCardsFold(); }catch(e){} },400); }
+function tutCardsFold(){ clearInterval(TUTF.iv); TUTF.iv=0; var t=$("tut"); if(!t||t.hidden)return; t.hidden=true; TUT_BACK=null; }
+function tutCardsEnd(){
+  var t=$("tut"); if(!t||t.hidden)return;
+  clearInterval(TUTF.iv); TUTF.iv=0;
+  t.hidden=true; tutSeen("cards");
+  try{ (TUT_BACK||$("start")).focus({preventScroll:true}); }catch(e){} TUT_BACK=null;
+}
+$("tut-next").addEventListener("click",function(){ if($("tut").getAttribute("data-pg")==="1")tutCardPg(2); else tutCardsEnd(); });
+$("tut-skip").addEventListener("click",tutCardsEnd);
+$("tut-body").addEventListener("scroll",tutMore,{passive:true});
+window.addEventListener("resize",function(){ if(!$("tut").hidden)tutMore(); });
+$("tut").addEventListener("keydown",function(e){
+  if(e.key==="Escape"){ e.preventDefault(); tutCardsEnd(); return; }
+  if(e.key!=="Tab")return;   // 자판 초점이 카드 밖(뒤의 홈)으로 나가지 않게
+  var f=[$("tut-skip"),$("tut-next")].filter(function(b){ return b.style.visibility!=="hidden"; }), a=document.activeElement, i=f.indexOf(a);
+  if(e.shiftKey&&i<=0){ e.preventDefault(); f[f.length-1].focus(); }
+  else if(!e.shiftKey&&i===f.length-1){ e.preventDefault(); f[0].focus(); }
+});
+/* 안드로이드의 뒤로 가기: 말풍선이 떠 있으면 닫고, 카드는 2장이면 1장으로, 1장이면 닫는다(건너뛰기와 같다). 닫은 것이 있으면 true */
+function tutBack(){ try{ if(!$("tutc").hidden){ tutCoachEnd(); return true; } var t=$("tut"); if(!t.hidden){ if(t.getAttribute("data-pg")==="2")tutCardPg(1); else tutCardsEnd(); return true; } }catch(e){} return false; }
+/* 처음 '시작'을 누른 사람: 앞의 누름 처리(강아지 정보 저장, 홈 열기)가 끝난 뒤에 불린다 */
+$("dogNext").addEventListener("click",function(){ try{ if(!S.dog||!$("main").classList.contains("on"))return; tutFresh(); tutCards(); }catch(e){} });
+$("tut-again").addEventListener("click",function(){ try{ $("ssheet").classList.remove("on"); tutFresh(); tutCards($("setopen")); }catch(e){} });
+/* 짚어 주기: k 는 map(산책 화면의 지도 칸), end(끝내기를 짧게 눌렀을 때), rec(기록 탭). 띄웠으면 true.
+   아직 안 본 사람에게만, 그 화면이 보일 때만 띄운다. 주머니 모드, 카드나 시트가 떠 있을 때는 띄우지 않고 다음으로 미룬다 */
+function tutTarget(k){ return k==="map"?$("w-livemap"):k==="end"?$("stop"):k==="rec"?$("setopen"):null; }
+function tutCan(k){
+  if(pkOn||!$("tut").hidden||document.querySelector(".sheet.on"))return false;
+  if(k==="rec")return $("v-log").classList.contains("on");
+  var v=$("v-walk"); return !!W&&v.classList.contains("on")&&(k!=="map"||v.classList.contains("km-on"));
+}
+function tutCoach(k){
+  try{
+    if(!TUT||TUT[k]||!TUT_TX[k])return false;
+    var c=$("tutc"), tg=tutTarget(k); if(!c||!c.hidden||!tg||!tutCan(k))return false;
+    var r=tg.getBoundingClientRect(); if(!r.width||!r.height)return false;
+    c.setAttribute("data-k",k); $("tutc-t").textContent=TUT_TX[k].t;
+    var pp=$("tutc-p"); pp.textContent=""; TUT_TX[k].p.forEach(function(x,i){ if(i)pp.appendChild(document.createTextNode(" ")); var sp=document.createElement("span"); sp.className="sn"; sp.textContent=x; pp.appendChild(sp); });
+    TUTC.k=k; TUTC.at=Date.now(); TUTC.back=document.activeElement;
+    c.hidden=false; tutPlace(true); tutSeen(k);   // 뜬 것은 바로 본 것으로 적는다(닫기 전에 앱이 꺼져도 다시 뜨지 않게)
+    window.addEventListener("resize",tutPlaceEv); window.addEventListener("scroll",tutPlaceEv,true);
+    clearInterval(TUTC.iv); TUTC.iv=setInterval(function(){ if(!TUTC.k||!tutCan(TUTC.k))tutCoachEnd(); },500);   // 화면이 바뀌면(산책이 끝남, 주머니 모드 등) 닫는다
+    try{ $("tutc-ok").focus({preventScroll:true}); }catch(e){}
+    return true;
+  }catch(e){ tutCoachEnd(); return false; }
+}
+function tutCoachEnd(){
+  try{
+    var c=$("tutc"); clearInterval(TUTC.iv); TUTC.iv=0;
+    window.removeEventListener("resize",tutPlaceEv); window.removeEventListener("scroll",tutPlaceEv,true);
+    if(!c||c.hidden){ TUTC.k=null; return; }
+    c.hidden=true; c.removeAttribute("data-k"); var b=TUTC.back; TUTC.k=null; TUTC.back=null;
+    if(b&&b.focus&&document.documentElement.contains(b))b.focus({preventScroll:true});
+  }catch(e){}
+}
+function tutPlaceEv(){ tutPlace(false); }
+/* 밝히는 자리와 말풍선 자리를 잰다. 산책 화면에서는 덮개가 아래 단추 셋 위에서 끝난다 */
+function tutPlace(first){
+  try{
+    var c=$("tutc"), k=TUTC.k, tg=tutTarget(k); if(!c||c.hidden||!tg)return;
+    var vw=window.innerWidth, vh=window.innerHeight, top0=8+(parseFloat(getComputedStyle(c).paddingTop)||0), bot=vh;
+    var bub=c.querySelector(".tutc-bub"), inn=c.querySelector(".tutc-in"), hole=c.querySelector(".tutc-hole"), ar=bub.querySelector(".ar"), ring=c.querySelector(".tutc-ring"), tag=c.querySelector(".tutc-tag");
+    if(k==="rec"){
+      var tb=$("tabs").getBoundingClientRect(); if(tb.height&&tb.top>0)bot=Math.min(vh,tb.top);
+      if(first){ var r0=tg.getBoundingClientRect();   // 줄이 화면 아래쪽에 다 보이게 한 번 민다(말풍선은 그 위에 놓인다)
+        if(r0.bottom>bot-12||r0.top<top0+140)window.scrollBy(0,Math.round(r0.bottom-(bot-16))); }
+      c.style.bottom="0px";
+    }else{
+      var a=document.querySelector("#v-walk .acts").getBoundingClientRect(); bot=Math.max(160,Math.min(vh,a.top));
+      c.style.bottom=Math.max(0,vh-bot)+"px";
+    }
+    var r=tg.getBoundingClientRect(), pad=k==="map"?3:6;
+    hole.style.left=(r.left-pad)+"px"; hole.style.top=(r.top-pad)+"px"; hole.style.width=(r.width+pad*2)+"px"; hole.style.height=(r.height+pad*2)+"px"; hole.style.borderRadius=k==="map"?"20px":"18px";
+    var bw=Math.min(vw-24,340), bl=Math.round((vw-bw)/2);
+    if(k==="end")bl=Math.max(12,Math.min(vw-12-bw,Math.round(r.right+6-bw)));
+    bub.style.width=bw+"px"; bub.style.left=bl+"px"; inn.style.maxHeight=""; bub.style.top="0px";
+    var bh=bub.offsetHeight, top, lim=bot-10, arrow=null, me=null;
+    ring.hidden=true; tag.hidden=true;
+    if(k==="map"){
+      me=$("km-me"); var mr=me?me.getBoundingClientRect():null; if(mr&&(!mr.width||mr.bottom>bot))mr=null;
+      var lim2=mr?mr.top-10:lim;
+      top=Math.max(top0,r.top+12); if(top+bh>lim2)top=Math.max(top0,lim2-bh);
+      if(top+bh>lim){ top=top0; }
+      if(mr&&top+Math.min(bh,lim-top)<=mr.top-4){   // 내 위치 단추를 동그라미로 짚고 그 왼쪽에 이름표
+        ring.hidden=false; ring.style.left=(mr.left-6)+"px"; ring.style.top=(mr.top-6)+"px"; ring.style.width=(mr.width+12)+"px"; ring.style.height=(mr.height+12)+"px";
+        tag.hidden=false; tag.textContent=TUT_TX.map.tag; tag.style.left="0px"; tag.style.top="0px";
+        var tw=tag.offsetWidth, th=tag.offsetHeight; tag.style.left=Math.max(8,Math.round(mr.left-12-tw))+"px"; tag.style.top=Math.round(mr.top+mr.height/2-th/2)+"px"; }
+    }else if(k==="end"){
+      top=r.bottom+pad+12; arrow="top";
+    }else{
+      var below=r.bottom+pad+12, above=r.top-pad-12-bh;
+      if(below+bh<=lim){ top=below; arrow="top"; }
+      else if(above>=top0){ top=above; arrow="bottom"; }
+      else if(r.top-top0>=lim-r.bottom){ top=top0; arrow="bottom"; inn.style.maxHeight=Math.max(120,r.top-pad-12-top0)+"px"; }
+      else { top=below; arrow="top"; }
+    }
+    if(top+bub.offsetHeight>lim)inn.style.maxHeight=Math.max(120,lim-top)+"px";
+    bub.style.top=Math.round(top)+"px";
+    if(arrow){ ar.hidden=false; var ax=Math.max(18,Math.min(bw-34,Math.round(r.left+r.width/2-bl-8))); ar.style.left=ax+"px"; ar.style.top=arrow==="top"?"-7px":""; ar.style.bottom=arrow==="bottom"?"-7px":""; }
+    else ar.hidden=true;
+  }catch(e){}
+}
+$("tutc").addEventListener("click",function(e){ if(Date.now()-TUTC.at<350&&!(e.target&&e.target.id==="tutc-ok"))return; tutCoachEnd(); });   // 띄우게 한 그 누름이 곧바로 닫지 않게
+$("tutc").addEventListener("keydown",function(e){ if(e.key==="Escape"){ e.preventDefault(); tutCoachEnd(); } });
+$("wseg").addEventListener("click",function(e){ var b=e.target.closest("button"); if(b&&b.dataset.v==="m"&&TUT&&!TUT.map)setTimeout(function(){ tutCoach("map"); },350); });   // 지도가 그려질 틈을 준다
+$("tabs").addEventListener("click",function(e){ var b=e.target.closest("button"); if(b&&b.dataset.v==="log"&&TUT&&!TUT.rec)setTimeout(function(){ tutCoach("rec"); },300); });
+/* 앱이 켜진 뒤: 적어 둔 것을 읽고, 카드를 닫기 전에 꺼졌던 사람에게는 카드를 다시 보여 준다 */
+function tutBoot(){
+  try{ window.__kk.tut={get st(){ return TUT; },coach:tutCoach,cards:tutCards,back:tutBack}; }catch(e){}
+  try{ TUT=tutRead(); if(TUT&&!TUT.cards&&S.user&&S.dog&&!W&&$("main").classList.contains("on"))tutCards(); }catch(e){}
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",tutBoot); else setTimeout(tutBoot,0);
 
 /* ══ 진입 ══ */
 function privNotice(){
@@ -5060,9 +5321,9 @@ function endWalk(){
     if(e&&e.pointerId!=null){try{el.setPointerCapture(e.pointerId);}catch(_){}}   // 어디를 눌러도 움직임이 이 단추로 오게. 밖으로 나가는지는 pointermove로 본다
     t0=Date.now(); el.classList.add("hold"); lab("계속 누르세요");
     (function step(){ if(!t0)return; var p=Math.min(1,(Date.now()-t0)/1500); el.style.setProperty("--hp",p.toFixed(3));
-      if(p>=1){reset();stopWalk();return;} raf=requestAnimationFrame(step); })();
+      if(p>=1){reset();stopWalk();tutSeen("end");return;} raf=requestAnimationFrame(step); })();
   }
-  function up(){ if(!t0)return; var held=Date.now()-t0; reset(); if(held>=1500)stopWalk(); else toast("1.5초 누르면 끝나요 · 놓으면 계속 걸어요"); }
+  function up(){ if(!t0)return; var held=Date.now()-t0; reset(); if(held>=1500){stopWalk();tutSeen("end");} else if(!tutCoach("end"))toast("1.5초 누르면 끝나요 · 놓으면 계속 걸어요"); }   // 디자인 4차: 처음 짧게 누른 때만 말풍선(tutCoach). 그 뒤로는 예전 알림
   el.addEventListener("pointerdown",down);
   el.addEventListener("pointerup",up);
   el.addEventListener("pointercancel",reset);
