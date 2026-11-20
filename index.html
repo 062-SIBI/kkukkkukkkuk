@@ -1843,13 +1843,20 @@ details.setd[open]>summary i{transform:rotate(90deg)}
 #statsnote{margin:-6px 0 0;padding:0 2px 14px;border-bottom:1px solid var(--line)}
 .set-del{display:block;width:100%;min-height:44px;margin-top:16px;padding:12px 0;background:none;border:0;font:inherit;font-size:13.5px;color:var(--clay);text-align:center;cursor:pointer}
 /* 고침 19(P01 11/14 피드백, 06 11/16 '듣기') */
-/* 2번 굳기 고르기: 굳기 창이 닫힌 뒤 산책이 끝날 때까지 똥 단추 위에 남는다. 그동안 '그거 아세요?' 한 줄은 쉬어서 화면 높이가 거의 그대로다(11px 늘어남).
-   킁킁 단추는 9px 올라가 있어서 좁은 폰에서 칩 끝이 그 위에 오므로 아래 틈을 7px 둔다 */
-#v-walk .acts.pfx>.act{grid-row:2}
-#poopfix{grid-column:1/-1;grid-row:1;justify-self:start;display:inline-flex;align-items:center;gap:7px;min-height:44px;margin:0 0 7px;padding:0 16px 0 13px;border:1.5px solid var(--line);border-radius:99px;background:var(--panel);color:var(--ink);font:inherit;font-size:14px;font-weight:700;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent}
-#poopfix i{flex:none;width:10px;height:10px;border-radius:50%;background:var(--coral)}
-#poopfix:active{transform:scale(.97)}
+/* 2번 굳기 고르기(보완 11/18, 06 "링 옆 단추로, 글 없이 똥 단추와 같은 색으로"): 굳기 창이 닫힌 뒤 산책이 끝날 때까지 링 왼쪽 아래에 작은 똥 단추가 남는다.
+   줄을 차지하지 않아 화면 높이와 아래 세 단추의 자리가 그대로다. 지도 탭에서는 지도 왼쪽 아래(길 색 단추 위)에 뜬다. 아이콘은 똥 단추의 것을 그대로 가져다 쓴다(poopChip) */
+.pfa{position:relative;height:0}
+#poopfix{position:absolute;left:calc(50% - var(--rw,min(236px,64vw))/2 - 26px);bottom:-4px;z-index:3;width:60px;height:60px;border:0;padding:0;margin:0;background:none;color:#1B1712;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;filter:drop-shadow(0 4px 5px rgba(190,60,40,.3))}
+#poopfix .pad{position:absolute;left:50%;top:50%;height:86%;aspect-ratio:13/16;border-radius:50%;background:var(--coral);background-image:radial-gradient(120% 90% at 49% 17%,rgba(255,255,255,.26),rgba(255,255,255,0) 58%);transform:translate(-50%,-50%) rotate(-22deg);transition:transform .14s cubic-bezier(.23,1,.32,1)}
+#poopfix .gi{position:absolute;left:50%;top:50%;width:22px;height:22px;transform:translate(-50%,-50%)}
+#poopfix:active .pad{transform:translate(-50%,-50%) rotate(-22deg) scale(.93)}
+#poopfix:focus-visible{outline:none}
+#poopfix:focus-visible .pad{outline:3px solid var(--ink);outline-offset:3px}
 #poopfix[hidden]{display:none}
+#v-walk.km-on #poopfix{left:2px;bottom:100px}
+/* 세로가 짧은 화면(walkFit): 링을 위로 붙이고 넘치는 만큼 줄여, 되돌리기 알림이 뜰 자리를 꾹게이지 글 아래에 둔다. 숫자는 링과 같은 비율(--rk)로 줄인다 */
+#v-walk.on.fit .ring{margin-top:0}
+#v-walk .ring .ctr .n{font-size:calc(84px*var(--rk,1))}
 /* 3번 산책 중 화면 켜 두기(앱에서만 보인다) */
 #awakeopt{border-bottom:1px solid var(--line)}
 #awakeopt[hidden]{display:none}
@@ -2043,13 +2050,13 @@ html,.sheet .in,.picks,#pwc .pw-tabp,#pwc .pw-row,#pwc .pw-thumbs,button,a,summa
       </svg>
       <div class="ctr"><div class="n" id="gnum">0</div><div class="u">꾹게이지</div></div>
     </div>
+    <div class="pfa"><button type="button" id="poopfix" aria-label="굳기 고르기" hidden><span class="pad"></span></button></div>
     <div class="gmsg" id="gmsg">이제 막 나왔네요</div>
     <div class="gsub" id="gsub"></div>
     <div class="gwarn" id="gwarn"></div>
     <div class="gtip" id="gtip" hidden></div>
     <div class="acts">
       <div class="undo" id="undo" role="status" aria-live="polite"><i class="ud"></i><span class="um" id="undo-m"></span><button type="button" id="undo-b">되돌리기</button><span class="up"></span></div>
-      <button type="button" id="poopfix" hidden><i aria-hidden="true"></i>굳기 고르기</button>
       <button class="act a-poop" id="b-poop" aria-label="똥 기록"><span class="pad"></span><span class="ac"><svg class="gi brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 10.5h13l-1.2 9a2.2 2.2 0 0 1 -2.2 1.9h-6.2a2.2 2.2 0 0 1 -2.2 -1.9z"/><path d="M8.6 10.5l-1.8 -6l4.4 2.6"/><path d="M15.4 10.5l1.8 -6l-4.4 2.6"/><path d="M11.2 7.1h1.6"/></svg><b id="c-poop">0</b></span></button>
       <button class="act a-sniff" id="b-sniff" aria-label="킁킁 기록, 오래 맡는 곳에서 한 번"><span class="pad"></span><span class="ac"><svg class="gi brand" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 19.6C9 19.6 2.8 16.4 2.8 10.8C2.8 7.2 6.6 4.8 12 4.8C17.4 4.8 21.2 7.2 21.2 10.8C21.2 16.4 15 19.6 12 19.6Z"/><ellipse cx="7.6" cy="8.6" rx="2.3" ry="1.25" transform="rotate(-18 7.6 8.6)" fill="#fff"/><ellipse cx="10.7" cy="7.9" rx=".75" ry=".6" fill="#fff"/></svg><b id="c-sniff">0</b></span></button>
       <button class="act a-pee" id="b-pee" aria-label="꾹 기록"><span class="pad"></span><span class="ac"><svg class="gi brand" viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(0 1)"><ellipse cx="22" cy="58" rx="13" ry="16" transform="rotate(-22 22 58)" fill="currentColor"/><ellipse cx="50" cy="40" rx="13" ry="16" fill="currentColor"/><ellipse cx="78" cy="58" rx="13" ry="16" transform="rotate(22 78 58)" fill="currentColor"/></g></svg><b id="c-pee">0</b></span></button>
@@ -2238,7 +2245,7 @@ html,.sheet .in,.picks,#pwc .pw-tabp,#pwc .pw-row,#pwc .pw-thumbs,button,a,summa
   <div class="in">
     <div class="grab"></div>
     <h3 id="poop-h" tabindex="-1" style="font-size:19px;margin-bottom:4px;outline:none">똥 저장했어요</h3>
-    <p class="poopsub">안 고르면 보통으로 남아요. 누르면 바로 바뀌어요.</p>
+    <p class="poopsub" id="poopsub">안 고르면 보통으로 남아요. 누르면 바로 바뀌어요.</p>
     <div class="firm3" id="firm">
       <button data-v="4" aria-pressed="false"><span class="e"><svg class="gi brand" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><circle cx="6.5" cy="14" r="3"/><circle cx="12" cy="10.5" r="3"/><circle cx="17.5" cy="14.5" r="3"/></svg></span><span class="l">단단</span></button>
       <button data-v="3" aria-pressed="true"><span class="e"><svg class="gi brand" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><rect x="3.5" y="9" width="17" height="7" rx="3.5"/></svg></span><span class="l">보통</span></button>
@@ -2602,7 +2609,7 @@ window.addEventListener("load",function(){ try{ if(sessionStorage.getItem("kk.rv
 
 function pad(n){return(n<10?"0":"")+n;}
 function ms2t(ms){var s=Math.floor(ms/1000);return Math.floor(s/60)+":"+pad(s%60);}
-function toast(m,ms){var t=$("toast");t.textContent=m;t.classList.toggle("long",String(m).length>38);t.classList.add("on");clearTimeout(t._x);
+function toast(m,ms,wide){var t=$("toast");t.textContent=m;t.classList.toggle("long",!!wide||String(m).length>38);t.classList.add("on");clearTimeout(t._x);
   t._x=setTimeout(function(){t.classList.remove("on");},ms||2000);}
 function press(box,cb,toggle){box.addEventListener("click",function(e){
   var b=e.target.closest("button");if(!b)return;
@@ -2851,9 +2858,11 @@ function awakeRender(){
 }
 function awakeToggle(){
   if(!S.awake&&!(navigator.wakeLock&&navigator.wakeLock.request)){
-    toast("이 폰에서는 켤 수 없어요 · "+wakeHow(),4500); return; }
+    toast("이 폰에서는 켤 수 없어요 · "+wakeHow(),4500,true); return; }   // 보완: 넓은 꼴로(아이폰 글은 38자가 안 돼 좁은 알약에서 서너 줄로 꺾였다)
+  var was=S.awake;
   if(S.awake)delete S.awake; else S.awake=1;
-  save(); awakeRender();
+  if(!save()){ if(was)S.awake=was; else delete S.awake; awakeRender(); toast("저장 못 했어요. 저장 공간을 확인해 주세요"); return; }   // 보완: 저장이 안 되면 바꾸지 않는다(켜짐이라고 보이고 앱을 다시 켜면 꺼져 있었다)
+  awakeRender();
   if(S.awake)holdScreen(); else wakeFree();
   toast(S.awake?"산책 중에는 화면을 켜 둬요":"화면이 꺼져도 기록은 이어져요");
 }
@@ -4217,10 +4226,10 @@ function tick(){
       : (W.gaps?"끊긴 구간 "+W.gaps+"곳 · 그 사이 경로는 비어 있어요":"");
   }
   // 고침 6: GPS 알림 줄이 비어 있을 때만 그 자리에 '그거 아세요?' 한 줄. 문장은 TIPS에서만 가져온다(저장된 글자를 화면에 넣지 않는다)
-  var tp=$("gtip"), pf=poopChip();   // 고침 19: 굳기 고르기가 보이는 동안은 '그거 아세요?' 한 줄이 쉰다(화면 높이가 그대로이게)
-  if(tp){ var tip=(wn.textContent||pf)?null:tipById(W.tip);
+  var tp=$("gtip"); poopChip();   // 고침 19: 굳기 고르기(링 옆 단추)를 켜고 끈다. 보완: 줄을 차지하지 않아 '그거 아세요?' 한 줄은 예전처럼 보인다
+  if(tp){ var tip=wn.textContent?null:tipById(W.tip);
     if(tip&&tp.getAttribute("data-id")!==tip.id){ tp.setAttribute("data-id",tip.id); tp.innerHTML="<b>그거 아세요?</b>"+tip.t; }
-    tp.hidden=!tip; wn.hidden=!!tip||(pf&&!wn.textContent); }
+    tp.hidden=!tip; wn.hidden=!!tip; }
   var gd=gaugeDetail(W);
   if(!gd.ready){
     $("gnum").textContent="-";var wsg0=$("wseg-g");if(wsg0)wsg0.textContent="-";
@@ -4243,7 +4252,33 @@ function tick(){
   $("w-km").textContent=((W.dist||0)/1000).toFixed(2)+" km";
   $("c-poop").textContent=(W.poops||[]).length;$("c-sniff").textContent=(W.sniffs||[]).length;$("c-pee").textContent=(W.kkuks||[]).length;
   if(pkOn)pocketTick();
+  walkFit();
 }
+/* 고침 19 보완(배치, 06 11/18 "안 가리게"): 되돌리기 알림은 아래 세 단추 바로 위 70px에 뜬다. 세로가 짧은 화면에서는 그 자리에 꾹게이지 글이 있어서 7초 동안 가려졌다
+   (예전부터 아랫줄이 가려졌고, 320x568에서는 화면이 한 화면을 넘었다). 꾹게이지 아랫줄(#gsub)과 단추 줄 사이가 좁으면 링을 위로 붙이고(.fit) 모자란 만큼 링을 줄인다(140px까지).
+   넉넉한 화면(위로 붙였을 때 틈이 116px 이상: 가운데 맞춤으로도 72px이 남는다)은 예전 그대로 둔다. 틈은 그 사이의 글(그거 아세요, GPS 경고)과 상관없이 화면 높이와 링 크기로 정해지므로 링 크기는 흔들리지 않는다.
+   잴 때는 링을 원래 크기로 되돌려 놓고 처음부터 잰다. 화면 크기와 꾹게이지 글이 그대로면 다시 재지 않고(5초에 한 번만), 지도 탭과 다른 화면에서는 건드리지 않는다(돌아왔을 때 그대로).
+   배치만 바꾸고 계산과 기록은 건드리지 않는다 */
+var FIT={w:0,w0:0,k:""};
+function walkFit(){
+  try{
+    var v=$("v-walk"), a=v&&v.querySelector(".acts"), g=v&&v.querySelector(".ring"), s=$("gsub"); if(!a||!g||!s)return;
+    if(!v.classList.contains("on")||v.classList.contains("km-on"))return;
+    var tp=$("gtip"), k=[window.innerWidth,window.innerHeight,$("gmsg").textContent,s.textContent,$("gwarn").textContent,(tp&&!tp.hidden)?tp.getAttribute("data-id"):"",Math.floor(monoNow()/5000)].join("|");
+    if(k===FIT.k)return; FIT.k=k;   // 달라진 것이 없으면 다시 재지 않는다
+    if(g.style.width){ g.style.width=""; g.style.removeProperty("--rk"); v.style.removeProperty("--rw"); }
+    v.classList.add("fit");
+    var w0=g.getBoundingClientRect().width, d=a.getBoundingClientRect().top-s.getBoundingClientRect().bottom;
+    if(d>=116){ v.classList.remove("fit"); return; }
+    var x=Math.max(0,72-d)+Math.max(0,document.documentElement.scrollHeight-window.innerHeight);
+    if(x<=0)return;
+    var w=Math.max(140,Math.floor(w0-x));
+    if(FIT.w0===w0&&Math.abs(FIT.w-w)<=2)w=FIT.w; else{ FIT.w=w; FIT.w0=w0; }   // 1~2px 차이로 링이 떨리지 않게
+    g.style.width=w+"px"; g.style.setProperty("--rk",(w/w0).toFixed(3)); v.style.setProperty("--rw",w+"px");
+  }catch(e){}
+}
+$("wseg").addEventListener("click",function(){ (window.requestAnimationFrame||setTimeout)(walkFit); });   // 지도 탭에서 돌아올 때 그리기 전에 한 번
+window.addEventListener("resize",walkFit);
 /* ── GPS 한 점 처리 (웹 watchPosition · 앱 백그라운드 둘 다 여기로) ──
    거리: 기준점에서 5m 넘게 벗어났을 때만 더한다. 1초마다 오는 점끼리 재면 한 걸음(1m 남짓)이
          전부 "멈춤"으로 읽혀 거리가 0에 가까워진다(예전 방식의 문제). 제자리 GPS 떨림도 여기서 걸러진다.
@@ -4383,7 +4418,7 @@ var wake=null, wakeAsk=false, wakeTry=0, wakeGen=0;
    "기록했어요"라고 말해놓고 실제로는 아무것도 안 남는다. 한 번만 말한다. */
 var quotaWarned=false;
 function persistLive(){
-  if(save()){quotaWarned=false;return true;}
+  if(save()){quotaWarned=false; if(PS.fail){PS.fail=false;poopHead();} return true;}   // 보완: 저장이 다시 됐으면 굳기 창의 '저장 못 했어요'도 푼다(창이 떠 있으면 제목도)
   if(!quotaWarned){quotaWarned=true;
     toast("저장 공간이 꽉 찼어요 · 기록 탭의 설정과 백업에서 파일로 저장을 먼저 해 주세요",4000);}
   return false;
@@ -4401,7 +4436,7 @@ function holdScreen(){
       wakeAsk=false; wakeTry=0; if(!(S.awake&&W)||(wake&&!wake.released&&wake!==s)){ wakeLet(s); return; } }   // 청하는 사이 껐거나 산책이 끝났다
     wake=s; s.addEventListener("release",function(){ if(W&&document.visibilityState==="visible")setTimeout(holdScreen,500); });}).catch(function(){ if(NATIVE&&gen!==wakeGen)return; wakeAsk=false;
     // Codex 2차: 앱에서 거절되면(청하는 사이 가려졌거나 폰이 막음) 보이는 동안 한 번 더 청하고, 그래도 안 되면 한 번만 알린다(되풀이해 청하지 않는다)
-    if(NATIVE&&S.awake&&W&&document.visibilityState==="visible"){ wakeTry++; if(wakeTry===1)setTimeout(holdScreen,500); else if(wakeTry===2)toast("화면을 켜 두지 못했어요 · "+wakeHow(),4500); } });
+    if(NATIVE&&S.awake&&W&&document.visibilityState==="visible"){ wakeTry++; if(wakeTry===1)setTimeout(holdScreen,500); else if(wakeTry===2)toast("화면을 켜 두지 못했어요 · "+wakeHow(),4500,true); } });
 }
 function wakeHow(){ return IOS?"폰 설정에서 자동 잠금을 바꿔 주세요":"폰 설정에서 화면 자동 꺼짐을 바꿔 주세요"; }
 function wakeLet(s){ if(s&&!s.released){ try{ var p=s.release(); if(p&&p.catch)p.catch(function(){}); }catch(e){} } }
@@ -4695,14 +4730,15 @@ $("b-pee").addEventListener("click",function(){
 /* 기록 뒤 7초 동안 버튼 위에 되돌리기 바. 토스트처럼 버튼을 가리지 않는다 */
 var UNDO={t:0,fn:null};
 function undoShow(kind,msg,fn,label){
+  if(UNDO.fn!==fn&&document.activeElement===$("undo-b")){try{$("undo-b").blur();}catch(e){}}   // 보완: 알림이 다른 것으로 바뀌면 그 단추에 남은 초점을 뗀다(되살리기에 초점이 있을 때, 또는 그 알림이 막 사라진 때 늦게 온 꾹 알림이 뜨면 Enter가 그 꾹을 지웠다)
   var u=$("undo"),col={poop:"var(--coral)",sniff:"var(--sun)",pee:"var(--sky)"}[kind]||"var(--sky)";
   $("undo-m").textContent=msg; $("undo-b").textContent=label||"되돌리기"; u.querySelector(".ud").style.background=col; u.querySelector(".up").style.background=col;
   UNDO.fn=fn; UNDO.k=kind; u.classList.remove("on"); void u.offsetWidth; u.classList.add("on");
   clearTimeout(UNDO.t); UNDO.t=setTimeout(undoHide,7000);
 }
 function undoHide(){ clearTimeout(UNDO.t); UNDO.fn=null; var u=$("undo"); if(u)u.classList.remove("on"); }
-$("undo-b").addEventListener("click",function(){
-  var f=UNDO.fn,k=UNDO.k; undoHide(); if(!f||!W)return;
+$("undo-b").addEventListener("click",function(e){
+  var f=UNDO.fn,k=UNDO.k; tapMark(e); undoHide(); if(!f||!W)return;   // 보완: 고치기로 창이 뜨거나 알림이 사라진 자리의 빠른 둘째 누름을 거르려고 자리를 적어 둔다
   if(f()===false)return;                          // 고치기(시트 다시 열기)는 지우지 않는다
   S.live=W; save(); tick(); widgetPush(); toast({poop:"똥 기록을 지웠어요",sniff:"킁킁 기록을 지웠어요",pee:"꾹 기록을 지웠어요"}[k]||"지웠어요");
 });
@@ -4761,17 +4797,27 @@ function poopTick(){
   PS.left--; PS.t=setTimeout(poopTick,1000);
 }
 var FIRMN={4:"단단",3:"보통",2:"묽음"};
+/* 고침 19 보완(11/18 다시 검토): 다시 연 창(keep)은 처음 뜬 창과 글이 다르다. 제목은 저장 결과 대신 '똥 N번째 기록'(한참 뒤에는 그 말이 지금 상태가 아니다),
+   도움 글은 '누르면 바로 바뀌어요.'(이미 고른 똥에 '안 고르면 보통'이라고 하지 않게), 지우는 단추는 '기록 지우기'('되돌리기'로 읽고 눌러 기록이 지워지지 않게).
+   제목은 마지막 저장 결과를 따른다(poopHead: 저장이 안 되면 '저장 못 했어요'가 붙고, 다시 되면 사라진다. 저장 공간 알림은 한 번만 떠서, 제목이 아니면 알 길이 없었다) */
+function poopHead(){ var r=PS.rec; if(!r||!W)return; var n=W.poops.indexOf(r)+1; $("poop-h").textContent=PS.keep?"똥 "+n+"번째 기록"+(PS.fail?", 저장 못 했어요":""):"똥 "+n+"번째, "+(PS.fail?"저장 못 했어요":"저장했어요"); }
+function poopFocus(alt){ var c=$("poopfix"); try{((c&&!c.hidden)?c:(alt||$("b-poop"))).focus({preventScroll:true});}catch(e){} }   // 초점을 굳기 고르기로. 사라졌으면 alt, 그것도 없으면 똥 단추
 function poopOpen(rec,keep){                      // keep: 나중에 고르려고 다시 연 창(굳기 고르기, 고치기). 초를 세지 않는다
-  PS.rec=rec; PS.keep=!!keep; $("poop-h").textContent="똥 "+(W.poops.indexOf(rec)+1)+"번째, "+(PS.fail?"저장 못 했어요":"저장했어요");
+  PS.rec=rec; PS.keep=!!keep;
+  if(keep&&PS.fail&&W){S.live=W;PS.fail=!persistLive();}   // 보완: 앞서 저장이 안 됐으면 다시 열 때 한 번 더 저장해 본다
+  poopHead();
+  $("poopsub").textContent=keep?"누르면 바로 바뀌어요.":"안 고르면 보통으로 남아요. 누르면 바로 바뀌어요.";
+  $("poopundo").textContent=keep?"기록 지우기":"되돌리기";
   poopSheetSync(); $("sheet").classList.add("on"); poopTouch();
   try{$("poop-h").focus({preventScroll:true});}catch(e){}   // 화면 읽기가 "저장했어요"를 읽게
 }
 function poopClose(auto){
-  var r=PS.rec;
-  clearTimeout(PS.t); PS.rec=null; PS.hold=false; PS.keep=false; if(auto)PS.autoAt=Date.now();
+  var r=PS.rec, kept=PS.keep;
+  if(auto&&r&&PS.fail&&W){S.live=W;PS.fail=!persistLive();}   // 보완: 고른 것이 저장되지 않았으면 닫히기 전에 한 번 더 저장해 보고, 아래 알림은 그 결과를 말한다
+  clearTimeout(PS.t); PS.rec=null; PS.hold=false; PS.keep=false; if(auto)PS.autoAt=monoNow();   // 보완: 폰 시계와 상관없는 시간으로 적는다
   if(auto&&r&&W&&W.poops.indexOf(r)>=0)undoShow("poop","똥 "+(W.poops.indexOf(r)+1)+"번째, "+(PS.fail?"저장 못 했어요":(FIRMN[r.f]||"보통")+"으로 저장했어요"),function(){poopOpen(r,true);return false;},"고치기");   // 고침 19: 고치려고 다시 연 창은 초를 세지 않는다
   var sh=$("sheet"), had=sh.contains(document.activeElement); sh.classList.remove("on");
-  if(had){try{$("b-poop").focus({preventScroll:true});}catch(e){}}
+  if(had){ if(kept)poopFocus(); else try{$("b-poop").focus({preventScroll:true});}catch(e){} }   // 보완: 다시 연 창(칩, 고치기)은 굳기 고르기로 돌아간다(똥 단추로 가면 Enter 한 번에 새 똥이 기록됐다)
 }
 function poopTouch(){ PS.left=5; poopTick(); }
 /* 고침 19(P01 11/14 "똥 보고 누르려고 했는데 얘가 도망갔어", 06 "닫히되 나중에 고르기"): 굳기 창은 5초 뒤 '보통'으로 닫히는 그대로 두고
@@ -4782,14 +4828,14 @@ function poopLast(){ var a=(W&&W.poops)||[], r=null; for(var i=0;i<a.length;i++)
 function poopChip(){
   var b=$("poopfix"); if(!b)return false;
   var r=poopLast(), on=!!r, l=on?"똥 "+(W.poops.indexOf(r)+1)+"번째 굳기 고르기":"";
+  if(on&&!b.querySelector(".gi")){ var ic=$("b-poop").querySelector(".gi"); if(ic)b.appendChild(ic.cloneNode(true)); }   // 보완: 아이콘은 똥 단추의 것을 그대로 쓴다(아이콘을 바꾸면 같이 바뀐다)
   if(b.hidden===on)b.hidden=!on;
-  b.parentNode.classList.toggle("pfx",on);
   if(on&&b.getAttribute("aria-label")!==l)b.setAttribute("aria-label",l);
   return on;
 }
-$("poopfix").addEventListener("click",function(){ var r=poopLast(); if(!W||!r)return; undoHide(); poopOpen(r,true); });
-$("b-poop").addEventListener("click",function(){
-  if(!W)return;
+$("poopfix").addEventListener("click",function(e){ var r=poopLast(); if(!W||!r)return; tapMark(e); undoHide(); poopOpen(r,true); });
+$("b-poop").addEventListener("click",function(e){
+  if(!W)return; tapMark(e);                        // 보완: 같은 자리의 빠른 둘째 누름이 창의 단추에 떨어지지 않게 자리를 적어 둔다
   headListen();                                    // iOS 나침반 권한, 사용자 제스처인 지금만 요청 가능
   var rec={t:Date.now(),f:3,odd:false,col:true,lat:null,lng:null,hd:(HEAD!=null?Math.round(HEAD):null)};
   W.poops.push(rec); S.live=W; PS.fail=!persistLive(); tick(); widgetPush();
@@ -4801,24 +4847,52 @@ $("b-poop").addEventListener("click",function(){
   undoHide();
   poopOpen(rec);
 });
-$("poopundo").addEventListener("click",function(){            // 되돌리기
-  var r=PS.rec; poopClose(); if(!r||!W)return;
+/* 고침 19 보완(11/18 다시 검토, P1): 같은 자리를 빠르게 두 번 누른 둘째 누름 거르기.
+   첫 누름으로 창이 뜨거나 닫히면 둘째 누름이 그 자리에 새로 온 단추에 떨어졌다. 칩이나 알림의 고치기를 두 번 → 창의 단단, 색이 이상해요(고르지 않은 값이 저장돼
+   묽은 변 경고가 달라진다). 좁은 폰에서 똥 단추를 두 번 → 창의 되돌리기(방금 기록이 지워짐). 닫기나 되돌리기를 두 번 → 아래의 꾹, 똥 단추(기록이 하나 생김).
+   창을 열거나 닫은 손가락 누름의 자리를 적어 두고(tapMark), 그 자리에서 40px 안에 다시 온 손가락 누름을 받지 않는다(tapEcho). 창(#sheet, body 바로 아래)에서는 0.7초,
+   산책 화면(#v-walk)에서는 0.4초(창이 닫히면 아래 단추가 바로 보여서, 0.5초 뒤 일부러 누른 것까지 삼키지 않게 짧다). 색이 이상해요도 0.4초로 적는다(안내 글이 펼쳐지고 접히며 단추가 움직인다).
+   다른 자리의 누름은 바로 받고, 받은 누름이 단추에 닿았으면 적어 둔 자리를 지운다(tapUse: 일부러 다른 단추를 누른 뒤에는 처음 자리도 바로 눌린다. 글이나 빈 곳을 스친 누름은 지우지 않는다).
+   글쇠로 누른 것, 앱이 대신 누른 것(뒤로 가기), 자리를 알 수 없는 누름(좌표 0,0)은 적지도 거르지도 지우지도 않는다. 시간은 폰 시계와 상관없는 값으로 잰다 */
+function monoNow(){ try{ return performance.now(); }catch(e){ return Date.now(); } }
+var TAP={x:0,y:0,at:null,ms:0};
+function tapAt(e){ return !!e&&e.detail>0&&!!(e.clientX||e.clientY); }                  // 자리를 아는 손가락 누름인가
+function tapMark(e,ms){ if(tapAt(e)){ TAP.x=e.clientX; TAP.y=e.clientY; TAP.at=monoNow(); TAP.ms=ms||0; } }   // ms: 이 자리는 이만큼만 거른다(없으면 듣는 쪽이 정한 만큼)
+function tapEcho(e,ms){ if(TAP.at==null||!tapAt(e))return false; if(TAP.ms&&TAP.ms<ms)ms=TAP.ms; var d=monoNow()-TAP.at, dx=e.clientX-TAP.x, dy=e.clientY-TAP.y; return d>=0&&d<ms&&dx*dx+dy*dy<1600; }
+function tapUse(e){ if(tapAt(e)&&e.target&&e.target.closest&&e.target.closest("button,a,summary,label,input,select"))TAP.at=null; }
+$("sheet").addEventListener("click",function(e){            // 창의 다른 누름(닫기, 바깥, 지우기, 굳기)보다 먼저 듣는다
+  if(!PS.rec)return;
+  if(tapEcho(e,700)){ e.stopImmediatePropagation(); e.preventDefault(); } else tapUse(e);
+},true);
+$("poopundo").addEventListener("click",function(e){           // 되돌리기. 다시 연 창에서는 '기록 지우기'이고 7초 동안 되살릴 수 있다(보완)
+  var r=PS.rec, kept=PS.keep, w0=W, had=$("sheet").contains(document.activeElement);
+  tapMark(e); poopClose(); if(!r||!W)return;             // 자리를 적어 둔다: 두 번 누른 둘째 누름이 아래의 똥 단추에 떨어져 새 기록이 생겼다
   var i=W.poops.indexOf(r); if(i>=0)W.poops.splice(i,1);
-  S.live=W; save(); tick(); widgetPush(); toast("똥 기록을 지웠어요");
+  S.live=W; var ok=save(); PS.fail=!ok; tick(); widgetPush();   // 저장이 안 됐으면 적어 둔다(굳기 고르기를 다시 열거나 산책 저장이 될 때 한 번 더 저장한다)
+  var msg="똥 기록을 지웠어요"+(ok?"":", 저장 못 했어요");   // 저장이 안 됐으면 된 것처럼만 말하지 않는다
+  if(kept&&i>=0){
+    undoShow("poop",msg,function(){
+      var foc=document.activeElement===$("undo-b");
+      if(W===w0&&W.poops.indexOf(r)<0){ W.poops.splice(Math.min(i,W.poops.length),0,r); S.live=W; var ok2=save(); PS.fail=!ok2; tick(); widgetPush(); toast("똥 기록을 되살렸어요"+(ok2?"":", 저장 못 했어요")); }
+      if(foc)poopFocus();
+      return false; },"되살리기");
+    if(had)poopFocus($("undo-b"));   // 글쇠로 지웠으면 초점을 남은 똥의 굳기 고르기로, 똥이 더 없으면 되살리기로(똥 단추로 가면 Enter 한 번에 새 똥이 기록됐다)
+  } else toast(msg);
 });
-$("poopclose").addEventListener("click",function(){poopClose();});   // 닫기(이미 저장돼 있다). 안드로이드 뒤로 가기도 이 단추를 누른다
-$("sheet").addEventListener("click",function(e){if(e.target===this)poopClose();});
+$("poopclose").addEventListener("click",function(e){tapMark(e);poopClose();});   // 닫기(이미 저장돼 있다). 안드로이드 뒤로 가기도 이 단추를 누른다
+$("sheet").addEventListener("click",function(e){if(e.target===this){tapMark(e);poopClose();}});
 $("sheet").addEventListener("pointerdown",function(){ if(PS.rec){PS.hold=true;poopTouch();} },true);   // 시트를 만지는 동안은 닫지 않는다
 function poopRelease(){ if(PS.hold){PS.hold=false; if(PS.rec)poopTouch();} }
 document.addEventListener("pointerup",poopRelease,true); document.addEventListener("pointercancel",poopRelease,true);
 $("sheet").addEventListener("focusin",function(e){ if(PS.rec&&e.target!==$("poop-h"))poopTouch(); });   // 화면 읽기로 훑는 동안도
 $("v-walk").addEventListener("click",function(e){   // 저절로 닫힌 직후의 늦은 탭이 아래 버튼에 떨어지지 않게
-  if(Date.now()-(PS.autoAt||0)<450){e.stopPropagation();e.preventDefault();}
+  var d=PS.autoAt==null?-1:monoNow()-PS.autoAt; if((d>=0&&d<450)||tapEcho(e,400)){e.stopPropagation();e.preventDefault();} else tapUse(e);   // 보완: 폰 시계와 상관없는 시간으로 잰다(예전에는 시계가 뒤로 가면 따라올 때까지 단추가 눌리지 않았다). 닫기를 두 번 누른 둘째 누름도 0.4초 동안 거른다
 },true);
-press($("firm"),function(b){ if(PS.rec&&W){PS.rec.f=+b.dataset.v;S.live=W;save();} poopTouch(); });
-$("odd").addEventListener("click",function(){
+press($("firm"),function(b){ if(PS.rec&&W){PS.rec.f=+b.dataset.v;S.live=W;PS.fail=!persistLive();poopHead();} poopTouch(); });   // 보완: 저장이 안 되면 알리고, 제목과 저절로 닫힐 때의 알림이 마지막 저장 결과를 말하게 적어 둔다
+$("odd").addEventListener("click",function(e){
   if(!PS.rec||!W)return;
-  PS.rec.odd=!PS.rec.odd; S.live=W; save(); poopSheetSync(); poopTouch();
+  tapMark(e,400);                                  // 보완: 안내 글이 펼쳐지고 접히며 단추들이 움직인다. 끌 때 같은 자리의 빠른 둘째 누름이 내려온 굳기 단추에 떨어져 굳기가 바뀌었다(0.4초만 거른다)
+  PS.rec.odd=!PS.rec.odd; S.live=W; PS.fail=!persistLive(); poopHead(); poopSheetSync(); poopTouch();
 });
 
 /* ══ 기록 ══ */
