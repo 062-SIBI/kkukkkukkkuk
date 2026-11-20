@@ -49,7 +49,10 @@ function kmPal(th){
   }
   return P;
 }
-var KM_LOGO=[[22,58,-22],[50,40,0],[78,58,22]];       // 로고 점 세 개(100 단위 가운데와 기울기)
+/* 꾹자리 표시(디자인 2차 11/19, 06이 시안 2에서 고른 '다'): 흰 패드(둥근 세모) 위에 로고의 점 셋. 100 격자.
+   toes는 점 셋의 가운데와 기울기(로고와 같은 22도), rx와 ry는 점의 반지름. 패드는 pts 세 점을 이은 세모를 굵기 2r의 둥근 선으로 덮은 것이고 cx, cy, w, h는 그 가운데와 크기다 */
+var KM_PAD={toes:[[32.5,59.5,-22],[50,36.5,0],[67.5,59.5,22]],rx:10.6,ry:13,pts:[[50,34],[29.5,60.5],[70.5,60.5]],r:21.5,cx:50,cy:47.25,w:84,h:69.5};
+var KM_FAV=5;                                         // 이 횟수부터 한 단 크게, 점 셋을 로고 세 색으로 [가정]
 var KM_DLA=0.00018,KM_DLN=0.000227;                   // 구름 칸 약 20m
 var KM_FONT="Jua,'Pretendard Variable',Pretendard,sans-serif";
 var KM_RM=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -285,7 +288,7 @@ KMap.prototype.go=function(la,ln,z){
   if(me.ft){me.ft.mx=kmX(ln);me.ft.my=kmY(la);me.draw();}
 };
 
-/* d: {fog, extra:[pts], trail:pts, trailK, guide:pts, guideDash, marks:[{la,ln,k}], stamps:[{la,ln,n,w,rank,neu,check,id,num}],
+/* d: {fog, extra:[pts], trail:pts, trailK, guide:pts, guideDash, marks:[{la,ln,k}], stamps:[{la,ln,n,w,neu,check,id,num}],
        cluster, sel, start:[la,ln], home:[la,ln], here:[la,ln], bubble:{la,ln,t}} */
 KMap.prototype.set=function(d){
   var me=this;me.d=d||{};
@@ -385,7 +388,8 @@ KMap.prototype.drawDots=function(x,T,px,py,W,H){   // 걸은 길: 흰 테두리 
   x.strokeStyle=kmTrailCol();x.lineWidth=lw;x.stroke();
   x.restore();
 };
-/* 꾹자리 도장: 자주 갈수록 크게, 1~3위 번호, 처음 마킹한 곳은 노란 반짝임. 멀리 보면 가까운 도장끼리 묶는다 */
+/* 꾹자리 표시: 자주 갈수록 크게, KM_FAV번부터 한 단 더 크게 로고 세 색으로(숫자는 붙이지 않는다, 06 11/19).
+   처음 마킹한 곳은 노란 반짝임. 멀리 보면 가까운 것끼리 묶고, 묶음의 색은 가장 많이 간 곳을 따른다 */
 KMap.prototype.drawStamps=function(x,px,py){
   var me=this,st=me.d.stamps||[];me.hits=[];
   var L=st.map(function(q){return {x:px(q.mx),y:py(q.my),q:q};}).sort(function(a,b){return (b.q.n||1)-(a.q.n||1);});
@@ -395,15 +399,15 @@ KMap.prototype.drawStamps=function(x,px,py){
     G.push({x:p.x,y:p.y,m:[p],n:p.q.n||1,top:p.q});
   });
   G.reverse().forEach(function(g){
-    var q=g.top,w=q.w||kmSize(g.n);
-    if(g.m.length>1){                              // 묶인 도장: 가장 높은 순위 번호는 그대로, 아래에 몇 곳인지
-      var rk=null,nu=false;g.m.forEach(function(p){if(p.q.rank&&(!rk||p.q.rank<rk))rk=p.q.rank;if(p.q.neu)nu=true;});
-      kmStamp(x,g.x,g.y,w,nu,rk,false);
-      kmPill(x,g.x,g.y+w*.5+9,g.m.length+"곳");
-      me.hits.push({x:g.x,y:g.y,c:g});return;
+    var q=g.top,fav=(q.n||1)>=KM_FAV,w=kmStampW(q.w||kmSize(g.n),fav);   // top은 묶음에서 가장 많이 간 곳. w는 그릴 크기라 아래의 딱지와 번호 자리도 이 크기를 따른다
+    if(g.m.length>1){                              // 묶인 표시: 아래에 몇 곳인지
+      var nu=false;g.m.forEach(function(p){if(p.q.neu)nu=true;});
+      kmStamp(x,g.x,g.y,w,nu,fav,false);
+      var pw=kmPill(x,g.x,g.y+w*.5+9,g.m.length+"곳");
+      me.hits.push({x:g.x,y:g.y,c:g});me.hits.push({x:g.x,y:g.y+w*.5+9,c:g,pw:pw/2});return;   // 딱지 칸을 눌러도 이 묶음이다(Codex 11/19)
     }
     var sel=me.d.sel!=null&&q.id===me.d.sel;
-    kmStamp(x,g.x,g.y,w,q.neu,q.rank,sel);
+    kmStamp(x,g.x,g.y,w,q.neu,fav,sel);
     if(q.num)kmTag(x,g.x+w*.48,g.y-w*.42,q.num,true);
     if(q.check)kmCheck(x,g.x+w*.48,g.y-w*.42);
     me.hits.push({x:g.x,y:g.y,id:q.id});
@@ -412,10 +416,11 @@ KMap.prototype.drawStamps=function(x,px,py){
 KMap.prototype.tap=function(X,Y){
   var me=this,best=null,bd=24;                     // 둘레 48px 안을 누르면 된다
   if(me.drop&&Date.now()-me.drop<400)return;        // 핀을 끌어 놓은 직후의 탭은 버린다
-  me.hits.forEach(function(h){var dd=Math.hypot(h.x-X,h.y-Y);if(dd<=bd){bd=dd;best=h;}});
+  me.hits.forEach(function(h){if(h.pw&&(Math.abs(h.x-X)>h.pw+2||Math.abs(h.y-Y)>10))return;   // 'N곳' 딱지는 그려진 칸 안(둘레 2px까지)을 눌렀을 때만 잡는다. 아래의 다른 꾹자리를 가로채지 않게
+    var dd=Math.hypot(h.x-X,h.y-Y);if(dd<=bd){bd=dd;best=h;}});
   if(me.o.onTap){me.o.onTap({pin:me.pinAt(X,Y),id:best&&!best.c?best.id:null,ll:me.ll(X,Y)});return;}
   if(best&&best.c){                                // 묶인 도장: 그쪽으로 확대
-    if(me.map)me.map.easeTo({center:me.map.unproject([best.x,best.y]),zoom:Math.min(18,me.map.getZoom()+2),duration:KM_RM?0:400});
+    if(me.map)me.map.easeTo({center:me.map.unproject([best.c.x,best.c.y]),zoom:Math.min(18,me.map.getZoom()+2),duration:KM_RM?0:400});   // 딱지를 눌렀어도 묶음의 가운데로
     return;
   }
   if(me.o.onPick)me.o.onPick(best?best.id:null);
@@ -423,11 +428,15 @@ KMap.prototype.tap=function(X,Y){
 
 /* ── 그림 조각 ── */
 function kmSize(n){return 16+5.2*Math.sqrt(n||1);}
-function kmLogo(x,cx,cy,w,halo,col){
-  var k=w/90;
-  function e(gr){KM_LOGO.forEach(function(q){x.beginPath();x.ellipse(cx+(q[0]-50)*k,cy+(q[1]-49)*k,13*k+gr,16*k+gr,q[2]*Math.PI/180,0,6.2832);x.fill();});}
-  if(halo){x.fillStyle="#FFFFFF";e(2.2);}
-  x.fillStyle=col||KMC.ink;e(0);
+function kmPad(x,X,Y,W,fav){                       // W: 패드의 폭(px). 그림자, 가는 검정 테두리, 흰 패드, 점 셋 차례로 그린다
+  var P=KM_PAD,s=W/P.w,d=P.r*2,tri=[KMC.coral,KMC.sun,KMC.sky];
+  function both(col,lw){x.beginPath();x.moveTo(P.pts[0][0],P.pts[0][1]);x.lineTo(P.pts[1][0],P.pts[1][1]);x.lineTo(P.pts[2][0],P.pts[2][1]);x.closePath();
+    x.strokeStyle=col;x.fillStyle=col;x.lineWidth=lw;x.stroke();x.fill();}
+  x.save();x.translate(X-P.cx*s,Y-P.cy*s);x.scale(s,s);x.lineJoin="round";x.lineCap="round";
+  x.save();x.translate(0,2/s);both("rgba(0,0,0,.13)",d+1/s);x.restore();
+  both("rgba(27,23,18,.92)",d+2/s);both("#FFFFFF",d);
+  P.toes.forEach(function(q,i){x.beginPath();x.ellipse(q[0],q[1],P.rx,P.ry,q[2]*Math.PI/180,0,6.2832);x.fillStyle=fav?tri[i]:KMC.ink;x.fill();});
+  x.restore();
 }
 function kmSpark(x,cx,cy,rr){
   x.save();x.strokeStyle=KMC.sun;x.lineWidth=2.4;x.lineCap="round";x.beginPath();
@@ -442,6 +451,7 @@ function kmPill(x,X,Y,t){
   x.save();x.font="11px "+KM_FONT;var w=x.measureText(t).width+12;
   x.fillStyle=KMC.ink;kmRR(x,X-w/2,Y-8,w,16,8);x.fill();x.lineWidth=1.5;x.strokeStyle="#FFFFFF";x.stroke();
   x.fillStyle="#FFFFFF";x.textAlign="center";x.textBaseline="middle";x.fillText(t,X,Y+.5);x.restore();
+  return w;                                        // 딱지의 폭(누르는 자리를 잡을 때 쓴다)
 }
 function kmPin(x,X,Y,n){                           // 가고 싶은 곳 핀(번호)
   x.save();
@@ -455,11 +465,13 @@ function kmCheck(x,X,Y){
   x.save();x.beginPath();x.arc(X,Y,9,0,6.2832);x.fillStyle=KMC.moss;x.fill();x.lineWidth=2;x.strokeStyle="#FFFFFF";x.stroke();
   x.beginPath();x.moveTo(X-4,Y);x.lineTo(X-1.2,Y+2.8);x.lineTo(X+4,Y-2.4);x.lineWidth=2.2;x.lineCap="round";x.lineJoin="round";x.stroke();x.restore();
 }
-function kmStamp(x,X,Y,w,neu,rank,sel){
-  if(sel){w*=1.3;x.save();x.beginPath();x.arc(X,Y,w*.78,0,6.2832);x.fillStyle="#FFFFFF";x.fill();x.lineWidth=2;x.strokeStyle=KMC.ink;x.stroke();x.restore();}
-  kmLogo(x,X,Y,w,true);
-  if(neu)kmSpark(x,X,Y,w*.62+6);
-  if(rank)kmTag(x,X+w*.48,Y-w*.42,rank,false);
+function kmStampW(w,fav){return Math.min(39,fav?w*1.12:w);}   // 그릴 크기: KM_FAV번 이상 간 곳은 한 단 크게(1.12배), 누구든 39에서 멈춘다
+function kmStamp(x,X,Y,w,neu,fav,sel){             // w: 그릴 크기(kmStampW). fav면 점 셋을 로고 세 색으로, 고른 곳은 1.15배에 흰 동그라미
+  if(sel)w*=1.15;
+  var W=w*.97;
+  if(sel){x.save();x.beginPath();x.arc(X,Y,W*.68,0,6.2832);x.fillStyle="#FFFFFF";x.fill();x.lineWidth=2;x.strokeStyle=KMC.ink;x.stroke();x.restore();}
+  kmPad(x,X,Y,W,fav);
+  if(neu)kmSpark(x,X,Y,W*.55+6);
 }
 /* 킁킁 자리와 똥 자리 표시(고침 13, 06 11/12 산책 피드백: 노란 단추 모양은 무엇인지 바로 알기 어렵다).
    산책 화면 단추와 같은 그림을 같은 색 동그라미에 넣는다: 킁킁은 노랑에 코, 똥은 빨강에 세 겹 똥. 그림은 단추의 24 단위 그림 그대로다.
@@ -708,11 +720,13 @@ if($("d-file")){
 function kmDog(){return (S.dog&&S.dog.name)||"우리 아이";}
 function kmJosa(w,a,b){var c=w.charCodeAt(w.length-1);return w+((c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28)?a:b);}
 function kmRank(){return S.spots.slice().sort(function(a,b){return b.n-a.n||(a.first||0)-(b.first||0);});}
-function kmStampSvg(s){
-  var k=s*.92/90,cx=s/2,cy=s*.36,o="";
-  KM_LOGO.forEach(function(q){var x=(cx+(q[0]-50)*k).toFixed(1),y=(cy+(q[1]-49)*k).toFixed(1);
-    o+='<ellipse cx="'+x+'" cy="'+y+'" rx="'+(13*k).toFixed(1)+'" ry="'+(16*k).toFixed(1)+'" transform="rotate('+q[2]+' '+x+' '+y+')" fill="currentColor"/>';});
-  return '<svg class="km-st" width="'+s+'" height="'+Math.round(s*.72)+'" viewBox="0 0 '+s+' '+(s*.72).toFixed(1)+'" aria-hidden="true">'+o+'</svg>';
+function kmStampSvg(s,fav){                         // 지도의 꾹자리 표시와 같은 그림(흰 패드 위의 점 셋). s: 그림의 폭(px), fav: 점 셋을 로고 세 색으로
+  var P=KM_PAD,u=P.w/Math.max(1,s-3.6),m=1.8*u,tri=[KMC.coral,KMC.sun,KMC.sky],o="";   // u: 1px이 몇 격자인지. 테두리 1.3px, 둘레 여백 1.8px
+  var d="M"+P.pts.map(function(p){return p[0]+" "+p[1];}).join("L")+"Z";
+  o+='<path d="'+d+'" fill="'+KMC.ink+'" stroke="'+KMC.ink+'" stroke-width="'+(P.r*2+2.6*u).toFixed(1)+'" stroke-linejoin="round"/>';
+  o+='<path d="'+d+'" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="'+(P.r*2)+'" stroke-linejoin="round"/>';
+  P.toes.forEach(function(q,i){o+='<ellipse cx="'+q[0]+'" cy="'+q[1]+'" rx="'+P.rx+'" ry="'+P.ry+'" transform="rotate('+q[2]+' '+q[0]+' '+q[1]+')" fill="'+(fav?tri[i]:KMC.ink)+'"/>';});
+  return '<svg class="km-st" width="'+s+'" height="'+Math.round(s*(P.h+m*2)/(P.w+m*2))+'" viewBox="'+(P.cx-P.w/2-m).toFixed(1)+' '+(P.cy-P.h/2-m).toFixed(1)+' '+(P.w+m*2).toFixed(1)+' '+(P.h+m*2).toFixed(1)+'" aria-hidden="true">'+o+'</svg>';
 }
 function kmDotSvg(k,s){var poop=k==="poop";   // 고침 13: 지도 표시와 같은 그림(동그라미 안에 코나 똥. 똥은 11/19부터 세 겹 똥)
   return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11.5" fill="'+(poop?KMC.coral:KMC.sun)+'"/>'+
@@ -760,12 +774,12 @@ function kmAreaRender(){
   $("ka-rank").innerHTML=!R.length?'<div class="empty">꾹을 기록하면 꾹자리가 생겨요</div>':
     show.map(function(s,i){var id=kmSpotId(s);
       return '<button type="button" class="km-row'+(KMA_SEL===id?' on':'')+'" data-sid="'+id+'">'+
-        '<span class="km-rk">'+(i+1)+'</span>'+kmStampSvg(24)+'<b>'+esc(kmSpotName(s))+'</b>'+
+        '<span class="km-rk">'+(i+1)+'</span>'+kmStampSvg(24,s.n>=KM_FAV)+'<b>'+esc(kmSpotName(s))+'</b>'+
         '<span class="km-cnt">'+s.n+'<small>번</small></span></button>';}).join("")+
     (R.length>3?'<button type="button" class="km-more" id="ka-more">'+(KMA_ALL?'접기':'꾹자리 '+R.length+'곳 다 보기')+'</button>':'');
   $("ka-reco").hidden=!kmHome();
   $("ka-reco-t").textContent="추천 길 만들기";
-  $("ka-note").textContent="동네는 산책을 가장 많이 시작한 곳에서 1km 안이에요. 새 길은 처음 걸은 길만 셉니다.";
+  $("ka-note").textContent="다섯 번 이상 간 꾹자리는 크게, 색으로 보여요. 동네는 산책을 가장 많이 시작한 곳에서 1km 안이에요. 새 길은 처음 걸은 길만 셉니다.";
   kmAreaPickUI();
   if($("lv-map").classList.contains("on"))kmAreaMap();
 }
@@ -775,7 +789,7 @@ function kmAreaMap(){
   KMA.theme(kmTheme());
   var R=kmRank(),now=Date.now(),last=S.walks.filter(function(w){return w.pts&&w.pts.length>1;})[0];
   KMA.set({fog:true,trail:last?last.pts:null,trailK:.85,cluster:true,sel:KMA_SEL,
-    stamps:R.map(function(s,i){return {la:s.lat,ln:s.lng,n:s.n,rank:i<3?i+1:null,neu:now-(s.first||0)<7*864e5,id:kmSpotId(s)};})});
+    stamps:R.map(function(s){return {la:s.lat,ln:s.lng,n:s.n,neu:now-(s.first||0)<7*864e5,id:kmSpotId(s)};})});
   var sig=S.spots.length+"/"+S.walks.length;
   if(KMA.sig!==sig){KMA.sig=sig;
     var f=R.map(function(s){return [s.lat,s.lng];});if(last)f=f.concat(last.pts);
