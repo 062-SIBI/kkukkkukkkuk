@@ -462,19 +462,20 @@ function kmStamp(x,X,Y,w,neu,rank,sel){
   if(rank)kmTag(x,X+w*.48,Y-w*.42,rank,false);
 }
 /* 킁킁 자리와 똥 자리 표시(고침 13, 06 11/12 산책 피드백: 노란 단추 모양은 무엇인지 바로 알기 어렵다).
-   산책 화면 단추와 같은 그림을 같은 색 동그라미에 넣는다: 킁킁은 노랑에 코, 똥은 빨강에 봉투. 그림은 단추의 24 단위 그림 그대로다. */
+   산책 화면 단추와 같은 그림을 같은 색 동그라미에 넣는다: 킁킁은 노랑에 코, 똥은 빨강에 세 겹 똥. 그림은 단추의 24 단위 그림 그대로다.
+   디자인 1차(11/19): 똥 단추 그림이 봉투에서 세 겹 똥으로 바뀌어(06이 시안 1에서 고름) 지도의 똥 자리도 같은 그림을 검정으로 채워 그린다. */
 var KM_NOSE_D="M12 19.6C9 19.6 2.8 16.4 2.8 10.8C2.8 7.2 6.6 4.8 12 4.8C17.4 4.8 21.2 7.2 21.2 10.8C21.2 16.4 15 19.6 12 19.6Z";
-var KM_BAG_D="M5.5 10.5h13l-1.2 9a2.2 2.2 0 0 1 -2.2 1.9h-6.2a2.2 2.2 0 0 1 -2.2 -1.9zM8.6 10.5l-1.8 -6l4.4 2.6M15.4 10.5l1.8 -6l-4.4 2.6";
-var KM_NOSE=null,KM_BAG=null;
+var KM_POOP_D="M3.1 17.5a8.9 3.7 0 1 1 17.8 0a8.9 3.7 0 1 1 -17.8 0zM5.5 12.9a6.5 3.4 0 1 1 13 0a6.5 3.4 0 1 1 -13 0zM7.8 8.8a4.2 3 0 1 1 8.4 0a4.2 3 0 1 1 -8.4 0zM9.7 7.7C9.9 5.3 11.9 5 13.5 2.6C14.9 4.9 14.5 7 13.5 8.4Z";
+var KM_NOSE=null,KM_POOP=null;
 function kmMark(x,X,Y,k,s){
   var poop=k==="poop",R=11.5*s,g=R*1.3/24;
   x.save();
   x.fillStyle="rgba(0,0,0,.10)";x.beginPath();x.arc(X,Y+2.2,R+.5,0,6.2832);x.fill();
   x.fillStyle=poop?KMC.coral:KMC.sun;x.strokeStyle="#FFFFFF";x.lineWidth=2.6;x.beginPath();x.arc(X,Y,R,0,6.2832);x.fill();x.stroke();
-  x.translate(X-12*g,Y-(poop?12.9:12.2)*g);x.scale(g,g);
+  x.translate(X-12*g,Y-(poop?12.1:12.2)*g);x.scale(g,g);
   if(poop){
-    if(!KM_BAG)KM_BAG=new Path2D(KM_BAG_D);
-    x.strokeStyle=KMC.ink;x.lineWidth=2.4;x.lineCap="round";x.lineJoin="round";x.stroke(KM_BAG);
+    if(!KM_POOP)KM_POOP=new Path2D(KM_POOP_D);
+    x.fillStyle=KMC.ink;x.fill(KM_POOP);
   }else{
     if(!KM_NOSE)KM_NOSE=new Path2D(KM_NOSE_D);
     x.fillStyle=KMC.ink;x.fill(KM_NOSE);
@@ -713,9 +714,9 @@ function kmStampSvg(s){
     o+='<ellipse cx="'+x+'" cy="'+y+'" rx="'+(13*k).toFixed(1)+'" ry="'+(16*k).toFixed(1)+'" transform="rotate('+q[2]+' '+x+' '+y+')" fill="currentColor"/>';});
   return '<svg class="km-st" width="'+s+'" height="'+Math.round(s*.72)+'" viewBox="0 0 '+s+' '+(s*.72).toFixed(1)+'" aria-hidden="true">'+o+'</svg>';
 }
-function kmDotSvg(k,s){var poop=k==="poop";   // 고침 13: 지도 표시와 같은 그림(동그라미 안에 코나 봉투)
+function kmDotSvg(k,s){var poop=k==="poop";   // 고침 13: 지도 표시와 같은 그림(동그라미 안에 코나 똥. 똥은 11/19부터 세 겹 똥)
   return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11.5" fill="'+(poop?KMC.coral:KMC.sun)+'"/>'+
-    (poop?'<path transform="translate(3.6 3) scale(.7)" fill="none" stroke="'+KMC.ink+'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="'+KM_BAG_D+'"/>'
+    (poop?'<path transform="translate(3.6 3.6) scale(.7)" fill="'+KMC.ink+'" d="'+KM_POOP_D+'"/>'
          :'<path transform="translate(3.6 3.5) scale(.7)" fill="'+KMC.ink+'" d="'+KM_NOSE_D+'"/>')+'</svg>';}
 function kmAgo(t){if(!t)return "";var d=Math.floor((Date.now()-t)/864e5);return d<=0?"오늘":d===1?"어제":d<30?d+"일 전":Math.floor(d/30)+"달 전";}
 
