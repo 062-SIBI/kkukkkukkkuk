@@ -116,6 +116,7 @@ const PURPOSE = {
 /* 개인정보 파일(PrivacyInfo.xcprivacy)을 웹 코드에 맞춰 만든다. 앱스토어 등록 때 적는 '앱이 수집하는 정보' 답과 같아야 한다.
    - 정확한 위치(앱 기능): 날씨와 동네 이름을 받으려고 소수점 셋째 자리로 줄인 좌표를 외부 서비스에 보낸다. 걸은 길은 보내지 않는다.
    - 기기 번호와 앱 사용 기록(분석): 아이폰 앱에서 사용 통계를 켠 경우(웹 코드의 HK_IOS=true)에만 넣는다.
+   - 피트니스(분석, 빌드 3.17): 산책이 끝날 때 시간(분)과 거리(km)를 사용 통계로 보낸다. 사용 통계를 켠 경우에만 넣는다.
    - 사용자 신원과 잇지 않고(계정이 없다) 광고 추적에 쓰지 않는다.
    - 파일 시각(C617.1): 기록 내보내기와 카드 저장에 쓰는 파일 플러그인이 요구한다.
    값 이름은 애플 문서에 적힌 그대로다(2026-11-10에 확인). 지어낸 이름을 쓰면 Xcode의 개인정보 보고서가 틀어진다. */
@@ -124,7 +125,8 @@ function privacyManifest(html) {
   if (on === off) throw new Error('웹 코드에서 아이폰 사용 통계 설정(HK_IOS)을 못 읽음');
   const types = [['NSPrivacyCollectedDataTypePreciseLocation', 'NSPrivacyCollectedDataTypePurposeAppFunctionality']];
   if (on) types.push(['NSPrivacyCollectedDataTypeDeviceID', 'NSPrivacyCollectedDataTypePurposeAnalytics'],
-    ['NSPrivacyCollectedDataTypeProductInteraction', 'NSPrivacyCollectedDataTypePurposeAnalytics']);
+    ['NSPrivacyCollectedDataTypeProductInteraction', 'NSPrivacyCollectedDataTypePurposeAnalytics'],
+    ['NSPrivacyCollectedDataTypeFitness', 'NSPrivacyCollectedDataTypePurposeAnalytics']);   // 값 이름은 애플 NSPrivacyCollectedDataType 문서에서 확인(11/20)
   const T = '\t';
   const one = t => T + T + '<dict>\n' +
     T + T + T + '<key>NSPrivacyCollectedDataType</key>\n' + T + T + T + '<string>' + t[0] + '</string>\n' +
@@ -197,7 +199,7 @@ function post() {
   const pm = privacyManifest(fs.readFileSync(path.join(IOS, 'App', 'public', 'index.html'), 'utf8'));
   write(path.join(IOS, 'App', 'PrivacyInfo.xcprivacy'), pm);
   console.log('✓ 프로젝트: 아이폰 전용, 버전 ' + ver.name + ', 빌드 ' + build + (team ? ', 팀 아이디 넣음' : ', 팀 아이디 없음(서명 없는 빌드)') +
-    ', 개인정보 파일 넣음(위치' + (pm.includes('NSPrivacyCollectedDataTypeDeviceID') ? ', 기기 번호, 앱 사용 기록' : '만. 사용 통계는 꺼짐') + ')');
+    ', 개인정보 파일 넣음(위치' + (pm.includes('NSPrivacyCollectedDataTypeDeviceID') ? ', 기기 번호, 앱 사용 기록, 피트니스' : '만. 사용 통계는 꺼짐') + ')');
 
   // ⑥ 아이콘과 시작 화면
   const AS = path.join(IOS, 'App', 'Assets.xcassets');
