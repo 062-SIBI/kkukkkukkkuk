@@ -1,7 +1,10 @@
-# 꾹꾹이 안드로이드 APK 빌드
+# 꾹꾹이 안드로이드 APK, AAB 빌드
 # - native/ 폴더가 바뀌면 자동으로, 또는 Actions 탭에서 "Run workflow"로 수동 실행
+#   (이 파일만 바꾼 커밋으로는 빌드가 돌지 않는다. 11/4부터)
 # - 결과 APK는 Releases에 올라가고, 받는 주소는 항상 같다:
 #   https://github.com/062-SIBI/kkukkkukkkuk/releases/latest/download/kkukkkuki.apk
+# - 플레이 스토어용 AAB는 공개 릴리스에 올리지 않고 그 실행 화면 아래 Artifacts에 30일 보관한다.
+#   APK와 같은 키로 서명한다(플레이 앱 서명은 이 키를 앱 서명 키로 올리는 길 B).
 # - 서명 키는 저장소 비밀값 ANDROID_SIGNING("비밀번호|base64") 하나. 같은 키로 서명해야
 #   다음 버전을 지우지 않고 덮어 설치할 수 있다. 키 원본은 꾹꾹이_최종/08_배포 폴더에 백업.
 name: Android APK
@@ -12,7 +15,6 @@ on:
     branches: [main]
     paths:
       - 'native/**'
-      - '.github/workflows/android.yml'
 
 permissions:
   contents: write
@@ -49,7 +51,7 @@ jobs:
           node scripts/patch-android.js
           npx cap sync android
 
-      - name: APK 빌드 · 서명
+      - name: APK, AAB 빌드와 서명
         working-directory: native/android
         env:
           SIGN: ${{ secrets.ANDROID_SIGNING }}
@@ -62,16 +64,27 @@ jobs:
           echo "::add-mask::$KS_PASS"
           printf '%s' "${SIGN#*|}" | base64 -d > app/release.p12
           chmod +x gradlew
-          ./gradlew assembleRelease --no-daemon --stacktrace
+          ./gradlew assembleRelease bundleRelease --no-daemon --stacktrace
           rm -f app/release.p12
 
       - name: 파일 이름 붙이기
         id: meta
         run: |
           cp native/android/app/build/outputs/apk/release/app-release.apk kkukkkuki.apk
-          echo "name=$(node -p "require('./native/app-version.json').name")" >> "$GITHUB_OUTPUT"
-          echo "code=$(node -p "require('./native/app-version.json').code")" >> "$GITHUB_OUTPUT"
-          ls -la kkukkkuki.apk
+          NAME=$(node -p "require('./native/app-version.json').name")
+          CODE=$(node -p "require('./native/app-version.json').code")
+          cp native/android/app/build/outputs/bundle/release/app-release.aab "kkukkkuki-$NAME-$CODE.aab"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "code=$CODE" >> "$GITHUB_OUTPUT"
+          ls -la kkukkkuki.apk "kkukkkuki-$NAME-$CODE.aab"
+
+      - name: 플레이 스토어용 AAB 보관 (공개 릴리스에는 올리지 않음)
+        uses: actions/upload-artifact@v4
+        with:
+          name: kkukkkuki-aab-${{ steps.meta.outputs.name }}-${{ steps.meta.outputs.code }}
+          path: kkukkkuki-*.aab
+          retention-days: 30
+          if-no-files-found: error
 
       - name: 릴리스에 올리기
         uses: softprops/action-gh-release@v2
@@ -89,3 +102,4 @@ jobs:
         run: |
           echo "### 꾹꾹이 APK 준비됨" >> "$GITHUB_STEP_SUMMARY"
           echo "받기: https://github.com/062-SIBI/kkukkkukkkuk/releases/latest/download/kkukkkuki.apk" >> "$GITHUB_STEP_SUMMARY"
+          echo "플레이 스토어용 AAB: 이 실행 화면 아래 Artifacts의 kkukkkuki-aab-${{ steps.meta.outputs.name }}-${{ steps.meta.outputs.code }}" >> "$GITHUB_STEP_SUMMARY"
