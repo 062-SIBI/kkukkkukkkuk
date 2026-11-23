@@ -3083,13 +3083,14 @@ function wgBusy(){ return WG.busy&&Date.now()-WG.t<5000; }   // 받는 중. 5초
    look(이 산책을 처음 보낼 때 강아지 생김새), end(끝낸 산책의 최종값, 끝낸 뒤 한 번). 안드로이드 플러그인은 모르는 값을 읽지 않는다 */
 function cardRing(w){ try{ var gd=gaugeDetail(w); return gd.ready?Math.max(0,Math.min(1,gd.score/100)):-1; }catch(e){ return -1; } }
 function wgEndOf(w){ return {startedAt:Math.round(w.start),endedAt:Math.round(w.end||Date.now()),km:((w.dist||0)/1000).toFixed(2),
-  ring:w.gauge==null?-1:Math.max(0,Math.min(1,w.gauge/100)),pee:(w.kkuks||[]).length,poop:(w.poops||[]).length,sniff:(w.sniffs||[]).length}; }
+  ring:w.gauge==null?-1:Math.max(0,Math.min(1,w.gauge/100)),pee:(w.kkuks||[]).length,poop:(w.poops||[]).length,sniff:(w.sniffs||[]).length,taken:(w.wgIds||[]).slice()}; }
 function widgetPush(){
   if(!WG.on)return;
   if(wgBusy()){WG.pend=true;return;}   // 위젯에서 누른 걸 받는 중이면 받은 뒤에 올린다(숫자가 잠깐 줄어 보이지 않게)
   WG.pend=false; var w=W;
   var o={walking:!!w,startedAt:w?Math.round(w.start):0,km:w?((w.dist||0)/1000).toFixed(2):"0.00",
-    pee:w?(w.kkuks||[]).length:0,poop:w?(w.poops||[]).length:0,sniff:w?(w.sniffs||[]).length:0,ring:w?cardRing(w):-1};
+    pee:w?(w.kkuks||[]).length:0,poop:w?(w.poops||[]).length:0,sniff:w?(w.sniffs||[]).length:0,ring:w?cardRing(w):-1,
+    taken:w?(w.wgIds||[]).slice():[]};   // taken: 이 횟수에 이미 들어간 카드 눌림 아이디. 카드는 큐에 남은 눌림 중 이것만 빼고 더한다(두 번 세지 않게)
   if(w&&WG.ls!==w.start){ o.look=kcLook(S.dog&&S.dog.look); WG.ls=w.start; }
   if(!w&&WG.end){ o.end=WG.end; WG.end=null; }
   NP.PaddWidget.update(o).catch(function(){WG.on=false;});
@@ -3113,14 +3114,23 @@ function widgetLate(w,evs){
 /* 0.5.2 아이폰 산책 카드: 눌림마다 아이디(id), 누른 시각(t), 누를 때 카드가 보인 산책의 시작 시각(ws)이 온다. drain은 꺼내 주기만 한다.
    ws로 산책을 찾아(끝난 산책이면 그 산책에) 누른 시각으로 기록하고, 눌림 아이디를 그 산책의 wgIds에 넣어 같은 save()로 남긴 뒤 ack로 지운다.
    같은 아이디가 다시 오면 wgIds를 보고 건너뛴다(ack는 다시 한다). 되돌리기(undo)는 ref 아이디로 남긴 기록(wid) 하나만 지우고,
-   같은 묶음 안에 눌림과 그 되돌리기가 함께 오면 둘 다 버린다. 맞는 산책이 없으면 7일까지 남겨 두고 그 뒤에 버린다.
-   가져가는 사이 들어온 눌림은 이번 목록에 없으니 ack하지 않아 다음에 온다(11/23 아스트라 회의 1, 2, 6, 새 1, 새 2) */
-var WGSP={};   // 카드로 남긴 꾹이 바꾼 꾹자리(되돌리기가 되돌린다). 앱을 다시 켜면 비고, 그때는 기록만 지운다
+   같은 묶음 안에 눌림과 그 되돌리기가 함께 오면 둘 다 버린다. 맞는 산책이 없으면 남겨 두고, 7일이 지난 눌림은 버린다(걷는 중인 산책 것은 빼고).
+   가져가는 사이 들어온 눌림은 이번 목록에 없으니 ack하지 않아 다음에 온다(11/23 아스트라 회의 1, 2, 6, 새 1, 새 2, 11/24 Task 2 회의) */
 function walkByStart(ms){
   var s=Math.round(+ms); if(!isFinite(s))return null;
   if(W&&Math.round(W.start)===s)return W;
+  if(!W&&S.live&&Math.round(S.live.start)===s)return S.live;   // 아직 정리하기 전의 5시간 넘은 산책(enterMain이 눌림을 먼저 받는다)
   for(var i=0;i<S.walks.length;i++){ var w=S.walks[i]; if(w&&Math.round(w.start)===s)return w; }
   return null;
+}
+/* 카드 꾹 하나를 꾹자리에서 뺀다. recordPee가 더한 자리(8m 안의 첫 자리)에서 횟수와 평균의 그 몫만 빼고, 그 꾹만 있던 자리는 지운다.
+   기록의 위치로 계산하므로 앱을 다시 켠 뒤에도, 뒤에 같은 자리에서 다른 꾹을 눌렀어도 맞다 */
+function wgSpotOut(w,r){
+  var f=null; for(var i=0;i<S.spots.length;i++)if(dist(S.spots[i],r)<=8){f=S.spots[i];break;}
+  if(!f)return;
+  if(f.n>1){ f.n--; f.lat=(f.lat*(f.n+1)-r.lat)/f.n; f.lng=(f.lng*(f.n+1)-r.lng)/f.n; return; }
+  S.spots.splice(S.spots.indexOf(f),1);
+  w.newSpot=S.spots.some(function(s){ return s.first>=w.start&&(!w.end||s.first<=w.end); });   // 이 산책에 새로 생긴 자리가 아직 있는가
 }
 function wgUndo(w,ref){
   var hit=false;
@@ -3128,38 +3138,41 @@ function wgUndo(w,ref){
     var a=w[k]; if(!Array.isArray(a))return;
     for(var i=a.length-1;i>=0;i--){ var r=a[i]; if(!r||r.wid!==ref)continue;
       a.splice(i,1); hit=true; if(k==="poops"&&PS.rec===r)poopClose();
-      var sp=k==="kkuks"?WGSP[ref]:null;
-      if(sp&&sp.f){sp.f.n--;sp.f.lat=sp.lat;sp.f.lng=sp.lng;sp.f.last=sp.last;}
-      else if(sp&&sp.add){var j=S.spots.indexOf(sp.add);if(j>=0)S.spots.splice(j,1);w.newSpot=sp.was;}
+      if(k==="kkuks"&&r.lat!=null)wgSpotOut(w,r);
     }
   });
-  delete WGSP[ref];
   return hit;
 }
 function wgTake(evs){
   var now=Date.now(), ack=[], gone={}, ch=[];
-  function mark(w){ if(ch.indexOf(w)<0)ch.push(w); }
+  function mark(w,t){ if(ch.indexOf(w)<0)ch.push(w);
+    if(w!==W&&w.end){ if(w.autoEnd&&t>w.end)w.end=t;                  // 자동으로 끝낸 산책은 늦게 온 눌림까지로 끝을 늘린다
+      try{ var gd=gaugeDetail(w); w.gauge=gd.ready?gd.score:null; w.slot=gd.slot; }catch(e){} } }   // 끝난 산책은 붙인 그 자리에서 꾹게이지를 다시 계산(중간 저장도 새 값, Codex PR #3과 같은 방법)
   evs.forEach(function(ev){ if(ev&&ev.type==="undo"&&ev.ref!=null)gone[String(ev.ref)]=1; });
   evs.forEach(function(ev){
     if(!ev||ev.id==null)return;
     var id=String(ev.id), t=+ev.t, w=walkByStart(ev.ws);
     if(!isFinite(t)){ ack.push(id); return; }                         // 시각이 없는 눌림은 버린다
-    if(!w){ if(now-t>7*864e5)ack.push(id); return; }                   // 맞는 산책이 없으면 7일까지 남긴다
+    if(now-t>7*864e5&&(!w||(w!==W&&w!==S.live))){ ack.push(id); return; }   // 7일 넘은 눌림은 버린다(걷는 중이거나 정리 전인 산책 것은 빼고)
+    if(!w)return;                                                      // 맞는 산책이 없으면 남긴다
     ack.push(id);
-    if(w.wgCut)return;                                                 // 눌림 표시를 정리한 오래된 산책(slimWalks): 이미 받은 것으로 본다
     if(!Array.isArray(w.wgIds))w.wgIds=[];
     if(w.wgIds.indexOf(id)>=0)return;                                  // 이미 받은 눌림
     w.wgIds.push(id);                                                  // 기록과 같은 저장에 들어간다
-    if(ev.type==="undo"){ if(wgUndo(w,String(ev.ref)))mark(w); return; }
-    if(gone[id])return;                                                // 같은 묶음에서 되돌린 눌림은 남기지 않는다
-    var live=w===W, p=(live&&lastFix&&Math.abs(lastFix.t-t)<60000)?lastFix:null;
-    if(ev.type==="pee"){ if(live)recordPee(p,t,id); else { if(!w.kkuks)w.kkuks=[]; w.kkuks.push({t:t,lat:null,lng:null,wid:id}); } }
-    else if(ev.type==="sniff"){ if(live)recordSniff(p,t,id); else { if(!w.sniffs)w.sniffs=[]; w.sniffs.push({t:t,lat:null,lng:null,wid:id}); } }
-    else if(ev.type==="poop"){ if(!w.poops)w.poops=[]; w.poops.push({t:t,f:0,odd:false,col:true,lat:p?p.lat:null,lng:p?p.lng:null,hd:null,qw:1,wid:id}); }   // 굳기 미확인
-    else return;
-    mark(w);
+    try{
+      ["kkuks","poops","sniffs"].forEach(function(k){ if(!Array.isArray(w[k]))w[k]=[]; });
+      if(ev.type==="undo"){ if(wgUndo(w,String(ev.ref)))mark(w); return; }
+      if(gone[id])return;                                              // 같은 묶음에서 되돌린 눌림은 남기지 않는다
+      var live=w===W, p=(live&&lastFix&&Math.abs(lastFix.t-t)<60000)?lastFix:null;
+      if(ev.type==="pee"){ if(live)recordPee(p,t,id); else w.kkuks.push({t:t,lat:null,lng:null,wid:id}); }
+      else if(ev.type==="sniff"){ if(live)recordSniff(p,t,id); else w.sniffs.push({t:t,lat:null,lng:null,wid:id}); }
+      else if(ev.type==="poop")w.poops.push({t:t,f:0,odd:false,col:true,lat:p?p.lat:null,lng:p?p.lng:null,hd:null,qw:1,wid:id});   // 굳기 미확인
+      else return;
+      mark(w,t);
+    }catch(e){                                                         // 기록이 들어가기 전에 막히면 아이디를 남기지 않는다(큐에 남아 다음에 다시 온다)
+      var has=ev.type==="undo"||["kkuks","poops","sniffs"].some(function(k){ return Array.isArray(w[k])&&w[k].some(function(r){ return r&&r.wid===id; }); });
+      if(!has){ w.wgIds.splice(w.wgIds.indexOf(id),1); ack.splice(ack.indexOf(id),1); } }
   });
-  ch.forEach(function(w){ if(w!==W&&w.end){ try{ var gd=gaugeDetail(w); w.gauge=gd.ready?gd.score:null; w.slot=gd.slot; }catch(e){} } });   // 끝난 산책은 꾹게이지를 다시 계산(Codex PR #3과 같은 방법)
   if(WG.end){ var we=walkByStart(WG.end.startedAt); if(we&&we!==W&&ch.indexOf(we)>=0)WG.end=wgEndOf(we); }   // 아직 안 보낸 끝 모습도 새 값으로
   if(W&&ch.indexOf(W)>=0)tick();
   if(ch.some(function(w){ return w!==W; })){ try{ renderLog(); renderHome(); }catch(e){} }
@@ -3189,7 +3202,7 @@ function widgetDrain(force){
       else if(ev.type==="poop"){W.poops.push({t:t,f:0,odd:false,col:true,lat:p?p.lat:null,lng:p?p.lng:null,hd:null,qw:1});S.live=W;save();tick();}   // 0.5.2: 굳기 미확인
     });
     widgetPush();
-  },function(){WG.busy=false;WG.on=false;});
+  },function(){WG.busy=false;if(!IOS)WG.on=false;});    // 0.5.2: 아이폰 카드 플러그인은 늘 답하므로 한 번 실패로 끄지 않는다(다음에 다시 가져간다)
   var clr=function(){ if(WG.pr===pr)WG.pr=null; };
   WG.pr=pr; pr.then(clr,clr);
   return pr;
@@ -4288,9 +4301,10 @@ function enterMain(){
     // 정지를 못 누른 채 앱을 껐다가 다음 날 열면 20시간짜리 "진행 중" 산책이 뜬다.
     // 그대로 정지를 누르면 그 산책이 기준선을 오염시킨다. 5시간 넘으면 버린다.
     if(Date.now()-Math.max(S.live.start,S.live.resumedAt||0)>5*3600e3){
+      var expire=function(lw){
       // 0.4.3: 끝내기를 못 누른 채 5시간이 지난 산책은 버리지 않고 마지막 기록 시각에 끝난 걸로 저장한다.
       // 끝 시각을 '지금'이 아니라 마지막 기록으로 잡아서 20시간짜리 산책이 기준선을 망치지 않는다.
-      var lw=S.live,wasRes=!!lw.resumedAt; S.live=null;
+      var wasRes=!!lw.resumedAt; if(S.live===lw)S.live=null;
       var last=Math.max(lw.start,lw.resumedAt||0);
       ["kkuks","poops","sniffs"].forEach(function(k){(lw[k]||[]).forEach(function(x){if(x&&x.t>last)last=x.t;});});
       if(lw.anc&&lw.anc.t>last)last=lw.anc.t;
@@ -4304,8 +4318,8 @@ function enterMain(){
           kkuk:(lw.kkuks||[]).length,poop:(lw.poops||[]).length,gauge:(lw.gauge==null?-1:lw.gauge),resumed:wasRes,auto_end:true});
         try{kmFogWalk(lw);}catch(e){}
         S.walks.unshift(lw); slimWalks();
-        glStart(lw); glFinish(lw);
-      } else glDropLive();
+        if(!W){ glStart(lw); glFinish(lw); }          // 0.5.2: 기다리는 사이 새 산책을 시작했으면 그 산책의 GPS 원본은 건드리지 않는다
+      } else if(!W)glDropLive();
       save();
       var at=new Date(last),hh=at.getHours(),
           whenTxt=(at.toDateString()===new Date().toDateString()?"":(at.getMonth()+1)+"월 "+at.getDate()+"일 ")+(hh<12?"오전 ":"오후 ")+((hh%12)||12)+":"+pad(at.getMinutes());
@@ -4313,6 +4327,12 @@ function enterMain(){
         if(any)toast("지난 산책은 마지막 기록 시각("+whenTxt+")에 끝난 걸로 저장했어요. 끝내기를 제때 눌러 주시면 꾹게이지가 더 정확해져요.",7000);
         else toast("끝내기를 못 누른 빈 산책을 정리했어요",2500);
       },900);
+      };
+      var lw0=S.live;
+      if(IOS&&WG.on){   // 0.5.2: 아이폰 산책 카드에서 누른 것을 먼저 받고 정리한다(카드 기록만 있는 산책을 버리지 않게). 1.5초 안에 답이 없으면 그냥 정리한다
+        var xd=false, xgo=function(){ if(xd)return; xd=true; expire(lw0); try{ renderLog(); renderHome(); }catch(e){} };
+        setTimeout(xgo,1500); var xp=widgetDrain(true); if(xp&&xp.then)xp.then(xgo,xgo); else xgo();
+      } else expire(lw0);
     } else begin(S.live);
   }
   widgetPush();widgetLaunch();
@@ -5394,10 +5414,10 @@ $("start").addEventListener("click",function(){startWalk(null);});
    예전에는 100개를 넘으면 산책을 통째로(꾹, 똥 기록까지) 지웠고 31번째부터 경로를 다 지웠다. */
 function slimWalks(){
   (S.walks||[]).forEach(function(w,i){
-    if(i<30||!w)return;
-    if(w.wgIds){ delete w.wgIds; w.wgCut=1;          // 0.5.2: 오래된 산책은 카드 눌림 아이디를 지운다(늦게 온 눌림은 받은 것으로 본다, wgTake)
+    if(!w)return;
+    if(w.wgIds&&w.end&&Date.now()-w.end>8*864e5){ delete w.wgIds;   // 0.5.2: 끝난 지 8일 지난 산책은 카드 눌림 아이디를 지운다(7일 넘은 눌림은 wgTake가 버린다)
       ["kkuks","poops","sniffs"].forEach(function(k){ (w[k]||[]).forEach(function(r){ if(r&&r.wid)delete r.wid; }); }); }
-    if(!w.pts)return;
+    if(i<30||!w.pts)return;
     if(i>=200){delete w.pts;return;}
     if(!w.thin&&w.pts.length>48){
       var n=w.pts.length,step=Math.ceil(n/40),o=[];
@@ -5597,7 +5617,7 @@ function recordPee(p,at,wid){   // wid: 아이폰 산책 카드의 눌림 아이
     else{var ns={lat:p.lat,lng:p.lng,n:1,first:Date.now(),last:Date.now()};S.spots.push(ns);
       sp={add:ns,was:!!W.newSpot};W.newSpot=true;tail=", 새 꾹자리예요";}}
   var k={t:at||Date.now(),lat:p?p.lat:null,lng:p?p.lng:null};
-  if(wid){ k.wid=wid; if(sp)WGSP[wid]=sp; }
+  if(wid)k.wid=wid;
   W.kkuks.push(k);
   S.live=W;var okS=persistLive();tick();widgetPush();
   if(at)return;                                   // 위젯에서 누른 건 앱이 나중에 받는다. 되돌리기 바를 띄우지 않는다
