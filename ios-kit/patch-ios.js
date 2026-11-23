@@ -159,7 +159,7 @@ function post() {
 
   // ④ Info.plist
   edit(path.join(IOS, 'App', 'Info.plist'), s => {
-    for (const k of Object.keys(PURPOSE).concat(['UIBackgroundModes', 'ITSAppUsesNonExemptEncryption', 'CFBundleLocalizations'])) {
+    for (const k of Object.keys(PURPOSE).concat(['UIBackgroundModes', 'ITSAppUsesNonExemptEncryption', 'CFBundleLocalizations', 'NSSupportsLiveActivities'])) {
       if (s.includes('<key>' + k + '</key>')) throw new Error('Info.plist에 이미 있음: ' + k);
     }
     // 가로 화면을 빼고 세로만(아이폰). 아이패드용 줄은 그대로 둔다(아이폰 전용 앱이라 쓰이지 않는다)
@@ -171,9 +171,17 @@ function post() {
     add += '\t<key>UIBackgroundModes</key>\n\t<array>\n\t\t<string>location</string>\n\t</array>\n';
     add += '\t<key>ITSAppUsesNonExemptEncryption</key>\n\t<false/>\n';      // HTTPS만 쓴다(수출 신고 면제). 올릴 때마다 묻지 않게
     add += '\t<key>CFBundleLocalizations</key>\n\t<array>\n\t\t<string>ko</string>\n\t</array>\n';
+    add += '\t<key>NSSupportsLiveActivities</key>\n\t<true/>\n';   // 산책 카드(라이브 액티비티, ios-kit/walkcard)
     return mustReplace(s, /<\/dict>\s*<\/plist>\s*$/, add + '</dict>\n</plist>\n', 'Info.plist 끝', 1);
   });
-  console.log('✓ Info.plist: 권한 글 4개, 화면 꺼도 위치 받기, 세로 고정, 한국어, 암호화 신고');
+  console.log('✓ Info.plist: 권한 글 4개, 화면 꺼도 위치 받기, 세로 고정, 한국어, 암호화 신고, 산책 카드 허용');
+
+  // 첫 화면을 산책 카드 플러그인(PaddWidget)을 등록하는 MainViewController로 바꾼다(ios-kit/walkcard/App/MainViewController.swift).
+  // 위젯 익스텐션은 이 다음에 ios-kit/add-walkcard.rb가 붙인다
+  edit(path.join(IOS, 'App', 'Base.lproj', 'Main.storyboard'), s => mustReplace(s,
+    'customClass="CAPBridgeViewController" customModule="Capacitor"',
+    'customClass="MainViewController" customModule="App" customModuleProvider="target"', '첫 화면 클래스', 1));
+  console.log('✓ Main.storyboard: 첫 화면 MainViewController(산책 카드 플러그인 등록)');
 
   // ⑤ 프로젝트 설정
   const FR = '4B4B50524956000000000001', BF = '4B4B50524956000000000002';   // 개인정보 파일의 참조 번호(16진수 24자)
