@@ -1174,6 +1174,8 @@ body.pwc-on .toast{top:calc(70px + env(safe-area-inset-top,0px));bottom:auto;bac
 #pwc .pw-chip:disabled{opacity:.38;cursor:not-allowed}
 #pwc .pw-chip .n{font-family:var(--pnum);font-weight:700}
 #pwc .pw-sw{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.25)}
+.pw-colin{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;border:0;padding:0}
+#pw-colors{flex-wrap:wrap;overflow:visible}   /* 글자색 칸이 다섯이라 좁은 폰에서 '직접'이 옆으로 밀려 숨지 않게 줄을 바꾼다 */
 #pwc .pw-thumbs{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 #pwc .pw-thumbs::-webkit-scrollbar{display:none}
 #pwc .pw-th{flex:none;width:64px;display:flex;flex-direction:column;gap:5px;align-items:center;border:0;background:none;padding:0;font-size:calc(12px*var(--fs,1));color:var(--pmuted);font-weight:600}
@@ -6871,7 +6873,7 @@ function lumAt(x,y,w,h){ return lumStats(x,y,w,h).m; }
 // 밝은 곳과 어두운 곳이 섞인 자리는 흰 글자+그림자, 아니면 대비가 큰 쪽
 function autoCol(x,y,w,h){ if(!LUM||E.bgOff) return WHITE; var st=lumStats(x,y,w,h); if(st.dark>0.12&&st.bright>0.12) return WHITE; var L=st.m, cw=1.05/(L+0.05), ci=(L+0.05)/0.0556; return ci>cw*1.1?INK:WHITE; }
 function bigCol(x,y,w,h){ return (LUM&&!E.bgOff&&lumAt(x,y,w,h)>0.5)?INK:WHITE; }
-function userCol(fallback){ return E.color==='white'?WHITE:E.color==='ink'?INK:E.color==='orange'?ORANGE:fallback; }
+function userCol(fallback){ return PW_HEX.test(E.color)?E.color:E.color==='white'?WHITE:E.color==='ink'?INK:E.color==='orange'?ORANGE:fallback; }
 function shadowFor(c,col,strong){ if(col===WHITE&&!E.bgOff){ c.shadowColor='rgba(0,0,0,'+(strong?.32:.55)+')'; c.shadowBlur=strong?22:9; c.shadowOffsetY=strong?2:1; } else { c.shadowColor='transparent'; c.shadowBlur=0; c.shadowOffsetY=0; } }
 
 /* ---------- 바탕: 사진, 없으면 노랑 포스터 ---------- */
@@ -7452,8 +7454,19 @@ function buildDepth(){
 }
 var IC_INFO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/><path d="M12 9h.01"/><path d="M11 12h1v4h1"/></svg>';
 var COLORS=[['auto','자동',null],['white','흰색','#FFFFFF'],['ink','잉크','#17100A'],['orange','주황','#F0952A']];
+/* 글자색 '직접' 칸(06 11/23 밤 "원하는 색으로 못 바꾸더라", 고른 안 "직접 고르기만 더하기"): 고른 색은 '#RRGGBB'로 E.color와 S.pwcPref.color에 남는다.
+   직접 고르기(input type=color)를 못 하는 폰에서는 칸을 더하지 않는다 */
+var PW_HEX=/^#[0-9A-F]{6}$/;
+function pwColorOK(){ try{ var i=document.createElement('input'); i.setAttribute('type','color'); return i.type==='color'; }catch(e){ return false; } }
 function buildColors(){ var box=$('pw-colors'); box.innerHTML=''; COLORS.forEach(function(o){ var sw=o[2]?'<span class="pw-sw" style="background:'+o[2]+'"></span>':'<span class="pw-sw" style="background:conic-gradient(#fff 0 50%,#17100A 0)"></span>';
-  box.appendChild(btn('pw-chip',sw+o[1],E.color===o[0],function(){ E.color=o[0]; buildColors(); prefSave(); redraw(); })); }); }
+  box.appendChild(btn('pw-chip',sw+o[1],E.color===o[0],function(){ E.color=o[0]; buildColors(); prefSave(); redraw(); })); });
+  if(!pwColorOK())return;
+  var own=PW_HEX.test(E.color), inp=document.createElement('input');
+  inp.type='color'; inp.className='pw-colin'; inp.tabIndex=-1; inp.setAttribute('aria-hidden','true'); inp.value=(own?E.color:'#FF6B57').toLowerCase();
+  inp.addEventListener('input',function(){ var v=String(this.value).toUpperCase(); if(PW_HEX.test(v)){ E.color=v; redraw(); } });
+  inp.addEventListener('change',function(){ var v=String(this.value).toUpperCase(); if(PW_HEX.test(v)){ E.color=v; buildColors(); prefSave(); redraw(); } });
+  box.appendChild(btn('pw-chip','<span class="pw-sw" style="background:'+(own?E.color:'conic-gradient(#FF6B57,#EFB02F,#3B9DF5,#FF6B57)')+'"></span>직접',own,function(){ inp.click(); }));
+  box.appendChild(inp); }
 /* ---------- 0.4.3 동네 이름: 누를 때만 받고, 한글과 ENG 중 고른다 ---------- */
 function placeLangOf(w){ return w.placeLang||S.placeLang||'ko'; }
 function placeNeed(w,lg){ return lg==='en'?(!w.placeEn&&!w.placeEnMiss):!w.place; }
@@ -7879,7 +7892,7 @@ pwcOpen=function(w){
   var same=E.w===w; E.w=w; E.D=walkData(w);
   if(!same){ E.photo=null; E.photos=[]; }
   var p=S.pwcPref||{};
-  E.tpl=TPL[p.tpl]?p.tpl:'photo'; E.color=p.color||'auto'; E.ratio=p.ratio==='45'?'45':'916';
+  E.tpl=TPL[p.tpl]?p.tpl:'photo'; E.color=(PW_HEX.test(p.color)||COLORS.some(function(o){ return o[0]===p.color; }))?p.color:'auto'; E.ratio=p.ratio==='45'?'45':'916';
   E.heroBy={}; E.touched=false; E.hero=heroFor(E.tpl); E.show={dist:E.D.hasDist,time:true,pee:true}; E.routeOn=false; E.marks=false; E.bgOff=false; E.depth=null; E.autoDepth=true; E.blob=null; E.bkey='';
   Array.prototype.forEach.call($('pw-ratio').querySelectorAll('button'),function(x){ x.setAttribute('aria-pressed',x.dataset.v===E.ratio?'true':'false'); });
   $('pw-bgOff').checked=false; cv.height=geo().H;
