@@ -1976,6 +1976,7 @@ details.kcset .srcq{margin-top:14px}
 .tut-rt{min-width:0}
 .tut-rt b{display:block;font-size:calc(20px*var(--fs,1));font-weight:800;line-height:1.25;margin-bottom:3px}
 .tut-rt>span{display:block;font-size:calc(15px*var(--fs,1));line-height:1.45;color:var(--ink-2)}
+.tut-rt>i{display:block;margin-top:4px;font-style:normal;font-size:calc(13px*var(--fs,1));line-height:1.4;color:var(--ink-3)}   /* 11/23 06: 노즈워크를 모르는 보호자용 한 줄(킁킁 줄 아래) */
 html[data-fs="big"] .tut-rt{padding:6px 0}   /* 크게: 글이 단추 그림보다 길어져 줄이 늘어날 때 글이 줄 테두리에 붙지 않게(보통 크기에서는 그대로) */
 /* 2장: 꾹게이지(글은 06이 11/20에 정한 것. 이 카드만 '~습니다') */
 .tut-tag{display:inline-block;font-size:calc(12.5px*var(--fs,1));font-weight:700;line-height:1.3;color:var(--ink);background:var(--panel-2);border-radius:99px;padding:5px 11px;margin-top:4px}
@@ -2377,7 +2378,7 @@ html[data-fs="big"] .set-two .big{flex:1 1 auto;width:auto;padding-left:14px;pad
     <div class="acts">
       <div class="undo" id="undo" role="status" aria-live="polite"><i class="ud"></i><span class="um" id="undo-m"></span><button type="button" id="undo-b">되돌리기</button><span class="up"></span></div>
       <button class="act a-poop" id="b-poop" aria-label="똥 기록"><span class="pad"></span><span class="ac"><svg class="gi brand" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.1 17.5a8.9 3.7 0 1 1 17.8 0a8.9 3.7 0 1 1 -17.8 0zM5.5 12.9a6.5 3.4 0 1 1 13 0a6.5 3.4 0 1 1 -13 0zM7.8 8.8a4.2 3 0 1 1 8.4 0a4.2 3 0 1 1 -8.4 0zM9.7 7.7C9.9 5.3 11.9 5 13.5 2.6C14.9 4.9 14.5 7 13.5 8.4Z"/></svg><b id="c-poop">0</b></span></button>
-      <button class="act a-sniff" id="b-sniff" aria-label="킁킁 기록, 오래 맡는 곳에서 한 번"><span class="pad"></span><span class="ac"><svg class="gi brand" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 19.6C9 19.6 2.8 16.4 2.8 10.8C2.8 7.2 6.6 4.8 12 4.8C17.4 4.8 21.2 7.2 21.2 10.8C21.2 16.4 15 19.6 12 19.6Z"/><ellipse cx="7.6" cy="8.6" rx="2.3" ry="1.25" transform="rotate(-18 7.6 8.6)" fill="#fff"/><ellipse cx="10.7" cy="7.9" rx=".75" ry=".6" fill="#fff"/></svg><b id="c-sniff">0</b></span></button>
+      <button class="act a-sniff" id="b-sniff" aria-label="킁킁 기록, 한 곳을 3초 이상 맡을 때만"><span class="pad"></span><span class="ac"><svg class="gi brand" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 19.6C9 19.6 2.8 16.4 2.8 10.8C2.8 7.2 6.6 4.8 12 4.8C17.4 4.8 21.2 7.2 21.2 10.8C21.2 16.4 15 19.6 12 19.6Z"/><ellipse cx="7.6" cy="8.6" rx="2.3" ry="1.25" transform="rotate(-18 7.6 8.6)" fill="#fff"/><ellipse cx="10.7" cy="7.9" rx=".75" ry=".6" fill="#fff"/></svg><b id="c-sniff">0</b></span></button>
       <button class="act a-pee" id="b-pee" aria-label="꾹 기록"><span class="pad"></span><span class="ac"><svg class="gi brand" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10.4 3C10.4 3 4.3 10.02 4.3 15.1A6.1 6.1 0 0 0 16.5 15.1C16.5 10.02 10.4 3 10.4 3ZM19 3.6C19 3.6 16.5 6.44 16.5 8.5A2.5 2.5 0 0 0 21.5 8.5C21.5 6.44 19 3.6 19 3.6Z"/><ellipse cx="7.6" cy="15.3" rx="1.15" ry="2.2" transform="rotate(16 7.6 15.3)" fill="#fff"/></svg><b id="c-pee">0</b></span></button>
     </div>
   </div>
@@ -2485,7 +2486,7 @@ html[data-fs="big"] .set-two .big{flex:1 1 auto;width:auto;padding-left:14px;pad
     <div class="tut-body" id="tut-body">
       <section class="tut-pg" data-pg="1">
         <div class="tut-row"><span class="tut-mini" data-b="b-poop" aria-hidden="true"></span><span class="tut-rt"><b>똥</b><span><span class="sn">똥을 누면 눌러요.</span> <span class="sn">이어서 굳기를 골라요.</span></span></span></div>
-        <div class="tut-row"><span class="tut-mini" data-b="b-sniff" aria-hidden="true"></span><span class="tut-rt"><b>킁킁</b><span><span class="sn">3초 넘게 냄새 맡는 곳에서</span> <span class="sn">한 번 눌러요.</span></span></span></div>
+        <div class="tut-row"><span class="tut-mini" data-b="b-sniff" aria-hidden="true"></span><span class="tut-rt"><b>킁킁</b><span><span class="sn">한 곳을 3초 이상</span> <span class="sn">맡을 때만 눌러요.</span></span><i><span class="sn">노즈워크(냄새 맡기)는</span> <span class="sn">강아지의 SNS 보기예요.</span> <span class="sn">기다려 주면 머리를 쓰고</span> <span class="sn">기분이 좋아져요.</span></i></span></div>
         <div class="tut-row"><span class="tut-mini" data-b="b-pee" aria-hidden="true"></span><span class="tut-rt"><b>꾹</b><span><span class="sn">쉬하거나 마킹할 때마다</span> <span class="sn">눌러요.</span></span></span></div>
         <h2 id="tut-h1" tabindex="-1">산책 중엔 단추 셋만 눌러요</h2>
         <p class="tut-p">잘못 눌러도 바로 되돌릴 수 있어요.</p>
@@ -5532,7 +5533,7 @@ function recordPee(p,at){
 $("b-sniff").addEventListener("click",function(){
   if(!W)return;
   // 고침 10(06 11/12 산책 피드백): 냄새는 걷는 내내 맡으니 언제 누르는지 헷갈린다. 처음 누를 때 한 번만 알려 준다. 기록은 그대로 남긴다
-  if(!S.snHint){S.snHint=1;save();toast("킁킁은 3초\u00a0넘게 냄새\u00a0맡는 곳에서 눌러\u00a0주세요",6000);$("toast").classList.add("long");}   // 긴 알림 모양(화면 너비까지 한 줄로)
+  if(!S.snHint){S.snHint=1;save();toast("킁킁은 한\u00a0곳을 3초\u00a0이상 맡을\u00a0때만 눌러\u00a0주세요",6000);$("toast").classList.add("long");}   // 긴 알림 모양(화면 너비까지 한 줄로)
   withFreshFix(recordSniff);
 });
 function recordSniff(p,at){
