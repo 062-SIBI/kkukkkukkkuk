@@ -182,6 +182,10 @@ function post() {
     'customClass="CAPBridgeViewController" customModule="Capacitor"',
     'customClass="MainViewController" customModule="App" customModuleProvider="target"', '첫 화면 클래스', 1));
   console.log('✓ Main.storyboard: 첫 화면 MainViewController(산책 카드 플러그인 등록)');
+  // Capacitor 8 틀은 실제 첫 화면을 SceneDelegate가 코드로 만든다(storyboard의 창을 새 창으로 바꾼다). 여기도 바꿔야 플러그인이 등록된다(CI 21번에서 [walkcard] 줄 없음)
+  edit(path.join(IOS, 'App', 'SceneDelegate.swift'), s => mustReplace(s,
+    'window?.rootViewController = CAPBridgeViewController()', 'window?.rootViewController = MainViewController()', '첫 화면(SceneDelegate)', 1));
+  console.log('✓ SceneDelegate.swift: 첫 화면 MainViewController');
 
   // ⑤ 프로젝트 설정
   const FR = '4B4B50524956000000000001', BF = '4B4B50524956000000000002';   // 개인정보 파일의 참조 번호(16진수 24자)
