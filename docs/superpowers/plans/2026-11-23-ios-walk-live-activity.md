@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 산책하는 동안 아이폰 잠금 화면, 다이내믹 아일랜드, 애플 워치에 산책 카드(걸은 시간, 거리, 강아지가 든 산책 링, 똥 | 킁킁 | 꾹 버튼)를 띄우고, 카드에서 누른 기록이 맞는 산책에 정확히 한 번 들어가게 한다(아이폰 0.5.1).
+**Goal:** 산책하는 동안 아이폰 잠금 화면, 다이내믹 아일랜드, 애플 워치에 산책 카드(걸은 시간, 거리, 강아지가 든 산책 링, 똥 | 킁킁 | 꾹 버튼)를 띄우고, 카드에서 누른 기록이 맞는 산책에 정확히 한 번 들어가게 한다(아이폰 0.5.2).
 
 **Architecture:** 웹(index.html)에 이미 있는 `PaddWidget` 다리(update, drain, consumeLaunch)를 아이폰에서도 켜고 `ack`를 더한다. 앱 타깃의 Swift 플러그인 `PaddWidget`이 `update`로 카드를 시작, 갱신, 끝내고, 카드 버튼(되돌리기 포함)은 앱 프로세스에서 도는 `LiveActivityIntent`가 백업에서 뺀 앱 안 파일 큐에 쌓는다. 웹은 GPS 점이 올 때와 앱이 뜨고 깨어날 때 `drain`으로 가져가 기록과 눌림 아이디를 함께 저장한 뒤 `ack`로 지운다. 카드 화면은 위젯 익스텐션 `WalkCard`이고, 빌드에서 프로젝트를 만든 직후 Ruby `xcodeproj` 스크립트로 한 번 붙인다. 강아지는 익스텐션이 SwiftUI로 직접 그린다.
 
@@ -11,7 +11,7 @@
 **Spec:** `docs/superpowers/specs/2026-11-23-ios-walk-live-activity-design.md` (1판 06 승인 11/23, 2판은 회의와 06 답 반영)
 
 ## Global Constraints
-- 아이폰 판 번호 `0.5.1`(ios-kit/version.json의 name). 앱의 최소 iOS는 바꾸지 않는다.
+- 아이폰 판 번호 `0.5.2`(ios-kit/version.json의 name, 빌드 번호 code는 5). 0.5.1(빌드 4)은 11/24 작은 판이 썼다. 앱의 최소 iOS는 바꾸지 않는다.
 - 라이브 액티비티 코드는 `@available(iOS 16.2, *)`, 카드 버튼은 `@available(iOS 17.0, *)`, 워치용 모습(`.supplementalActivityFamilies([.small])`)은 iOS 18 이상에서만. 그보다 낮은 iOS에서 `update`는 아무것도 하지 않고 성공으로 끝낸다.
 - 위젯 익스텐션: 제품 이름 `WalkCard`, 번들 아이디는 앱 번들 아이디 + `.walkcard`. 앱 그룹 없음. 익스텐션은 네트워크를 쓰지 않는다.
 - 버튼 순서와 색: 왼쪽부터 똥 `#FF6B57`, 킁킁 `#EFB02F`, 꾹 `#3B9DF5`(앱 CSS의 --coral, --sun, --sky). 아이콘은 앱 산책 화면 버튼과 같은 모양. 버튼 한 칸(아이콘, 이름, 횟수)은 44pt 이상.
@@ -45,7 +45,7 @@
 - Create: `ios-kit/walkcard/App/PaddWidgetPlugin.swift`, `ios-kit/walkcard/App/WalkCardController.swift`, `ios-kit/walkcard/App/MainViewController.swift`(앱만)
 - Create: `ios-kit/walkcard/Extension/WalkCardBundle.swift`, `WalkCardLiveActivity.swift`, `Info.plist`, `PrivacyInfo.xcprivacy`(추적 없음, 수집 없음, 사유 API 없음)
 - Create: `ios-kit/add-walkcard.rb`
-- Modify: `ios-kit/patch-ios.js`(post: Info.plist에 `NSSupportsLiveActivities` true, Main.storyboard의 뷰 컨트롤러를 `MainViewController`/모듈 `App`으로), `.github/workflows/ios.yml`, `ios-kit/version.json`(name `0.5.1`), `index.html`(아이폰 플러그인 목록 3027에 `"PaddWidget"`)
+- Modify: `ios-kit/patch-ios.js`(post: Info.plist에 `NSSupportsLiveActivities` true, Main.storyboard의 뷰 컨트롤러를 `MainViewController`/모듈 `App`으로), `.github/workflows/ios.yml`, `ios-kit/version.json`(name `0.5.2`), `index.html`(아이폰 플러그인 목록 3027에 `"PaddWidget"`)
 
 **Interfaces:**
 - Produces:
@@ -61,7 +61,7 @@
 - [ ] **Step 2: ios.yml을 고친다.** '앱 껍데기 만들기'에서 `patch-ios.js post` 바로 다음에 한 번만 `ruby ../ios-kit/add-walkcard.rb ios/App`(출시 단계는 그 프로젝트를 다시 쓰므로 붙이지 않는다). 젬은 정확한 버전으로 설치하고 그 버전을 스크립트 머리에 적는다. 보관 빌드 뒤 `test -d build/App.xcarchive/Products/Applications/App.app/PlugIns/WalkCard.appex`. 내보낸 IPA의 `App.app`과 `PlugIns/WalkCard.appex` 각각 `codesign -d --entitlements :-`와 `security cms -D -i embedded.mobileprovision`으로 번들 아이디와 프로파일을 찍고, 하나라도 없으면 올리지 않고 멈춘다.
 - [ ] **Step 3: 깃허브 액션을 올리기 끄고 돌린다.** Expected: 시뮬레이터 빌드 통과, `.appex` 있음, 두 서명 찍힘. 위젯 번들 아이디 자동 등록에서 막히면 06에게 애플 개발자 사이트 등록 순서를 적어 드리고 멈춘다.
 - [ ] **Step 4: (06 '올려' 뒤) 뼈대를 테스트플라이트에 올려 06이 잠금 화면에서 꾹 하나를 누른다.** Expected: 앱 기록에 꾹 1(10분).
-- [ ] **Step 5: 커밋** `git commit -m "아이폰 산책 카드: 뼈대(버튼 하나)로 빌드와 서명 확인, 0.5.1"`
+- [ ] **Step 5: 커밋** `git commit -m "아이폰 산책 카드: 뼈대(버튼 하나)로 빌드와 서명 확인, 0.5.2"`
 
 ### Task 2: 웹 다리 (index.html)
 
@@ -132,7 +132,7 @@
 - [ ] **Step 2: 깃허브 액션 시뮬레이터 빌드.** Expected: 통과, `.appex` 있음.
 - [ ] **Step 3: 커밋** `git commit -m "아이폰 산책 카드: 잠금 화면, 다이내믹 아일랜드, 워치 모습"`
 
-### Task 5: 강아지 그림 (늦어지면 0.5.2로)
+### Task 5: 강아지 그림 (늦어지면 0.5.3으로)
 
 **Files:**
 - Create: `ios-kit/walkcard/Extension/DogView.swift`
