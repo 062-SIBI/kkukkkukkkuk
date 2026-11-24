@@ -159,6 +159,8 @@ jobs:
           ls build/App.xcarchive/Products/Applications
           test -d build/App.xcarchive/Products/Applications/App.app/PlugIns/WalkCard.appex
           echo "✓ 보관 빌드 안에 WalkCard.appex(산책 카드)"
+          # ActivityKit, AppIntents가 약하게 이어졌는지(앱 최소 iOS 15.0에서 켜지게). 강하게 이어졌으면 여기서 멈춘다
+          bash ../../../ios-kit/weak-check.sh build/App.xcarchive/Products/Applications/App.app/App
 
       - name: 서명하고 테스트플라이트에 올리기
         if: ${{ github.event_name == 'workflow_dispatch' && (inputs.upload || inputs.sign_check) }}
