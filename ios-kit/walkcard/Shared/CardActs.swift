@@ -48,8 +48,8 @@ enum CardActs {
             st.lastId = nil
             st.lastUntil = nil
         }
-        st.at = Date()
-        await a.update(ActivityContent(state: st, staleDate: Date().addingTimeInterval(30 * 60)))
+        // 오래된 카드 시각과 마지막 갱신 시각(at)은 웹 갱신만 바꾼다. 앱이 죽은 채 카드만 눌러도 30분 뒤 오래된 카드가 되게(최종 검토)
+        await a.update(ActivityContent(state: st, staleDate: a.content.staleDate))
     }
 
     /// 되돌리기 칸이 아직 그 눌림의 것이면 비운다(눌림 5초 뒤). 비운 눌림은 2초 동안 recent로 기억한다
@@ -60,8 +60,8 @@ enum CardActs {
         st.lastKind = nil
         st.lastId = nil
         st.lastUntil = nil
-        st.at = Date()
-        await a.update(ActivityContent(state: st, staleDate: Date().addingTimeInterval(30 * 60)))
+        // 오래된 카드 시각과 마지막 갱신 시각(at)은 웹 갱신만 바꾼다. 앱이 죽은 채 카드만 눌러도 30분 뒤 오래된 카드가 되게(최종 검토)
+        await a.update(ActivityContent(state: st, staleDate: a.content.staleDate))
     }
 }
 #endif
