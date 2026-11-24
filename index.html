@@ -5427,7 +5427,7 @@ function slimWalks(){
   (S.walks||[]).forEach(function(w,i){
     if(!w)return;
     if(w.wgIds&&w.end&&Date.now()-w.end>8*864e5){ delete w.wgIds; w.wgPruned=1;   // 0.5.2: 끝난 지 8일 지난 산책은 카드 눌림 아이디를 지운다(이 산책의 7일 넘은 눌림은 wgTake가 버린다)
-      ["kkuks","poops","sniffs"].forEach(function(k){ (w[k]||[]).forEach(function(r){ if(r&&r.wid)delete r.wid; }); }); }
+      ["kkuks","poops","sniffs"].forEach(function(k){ (w[k]||[]).forEach(function(r){ if(!r)return; if(r.wid)delete r.wid; if(r.sp)delete r.sp; }); }); }   // sp(꾹자리 되돌리기 값)도 되돌리기에만 쓰여 함께 지운다
     if(i<30||!w.pts)return;
     if(i>=200){delete w.pts;return;}
     if(!w.thin&&w.pts.length>48){
