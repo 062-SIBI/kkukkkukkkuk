@@ -77,10 +77,16 @@ jobs:
       - name: 시뮬레이터용 빌드 (서명 없이)
         working-directory: native/ios/App
         run: |
-          set -o pipefail
-          xcodebuild -project App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator \
+          mkdir -p build
+          # 실패하면 오류 줄을 실행 요약에도 남긴다(ios-kit/build-errors.sh)
+          if ! xcodebuild -project App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' -derivedDataPath build/dd \
-            CODE_SIGNING_ALLOWED=NO build | tail -60
+            CODE_SIGNING_ALLOWED=NO build > build/sim.log 2>&1; then
+            tail -60 build/sim.log
+            bash ../../../ios-kit/build-errors.sh build/sim.log "시뮬레이터 빌드"
+            exit 1
+          fi
+          tail -60 build/sim.log
 
       - name: 시뮬레이터에서 켜서 화면 찍기 (가짜 기록으로 홈, 산책, 기록 카드, 기록 탭)
         continue-on-error: true
@@ -116,9 +122,12 @@ jobs:
           for C in light dark; do
             L=$(grep -c "\[walkcard\] plugin loaded" "shots/console_$C.txt" || true)
             U=$(grep -c "\[walkcard\] update" "shots/console_$C.txt" || true)
-            echo "산책 카드($C 실행): 플러그인 등록 ${L:-0}번, update ${U:-0}번" | tee -a "$GITHUB_STEP_SUMMARY"
+            S=$(grep -c "\[walkcard\] started" "shots/console_$C.txt" || true)
+            F=$(grep -cE "\[walkcard\] (start failed|live activities off)" "shots/console_$C.txt" || true)
+            echo "산책 카드($C 실행): 플러그인 등록 ${L:-0}번, update ${U:-0}번, 카드 시작 ${S:-0}번, 시작 못 함 ${F:-0}번" | tee -a "$GITHUB_STEP_SUMMARY"
             if [ "${L:-0}" != "1" ]; then echo "::warning::산책 카드 플러그인 등록이 한 번이 아니에요($C 실행에서 ${L:-0}번)"; fi
           done
+          grep -hE "\[walkcard\] (update|start failed|live activities off)" shots/console_light.txt | head -4 | cut -c1-200 | sed 's/^/    /' | tee -a "$GITHUB_STEP_SUMMARY" || true
           echo "--- 충돌 보고서(웹킷, 그래픽 중계, 앱만. 없으면 빈칸)"; grep -E "WebKit|SimMetalHost|^App" shots/crash_reports.txt | head -20 || true
 
       - name: 찍은 화면 보관
@@ -138,9 +147,15 @@ jobs:
           npx cap copy ios
           node ../ios-kit/patch-ios.js check-release
           cd ios/App
-          xcodebuild -project App.xcodeproj -scheme App -configuration Release \
+          mkdir -p build
+          if ! xcodebuild -project App.xcodeproj -scheme App -configuration Release \
             -destination 'generic/platform=iOS' -archivePath build/App.xcarchive -derivedDataPath build/dd \
-            CODE_SIGNING_ALLOWED=NO archive | tail -40
+            CODE_SIGNING_ALLOWED=NO archive > build/archive.log 2>&1; then
+            tail -40 build/archive.log
+            bash ../../../ios-kit/build-errors.sh build/archive.log "보관 빌드"
+            exit 1
+          fi
+          tail -40 build/archive.log
           ls build/App.xcarchive/Products/Applications
           test -d build/App.xcarchive/Products/Applications/App.app/PlugIns/WalkCard.appex
           echo "✓ 보관 빌드 안에 WalkCard.appex(산책 카드)"
