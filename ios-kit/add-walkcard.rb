@@ -26,7 +26,7 @@ dirs = {
 }
 dirs.each do |k, d|
   FileUtils.mkdir_p(d)
-  Dir[File.join(kit, k, '*')].each { |f| FileUtils.cp(f, d) }
+  Dir[File.join(kit, k, '*')].each { |f| FileUtils.cp_r(f, d) }   # Assets.xcassets 같은 폴더도 통째로
 end
 
 ext = project.new_target(:app_extension, 'WalkCard', :ios, '16.2', nil, :swift)
@@ -41,7 +41,7 @@ dirs.each do |k, d|
     ref = groups[k].new_reference(File.basename(f))
     if f.end_with?('.swift')
       users[k].each { |t| t.add_file_references([ref]) }
-    elsif f.end_with?('.xcprivacy')
+    elsif f.end_with?('.xcprivacy') || f.end_with?('.xcassets')   # 개인정보 파일, 버튼 아이콘
       users[k].each { |t| t.add_resources([ref]) }
     end
   end
