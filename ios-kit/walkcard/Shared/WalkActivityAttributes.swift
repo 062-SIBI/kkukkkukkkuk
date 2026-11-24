@@ -24,6 +24,8 @@ struct WalkActivityAttributes: ActivityAttributes {
         var lastKind: String?
         var lastId: String?
         var lastUntil: Date?
+        /// 마지막으로 갱신한 시각(오래된 카드에서 멈춘 걸은 시간을 보이려고)
+        var at: Date?
     }
 }
 #endif
