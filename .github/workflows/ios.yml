@@ -18,6 +18,10 @@ on:
         description: '테스트플라이트에 올리기 (애플 키 4개를 넣은 뒤에만 켜기)'
         type: boolean
         default: false
+      sign_check:
+        description: '서명만 확인하기 (앱과 산책 카드에 서명과 프로파일이 붙는지 보고, 올리지 않음)'
+        type: boolean
+        default: false
   pull_request:
     paths:
       - 'ios-kit/**'
@@ -65,15 +69,24 @@ jobs:
           node ../ios-kit/patch-ios.js pre demo
           npx cap add ios
           node ../ios-kit/patch-ios.js post
-          plutil -lint ios/App/App/Info.plist ios/App/App/PrivacyInfo.xcprivacy
+          # 산책 카드(위젯 익스텐션 WalkCard)를 프로젝트에 붙인다. 출시 단계는 이 프로젝트를 다시 쓰므로 여기서 한 번만
+          gem install xcodeproj -v 1.28.1 --no-document --user-install
+          ruby ../ios-kit/add-walkcard.rb ios/App
+          plutil -lint ios/App/App/Info.plist ios/App/App/PrivacyInfo.xcprivacy ios/App/WalkCard/Info.plist ios/App/WalkCard/PrivacyInfo.xcprivacy
 
       - name: 시뮬레이터용 빌드 (서명 없이)
         working-directory: native/ios/App
         run: |
-          set -o pipefail
-          xcodebuild -project App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator \
+          mkdir -p build
+          # 실패하면 오류 줄을 실행 요약에도 남긴다(ios-kit/build-errors.sh)
+          if ! xcodebuild -project App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' -derivedDataPath build/dd \
-            CODE_SIGNING_ALLOWED=NO build | tail -60
+            CODE_SIGNING_ALLOWED=NO build > build/sim.log 2>&1; then
+            tail -60 build/sim.log
+            bash ../../../ios-kit/build-errors.sh build/sim.log "시뮬레이터 빌드"
+            exit 1
+          fi
+          tail -60 build/sim.log
 
       - name: 시뮬레이터에서 켜서 화면 찍기 (가짜 기록으로 홈, 산책, 기록 카드, 기록 탭)
         continue-on-error: true
@@ -104,6 +117,17 @@ jobs:
           echo "찍은 파일 수: $(ls shots | wc -l)"
           echo "--- 콘솔에서 [demo] 줄"; grep -h "\[demo\]" shots/console_light.txt shots/console_dark.txt | tail -80 || true
           echo "--- 콘솔의 오류와 경고"; grep -hE "\[(error|warn)\]" shots/console_light.txt shots/console_dark.txt | head -10 | cut -c1-260 || true
+          echo "--- 산책 카드(앱 쪽 [walkcard] 줄)"; grep -h "\[walkcard\]" shots/console_light.txt shots/console_dark.txt | head -20 || true
+          # 앱을 한 번 켤 때마다 플러그인 등록은 한 번이어야 한다(0번이면 카드가 안 뜨고, 2번이면 브리지가 둘). 실행 요약에도 남긴다
+          for C in light dark; do
+            L=$(grep -c "\[walkcard\] plugin loaded" "shots/console_$C.txt" || true)
+            U=$(grep -c "\[walkcard\] update" "shots/console_$C.txt" || true)
+            S=$(grep -c "\[walkcard\] started" "shots/console_$C.txt" || true)
+            F=$(grep -cE "\[walkcard\] (start failed|live activities off)" "shots/console_$C.txt" || true)
+            echo "산책 카드($C 실행): 플러그인 등록 ${L:-0}번, update ${U:-0}번, 카드 시작 ${S:-0}번, 시작 못 함 ${F:-0}번" | tee -a "$GITHUB_STEP_SUMMARY"
+            if [ "${L:-0}" != "1" ]; then echo "::warning::산책 카드 플러그인 등록이 한 번이 아니에요($C 실행에서 ${L:-0}번)"; fi
+          done
+          grep -hE "\[walkcard\] (update|start failed|live activities off)" shots/console_light.txt | head -4 | cut -c1-200 | sed 's/^/    /' | tee -a "$GITHUB_STEP_SUMMARY" || true
           echo "--- 충돌 보고서(웹킷, 그래픽 중계, 앱만. 없으면 빈칸)"; grep -E "WebKit|SimMetalHost|^App" shots/crash_reports.txt | head -20 || true
 
       - name: 찍은 화면 보관
@@ -123,15 +147,26 @@ jobs:
           npx cap copy ios
           node ../ios-kit/patch-ios.js check-release
           cd ios/App
-          xcodebuild -project App.xcodeproj -scheme App -configuration Release \
+          mkdir -p build
+          if ! xcodebuild -project App.xcodeproj -scheme App -configuration Release \
             -destination 'generic/platform=iOS' -archivePath build/App.xcarchive -derivedDataPath build/dd \
-            CODE_SIGNING_ALLOWED=NO archive | tail -40
+            CODE_SIGNING_ALLOWED=NO archive > build/archive.log 2>&1; then
+            tail -40 build/archive.log
+            bash ../../../ios-kit/build-errors.sh build/archive.log "보관 빌드"
+            exit 1
+          fi
+          tail -40 build/archive.log
           ls build/App.xcarchive/Products/Applications
+          test -d build/App.xcarchive/Products/Applications/App.app/PlugIns/WalkCard.appex
+          echo "✓ 보관 빌드 안에 WalkCard.appex(산책 카드)"
+          # ActivityKit, AppIntents가 약하게 이어졌는지(앱 최소 iOS 15.0에서 켜지게). 강하게 이어졌으면 여기서 멈춘다
+          bash ../../../ios-kit/weak-check.sh build/App.xcarchive/Products/Applications/App.app/App
 
       - name: 서명하고 테스트플라이트에 올리기
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload }}
+        if: ${{ github.event_name == 'workflow_dispatch' && (inputs.upload || inputs.sign_check) }}
         working-directory: native/ios/App
         env:
+          DO_UPLOAD: ${{ inputs.upload && !inputs.sign_check }}   # 서명만 확인하기를 켜면 올리기를 같이 켜도 올리지 않는다
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
@@ -172,6 +207,23 @@ jobs:
             -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" | tail -40
           IPA=$(ls build/ipa/*.ipa | head -1)
           ls -la "$IPA"
+          # 앱과 산책 카드 둘 다 서명과 프로파일이 붙었는지 본다(팀 아이디는 찍지 않는다)
+          rm -rf build/ipa-check && mkdir -p build/ipa-check && unzip -q "$IPA" -d build/ipa-check
+          for B in build/ipa-check/Payload/App.app build/ipa-check/Payload/App.app/PlugIns/WalkCard.appex; do
+            N=$(basename "$B")
+            if [ ! -d "$B" ]; then echo "::error::$N 이(가) IPA에 없어요"; exit 1; fi
+            codesign --verify --strict "$B" || { echo "::error::$N 서명 확인 실패"; exit 1; }
+            if [ ! -f "$B/embedded.mobileprovision" ]; then echo "::error::$N 에 프로파일이 없어요"; exit 1; fi
+            security cms -D -i "$B/embedded.mobileprovision" > build/ipa-check/prof.plist 2>/dev/null
+            AID=$(plutil -extract Entitlements.application-identifier raw build/ipa-check/prof.plist 2>/dev/null || true)
+            BID=$(plutil -extract CFBundleIdentifier raw "$B/Info.plist" 2>/dev/null || true)
+            if [ -z "$BID" ] || [ "${AID#*.}" != "$BID" ]; then echo "::error::$N 프로파일의 아이디(${AID#*.})가 번들 아이디($BID)와 달라요"; exit 1; fi
+            echo "✓ $N: 서명 있음, 프로파일 있음, 아이디 ${AID#*.}"
+          done
+          if [ "$DO_UPLOAD" != "true" ]; then
+            echo "서명 확인만 했어요(테스트플라이트에는 올리지 않음)"
+            exit 0
+          fi
           # 올리기: altool을 먼저 쓰고, 안 되면 xcodebuild로 한 번 더 올려 본다(같은 빌드 번호가 두 번 올라가지는 않는다)
           set +e
           xcrun altool --upload-app --type ios -f "$IPA" --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID" 2>&1 | tee build/altool.log
@@ -198,7 +250,9 @@ jobs:
             echo "### 꾹꾹이 아이폰 앱"
             echo "버전 $(node -p "require('./ios-kit/version.json').name"), 빌드 번호 ${IOS_BUILD:-?}"
             echo "시뮬레이터 화면: 이 실행 화면 아래 Artifacts의 ios-simulator-screens"
-            if [ "${{ github.event_name == 'workflow_dispatch' && inputs.upload }}" = "true" ]; then
+            if [ "${{ github.event_name == 'workflow_dispatch' && inputs.sign_check }}" = "true" ]; then
+              echo "서명만 확인했습니다(앱과 산책 카드). 테스트플라이트에는 올리지 않았습니다"
+            elif [ "${{ github.event_name == 'workflow_dispatch' && inputs.upload }}" = "true" ]; then
               echo "테스트플라이트: 올리기까지 끝났다면 10~30분 뒤 App Store Connect의 TestFlight 탭에 빌드가 보입니다"
             else
               echo "테스트플라이트에는 올리지 않았습니다(빌드 확인만)"
