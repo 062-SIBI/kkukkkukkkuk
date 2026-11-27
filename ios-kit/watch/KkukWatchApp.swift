@@ -65,6 +65,7 @@ final class PhoneLink: NSObject, ObservableObject, WCSessionDelegate {
             return
         }
         let m: [String: Any] = ["kind": kind, "ws": ws, "t": now, "id": UUID().uuidString]
+        let sentWs = ws, sentAt = lastAt   // 이 눌림을 보낸 산책과 그때의 폰 소식(늦게 온 답이 새 산책을 건드리지 않게)
         counts[kind, default: 0] += 1   // 폰의 답을 기다리지 않고 바로 올린다(폰이 다음 상태로 맞춘다)
         flash = kind
         WKInterfaceDevice.current().play(.click)
@@ -82,15 +83,17 @@ final class PhoneLink: NSObject, ObservableObject, WCSessionDelegate {
                     return
                 }
                 let ended = (reply["ended"] as? Bool) == true
-                Task { @MainActor in self?.refused(kind, ended: ended) }
+                Task { @MainActor in self?.refused(kind, ended: ended, ws: sentWs, at: sentAt) }
             }, errorHandler: { _ in s.transferUserInfo(m) })
         } else {
             s.transferUserInfo(m)
         }
     }
 
-    /// 폰이 받지 않은 눌림: 올린 숫자를 되돌린다. 끝난 산책이면 산책 화면을 닫는다
-    @MainActor private func refused(_ kind: String, ended: Bool) {
+    /// 폰이 받지 않은 눌림: 올린 숫자를 되돌린다. 끝난 산책이면 산책 화면을 닫는다.
+    /// 그사이 폰이 새 상태(다른 산책이거나 같은 산책의 새 횟수)를 보냈으면 그 상태가 맞으므로 건드리지 않는다(PR #24 Codex)
+    @MainActor private func refused(_ kind: String, ended: Bool, ws sentWs: Double, at sentAt: Double) {
+        guard ws == sentWs, lastAt == sentAt else { return }
         counts[kind] = max(0, (counts[kind] ?? 0) - 1)
         if ended {
             walking = false
