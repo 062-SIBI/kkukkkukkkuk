@@ -1,6 +1,8 @@
 // 산책 카드 모습: 잠금 화면, 다이내믹 아일랜드, 애플 워치(iOS 18 이상의 작은 모습). 시안 3(06 PC 21_위젯_1123/산책카드_시안3_1123.png).
-// 버튼은 앱 산책 화면과 같은 순서와 색(왼쪽부터 똥 코랄, 킁킁 노랑, 꾹 파랑). 한 칸에 아이콘, 이름, 이번 산책 횟수(44pt 이상).
-// 누른 칸은 5초 동안 체크와 '되돌리기'. iOS 17 미만은 버튼 대신 횟수 글. 끝난 카드와 오래된 카드에는 버튼이 없다.
+// 버튼은 앱 산책 화면과 같은 순서와 색(왼쪽부터 똥 코랄, 킁킁 노랑, 꾹 파랑). 칸 전체를 그 색으로 채우고 안에 아이콘만
+// 둔다(06 11/27 B안: 이름과 횟수 글자 없이 칸을 크게). 잠금 화면 56pt, 아일랜드 52pt, 워치는 남는 높이를 다 쓴다.
+// 워치 스마트 스택은 06 손그림(11/27)대로 모서리가 서로 다른 덩어리 칸 셋과 구석의 시간, 거리만 둔다(링 없음).
+// 누른 칸은 5초 동안 흰 테두리와 '되돌리기'. iOS 17 미만은 버튼 대신 횟수 글. 끝난 카드와 오래된 카드에는 버튼이 없다.
 // 링 안의 강아지는 Task 5에서 넣는다. 그 전에는 빈 링, 작은 아일랜드 왼쪽은 앱 색 점 셋(설계 '06이 정한 것' 3번).
 import ActivityKit
 import AppIntents   // Button(intent:)는 SwiftUI와 AppIntents를 함께 들여와야 쓸 수 있다
@@ -12,15 +14,22 @@ private struct Kind {
     let name: String
     let color: Color
     let icon: String
+    /// 워치 스마트 스택 덩어리 칸의 모서리(왼쪽 위, 오른쪽 위, 오른쪽 아래, 왼쪽 아래, 짧은 변에 대한 비율)
+    let pebble: [CGFloat]
+    /// 워치 스마트 스택에서 칸을 내리는(+) 또는 올리는(-) 만큼. 로고 점처럼 가운데 노랑만 조금 위
+    let lift: CGFloat
 }
 
 private let kinds = [
-    Kind(key: "poop", name: "똥", color: Color(red: 1.0, green: 0x6B / 255.0, blue: 0x57 / 255.0), icon: "kk-poop"),
-    Kind(key: "sniff", name: "킁킁", color: Color(red: 0xEF / 255.0, green: 0xB0 / 255.0, blue: 0x2F / 255.0), icon: "kk-nose"),
-    Kind(key: "pee", name: "꾹", color: Color(red: 0x3B / 255.0, green: 0x9D / 255.0, blue: 0xF5 / 255.0), icon: "kk-pee")
+    Kind(key: "poop", name: "똥", color: Color(red: 1.0, green: 0x6B / 255.0, blue: 0x57 / 255.0), icon: "kk-poop",
+         pebble: [0.32, 0.18, 0.24, 0.44], lift: 2),
+    Kind(key: "sniff", name: "킁킁", color: Color(red: 0xEF / 255.0, green: 0xB0 / 255.0, blue: 0x2F / 255.0), icon: "kk-nose",
+         pebble: [0.22, 0.30, 0.38, 0.24], lift: -2),
+    Kind(key: "pee", name: "꾹", color: Color(red: 0x3B / 255.0, green: 0x9D / 255.0, blue: 0xF5 / 255.0), icon: "kk-pee",
+         pebble: [0.18, 0.40, 0.44, 0.26], lift: 2)
 ]
 
-/// 색 동그라미 위 그림 색(시안 3)
+/// 색 칸 위 아이콘과 숫자 색(시안 3)
 private let glyph = Color(red: 0.12, green: 0.12, blue: 0.12)
 
 private func count(_ s: WalkActivityAttributes.ContentState, _ key: String) -> Int {
@@ -91,31 +100,33 @@ private struct Ring: View {
     }
 }
 
-/// 버튼 한 칸: 색 동그라미 안 아이콘, 아래 '똥 1'. 누른 칸이면 체크와 '되돌리기'.
-/// 큰 글씨(접근성 크기)에서는 아이콘을 빼고 이름과 횟수를 지킨다
+/// 버튼 한 칸: 칸 전체가 그 색이고 안에 아이콘만(B안). 누른 칸이면 흰 테두리와 '되돌리기'(워치는 화살표만).
+/// 이름과 이번 산책 횟수는 화면에서 빼고 보이스오버 이름에만 남긴다. 칸 크기가 정해져 있어 글씨는 고정 크기로 쓴다
 @available(iOS 17.0, *)
 private struct TapCell: View {
-    @Environment(\.dynamicTypeSize) private var typeSize
     let kind: Kind
     let context: ActivityViewContext<WalkActivityAttributes>
     let small: Bool
+    let height: CGFloat
 
     var body: some View {
         let st = context.state, n = count(st, kind.key), ws = walkStartMs(context)
         if let id = undoId(st, kind.key) {
             Button(intent: UndoTapIntent(tapId: id, kind: kind.key, walkStart: ws)) {
-                cell(label: "되돌리기", marked: true) {
-                    Image(systemName: "checkmark").font(.system(size: small ? 10 : 14, weight: .heavy)).foregroundStyle(glyph)
+                cell(marked: true) {
+                    Image(systemName: "arrow.uturn.backward").font(.system(size: small ? 12 : 16, weight: .heavy))
+                    if !small {
+                        Text("되돌리기").font(.system(size: 15, weight: .heavy))
+                    }
                 }
             }
             .buttonStyle(.plain)
             .accessibilityLabel("\(kind.name) 기록 되돌리기")
         } else {
             Button(intent: RecordTapIntent(kind: kind.key, walkStart: ws)) {
-                cell(label: "\(kind.name) \(n)", marked: false) {
+                cell(marked: false) {
                     Image(kind.icon).renderingMode(.template).resizable().scaledToFit()
-                        .foregroundStyle(glyph)
-                        .frame(width: small ? 12 : 17, height: small ? 12 : 17)
+                        .frame(width: small ? 18 : 32, height: small ? 18 : 32)
                 }
             }
             .buttonStyle(.plain)
@@ -123,28 +134,47 @@ private struct TapCell: View {
         }
     }
 
-    private func cell<G: View>(label: String, marked: Bool, @ViewBuilder glyphView: () -> G) -> some View {
-        let dot: CGFloat = small ? 20 : 26
-        return VStack(spacing: small ? 2 : 3) {
-            if !typeSize.isAccessibilitySize {
-                ZStack {
-                    Circle().fill(kind.color)
-                    glyphView()
-                }
-                .frame(width: dot, height: dot)
-            }
-            Text(label)
-                .font((small ? Font.system(size: 10) : Font.caption).weight(.semibold).monospacedDigit())
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
-                .layoutPriority(1)
+    private func cell<C: View>(marked: Bool, @ViewBuilder content: () -> C) -> some View {
+        HStack(spacing: small ? 3 : 7) { content() }
+            .foregroundStyle(glyph)
+            .lineLimit(1)
+            .minimumScaleFactor(0.6)
+            .padding(.horizontal, small ? 2 : 6)
+            .frame(maxWidth: .infinity, minHeight: small ? 30 : height, maxHeight: small ? CGFloat.infinity : height)
+            .background { back(marked: marked) }
+            .padding(.top, small ? max(kind.lift, 0) : 0)
+            .padding(.bottom, small ? max(-kind.lift, 0) : 0)
+            .contentShape(Rectangle())
+    }
+
+    /// 칸 바탕: 잠금 화면과 아일랜드는 둥근 네모, 워치 스마트 스택은 모서리가 서로 다른 덩어리(06 손그림 11/27)
+    @ViewBuilder private func back(marked: Bool) -> some View {
+        if small {
+            let p = Pebble(f: kind.pebble)
+            p.fill(kind.color).overlay(p.stroke(marked ? Color.white : Color.clear, lineWidth: 2))
+        } else {
+            let r = RoundedRectangle(cornerRadius: 16, style: .continuous)
+            r.fill(kind.color).overlay(r.strokeBorder(marked ? Color.white : Color.clear, lineWidth: 3))
         }
-        .frame(maxWidth: .infinity, minHeight: small ? 30 : 46, maxHeight: small ? CGFloat.infinity : nil)
-        .padding(.vertical, small ? 1 : 3)
-        .background(RoundedRectangle(cornerRadius: small ? 10 : 14, style: .continuous).fill(Color.primary.opacity(0.07)))
-        .overlay(RoundedRectangle(cornerRadius: small ? 10 : 14, style: .continuous)
-            .stroke(marked ? kind.color : Color.clear, lineWidth: 2))
-        .contentShape(Rectangle())
+    }
+}
+
+/// 워치 스마트 스택의 덩어리 칸: 네 모서리를 서로 다르게 둥글린 네모. 칸끼리 겹치지 않아 누르는 자리가 칸과 같다
+private struct Pebble: Shape {
+    /// 왼쪽 위, 오른쪽 위, 오른쪽 아래, 왼쪽 아래(짧은 변에 대한 비율)
+    let f: [CGFloat]
+
+    func path(in r: CGRect) -> Path {
+        let m = min(r.width, r.height)
+        let c = (0..<4).map { i in min((i < f.count ? f[i] : 0.25) * m, m / 2) }
+        var p = Path()
+        p.move(to: CGPoint(x: r.minX + c[0], y: r.minY))
+        p.addArc(tangent1End: CGPoint(x: r.maxX, y: r.minY), tangent2End: CGPoint(x: r.maxX, y: r.maxY), radius: c[1])
+        p.addArc(tangent1End: CGPoint(x: r.maxX, y: r.maxY), tangent2End: CGPoint(x: r.minX, y: r.maxY), radius: c[2])
+        p.addArc(tangent1End: CGPoint(x: r.minX, y: r.maxY), tangent2End: CGPoint(x: r.minX, y: r.minY), radius: c[3])
+        p.addArc(tangent1End: CGPoint(x: r.minX, y: r.minY), tangent2End: CGPoint(x: r.maxX, y: r.minY), radius: c[0])
+        p.closeSubpath()
+        return p
     }
 }
 
@@ -157,10 +187,12 @@ private func countsLine(_ s: WalkActivityAttributes.ContentState) -> String {
 private struct Buttons: View {
     let context: ActivityViewContext<WalkActivityAttributes>
     var small = false
+    /// 칸 높이(잠금 화면 56, 아일랜드 52). 워치(small)는 남는 높이를 다 쓴다
+    var height: CGFloat = 56
     var body: some View {
         if #available(iOS 17.0, *) {
             HStack(spacing: small ? 4 : 8) {
-                ForEach(kinds, id: \.key) { k in TapCell(kind: k, context: context, small: small) }
+                ForEach(kinds, id: \.key) { k in TapCell(kind: k, context: context, small: small, height: height) }
             }
         } else {
             VStack(alignment: .leading, spacing: 2) {
@@ -206,17 +238,19 @@ private struct LockView: View {
     }
 }
 
-/// 애플 워치 스마트 스택(iOS 18 이상의 작은 모습): 위에 시간과 링, 아래 작은 버튼 셋
+/// 애플 워치 스마트 스택(iOS 18 이상의 작은 모습): 왼쪽 위 구석에 걸은 시간과 거리, 아래 덩어리 버튼 셋.
+/// 06 11/27 "칸만 3개, 거리는 구석에 시간이랑": 링은 뺐다
 private struct SmallView: View {
     let context: ActivityViewContext<WalkActivityAttributes>
     var body: some View {
         let st = context.state, stale = context.isStale && !st.ended
         VStack(alignment: .leading, spacing: 4) {
-            HStack(spacing: 4) {
-                Elapsed(context: context).font(.system(size: 15, weight: .bold).monospacedDigit()).lineLimit(1).minimumScaleFactor(0.7)
-                    .frame(width: 66, alignment: .leading)
-                Spacer(minLength: 2)
-                Ring(value: st.ring, size: 20, width: 3, ended: st.ended)
+            HStack(alignment: .firstTextBaseline, spacing: 5) {
+                Elapsed(context: context).font(.system(size: 13, weight: .bold).monospacedDigit()).lineLimit(1).minimumScaleFactor(0.7)
+                    .frame(width: 50, alignment: .leading)
+                Text(kmText(st.km)).font(.system(size: 12, weight: .semibold).monospacedDigit())
+                    .foregroundStyle(.secondary).lineLimit(1)
+                Spacer(minLength: 0)
             }
             if st.ended {
                 Text("산책 끝  " + countsLine(st)).font(.caption2.weight(.semibold)).lineLimit(1).minimumScaleFactor(0.7)
@@ -258,7 +292,7 @@ private struct IslandBottom: View {
             } else if context.isStale {
                 Text("앱에서 산책을 확인해 주세요").font(.footnote)
             } else {
-                Buttons(context: context)
+                Buttons(context: context, height: 52)
             }
         }
     }

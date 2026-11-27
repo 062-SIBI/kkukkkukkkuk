@@ -148,6 +148,28 @@ function privacyManifest(html) {
     T + '</array>\n' +
     '</dict>\n</plist>\n';
 }
+const WIDGET_SCHEME = 'kkukkkukkkuk';
+function widgetTips() {
+  const swiftLink = fs.readFileSync(path.join(KIT, 'walkcard', 'Shared', 'WalkLink.swift'), 'utf8');
+  if (!swiftLink.includes('static let scheme = "' + WIDGET_SCHEME + '"')) throw new Error('위젯 주소 이름이 WalkLink.swift와 다름');
+  const html = fs.readFileSync(path.join(REPO, 'index.html'), 'utf8');
+  const m = html.match(/var TIPS=\[([\s\S]*?)\n\];/);
+  if (!m) throw new Error('index.html에서 TIPS를 못 찾음');
+  const rows = [];
+  for (const line of m[1].split('\n')) {
+    const t = line.match(/\bt:"([^"\\]+)"/);
+    if (!t || /\bonly:/.test(line)) continue;            // 눈 오는 날처럼 날씨가 있어야 보이는 줄은 위젯에 넣지 않는다
+    const mm = line.match(/\bm:\[(\d+),(\d+)\]/);
+    rows.push([t[1], mm ? +mm[1] : 0, mm ? +mm[2] : 0]);
+  }
+  if (rows.length < 5) throw new Error('위젯 문장이 너무 적음: ' + rows.length);
+  const swift = '// 자동으로 만든 파일(ios-kit/patch-ios.js post). 고치지 말고 index.html의 TIPS를 고친다.\n' +
+    '// 줄마다 (문장, 보이는 첫 달, 끝 달). 달이 0이면 늘 보인다.\n' +
+    'enum WidgetTipData {\n    static let rows: [(String, Int, Int)] = [\n' +
+    rows.map(r => '        ("' + r[0] + '", ' + r[1] + ', ' + r[2] + '),').join('\n') + '\n    ]\n}\n';
+  write(path.join(KIT, 'walkcard', 'Extension', 'WidgetTipData.swift'), swift);
+  console.log('✓ 위젯 문장 ' + rows.length + '줄(index.html TIPS에서)');
+}
 function post() {
   if (!fs.existsSync(path.join(IOS, 'App.xcodeproj', 'project.pbxproj'))) throw new Error('ios 폴더가 없음. npx cap add ios를 먼저 돌린다');
   if (!fs.existsSync(path.join(IOS, 'App', 'public', 'index.html'))) throw new Error('앱 안에 index.html이 없음');
@@ -159,7 +181,7 @@ function post() {
 
   // ④ Info.plist
   edit(path.join(IOS, 'App', 'Info.plist'), s => {
-    for (const k of Object.keys(PURPOSE).concat(['UIBackgroundModes', 'ITSAppUsesNonExemptEncryption', 'CFBundleLocalizations', 'NSSupportsLiveActivities'])) {
+    for (const k of Object.keys(PURPOSE).concat(['UIBackgroundModes', 'ITSAppUsesNonExemptEncryption', 'CFBundleLocalizations', 'NSSupportsLiveActivities', 'CFBundleURLTypes'])) {
       if (s.includes('<key>' + k + '</key>')) throw new Error('Info.plist에 이미 있음: ' + k);
     }
     // 가로 화면을 빼고 세로만(아이폰). 아이패드용 줄은 그대로 둔다(아이폰 전용 앱이라 쓰이지 않는다)
@@ -172,9 +194,15 @@ function post() {
     add += '\t<key>ITSAppUsesNonExemptEncryption</key>\n\t<false/>\n';      // HTTPS만 쓴다(수출 신고 면제). 올릴 때마다 묻지 않게
     add += '\t<key>CFBundleLocalizations</key>\n\t<array>\n\t\t<string>ko</string>\n\t</array>\n';
     add += '\t<key>NSSupportsLiveActivities</key>\n\t<true/>\n';   // 산책 카드(라이브 액티비티, ios-kit/walkcard)
+    // 홈 화면 위젯 '산책 시작'이 여는 주소(0.5.3). ios-kit/walkcard/Shared/WalkLink.swift의 scheme과 같게 둔다
+    add += '\t<key>CFBundleURLTypes</key>\n\t<array>\n\t\t<dict>\n\t\t\t<key>CFBundleURLName</key>\n\t\t\t<string>app.padd.walk</string>\n' +
+      '\t\t\t<key>CFBundleURLSchemes</key>\n\t\t\t<array>\n\t\t\t\t<string>' + WIDGET_SCHEME + '</string>\n\t\t\t</array>\n\t\t</dict>\n\t</array>\n';
     return mustReplace(s, /<\/dict>\s*<\/plist>\s*$/, add + '</dict>\n</plist>\n', 'Info.plist 끝', 1);
   });
-  console.log('✓ Info.plist: 권한 글 4개, 화면 꺼도 위치 받기, 세로 고정, 한국어, 암호화 신고, 산책 카드 허용');
+  console.log('✓ Info.plist: 권한 글 4개, 화면 꺼도 위치 받기, 세로 고정, 한국어, 암호화 신고, 산책 카드 허용, 위젯 주소(' + WIDGET_SCHEME + ')');
+
+  // ⑦ 홈 화면 위젯 문장: index.html의 '그거 아세요?'(TIPS)에서 날씨에 매이지 않은 줄을 옮긴다. add-walkcard.rb가 이 파일도 붙인다
+  widgetTips();
 
   // 첫 화면을 산책 카드 플러그인(PaddWidget)을 등록하는 MainViewController로 바꾼다(ios-kit/walkcard/App/MainViewController.swift).
   // 위젯 익스텐션은 이 다음에 ios-kit/add-walkcard.rb가 붙인다
@@ -186,6 +214,11 @@ function post() {
   edit(path.join(IOS, 'App', 'SceneDelegate.swift'), s => mustReplace(s,
     'window?.rootViewController = CAPBridgeViewController()', 'window?.rootViewController = MainViewController()', '첫 화면(SceneDelegate)', 1));
   console.log('✓ SceneDelegate.swift: 첫 화면 MainViewController');
+  // 0.5.3 워치 앱: 앱이 화면 없이 뒤에서 깨어난 때(워치에서 누름)도 워치 연결을 켠다(ios-kit/walkcard/App/WatchLink.swift)
+  edit(path.join(IOS, 'App', 'AppDelegate.swift'), s => mustReplace(s,
+    '// Override point for customization after application launch.\n        return true',
+    'WatchLink.shared.start()   // 워치 앱과 잇기(0.5.3)\n        return true', 'AppDelegate 시작', 1));
+  console.log('✓ AppDelegate.swift: 워치 연결 켜기');
 
   // ⑤ 프로젝트 설정
   const FR = '4B4B50524956000000000001', BF = '4B4B50524956000000000002';   // 개인정보 파일의 참조 번호(16진수 24자)

@@ -72,14 +72,17 @@ jobs:
           # 산책 카드(위젯 익스텐션 WalkCard)를 프로젝트에 붙인다. 출시 단계는 이 프로젝트를 다시 쓰므로 여기서 한 번만
           gem install xcodeproj -v 1.28.1 --no-document --user-install
           ruby ../ios-kit/add-walkcard.rb ios/App
-          plutil -lint ios/App/App/Info.plist ios/App/App/PrivacyInfo.xcprivacy ios/App/WalkCard/Info.plist ios/App/WalkCard/PrivacyInfo.xcprivacy
+          # 0.5.3 워치 앱(KkukWatch): 아이폰 앱 안 Watch 폴더에 넣는다
+          ruby ../ios-kit/add-watch.rb ios/App
+          plutil -lint ios/App/App/Info.plist ios/App/App/PrivacyInfo.xcprivacy ios/App/WalkCard/Info.plist ios/App/WalkCard/PrivacyInfo.xcprivacy ios/App/KkukWatch/Info.plist
 
       - name: 시뮬레이터용 빌드 (서명 없이)
         working-directory: native/ios/App
         run: |
           mkdir -p build
           # 실패하면 오류 줄을 실행 요약에도 남긴다(ios-kit/build-errors.sh)
-          if ! xcodebuild -project App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator \
+          # -sdk를 주지 않는다: 주면 워치 앱까지 아이폰 SDK로 만들려다 멈춘다(0.5.3). 목적지만 주면 워치 앱은 워치 시뮬레이터 SDK로 만든다
+          if ! xcodebuild -project App.xcodeproj -scheme App -configuration Debug \
             -destination 'generic/platform=iOS Simulator' -derivedDataPath build/dd \
             CODE_SIGNING_ALLOWED=NO build > build/sim.log 2>&1; then
             tail -60 build/sim.log
@@ -112,6 +115,16 @@ jobs:
           xcrun simctl launch --console-pty "$DEV" app.padd.walk > shots/console_dark.txt 2>&1 &
           for i in 0 1 2 3 4 5 6 7; do sleep 3; xcrun simctl io "$DEV" screenshot "shots/dark_$i.png" >/dev/null 2>&1 || true; done
           xcrun simctl terminate "$DEV" app.padd.walk || true
+          # 0.5.3 홈 화면 위젯: 위젯이 여는 주소로 앱을 열면 앱 쪽이 받는지([walkcard] launch start)
+          xcrun simctl ui "$DEV" appearance light || true
+          xcrun simctl launch --console-pty "$DEV" app.padd.walk > shots/console_widget.txt 2>&1 &
+          sleep 10
+          xcrun simctl openurl "$DEV" "kkukkkukkkuk://walk/start" || true
+          sleep 6; xcrun simctl io "$DEV" screenshot "shots/widget_open.png" >/dev/null 2>&1 || true
+          xcrun simctl terminate "$DEV" app.padd.walk || true
+          WL=$(grep -c "\[walkcard\] launch start" shots/console_widget.txt || true)
+          echo "홈 화면 위젯 주소: 앱이 받은 횟수 ${WL:-0}번(1이면 정상)" | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ "${WL:-0}" != "1" ]; then echo "::warning::위젯 주소(kkukkkukkkuk://walk/start)를 앱이 받지 못했어요"; fi
           ls ~/Library/Logs/DiagnosticReports/ > shots/crash_reports.txt 2>&1 || true
           xcrun simctl shutdown "$DEV" || true
           echo "찍은 파일 수: $(ls shots | wc -l)"
@@ -158,7 +171,9 @@ jobs:
           tail -40 build/archive.log
           ls build/App.xcarchive/Products/Applications
           test -d build/App.xcarchive/Products/Applications/App.app/PlugIns/WalkCard.appex
-          echo "✓ 보관 빌드 안에 WalkCard.appex(산책 카드)"
+          echo "✓ 보관 빌드 안에 WalkCard.appex(산책 카드, 홈 화면 위젯)"
+          test -d build/App.xcarchive/Products/Applications/App.app/Watch/KkukWatch.app
+          echo "✓ 보관 빌드 안에 Watch/KkukWatch.app(워치 앱)"
           # ActivityKit, AppIntents가 약하게 이어졌는지(앱 최소 iOS 15.0에서 켜지게). 강하게 이어졌으면 여기서 멈춘다
           bash ../../../ios-kit/weak-check.sh build/App.xcarchive/Products/Applications/App.app/App
 
