@@ -90,15 +90,17 @@ final class TapQueue {
         #endif
     }
 
-    private func add(type: String, at: Date, walkStart: Double, ref: String?, of: String?) -> String? {
-        let tap = Tap(id: UUID().uuidString, type: type, t: (at.timeIntervalSince1970 * 1000).rounded(),
+    /// id를 주면 그 아이디를 쓰고, 같은 아이디가 큐에 이미 있으면 다시 넣지 않는다(added false)
+    private func add(id: String? = nil, type: String, at: Date, walkStart: Double, ref: String?, of: String?) -> (id: String, added: Bool)? {
+        let tap = Tap(id: id ?? UUID().uuidString, type: type, t: (at.timeIntervalSince1970 * 1000).rounded(),
                       ws: walkStart, ref: ref, of: of)
-        return queue.sync { () -> String? in
+        return queue.sync { () -> (id: String, added: Bool)? in
             guard var all = load() else { return nil }
+            if id != nil, all.contains(where: { $0.id == tap.id }) { return (tap.id, false) }
             all.append(tap)
             guard store(all) else { return nil }
             lately = lately.filter { at.timeIntervalSince($0.added) < 5 } + [(tap, at)]
-            return tap.id
+            return (tap.id, true)
         }
     }
 
@@ -110,12 +112,19 @@ final class TapQueue {
     /// 남기지 못하면 nil(카드 숫자를 올리지 않는다)
     @discardableResult
     func append(kind: String, at: Date, walkStart: Double) -> String? {
-        add(type: kind, at: at, walkStart: walkStart, ref: nil, of: nil)
+        add(type: kind, at: at, walkStart: walkStart, ref: nil, of: nil)?.id
     }
 
     @discardableResult
     func appendUndo(ref: String, kind: String, at: Date, walkStart: Double) -> String? {
-        add(type: "undo", at: at, walkStart: walkStart, ref: ref, of: kind)
+        add(type: "undo", at: at, walkStart: walkStart, ref: ref, of: kind)?.id
+    }
+
+    /// 워치 눌림: 워치가 만든 아이디를 그대로 쓴다. 웹은 산책마다 받은 아이디(wgIds)를 기록과 함께 저장하므로
+    /// 워치가 다시 보낸 같은 눌림은 폰 앱이 다시 켜진 뒤에도 한 번만 남는다(Codex P0, 11/27).
+    /// 같은 아이디가 큐에 이미 있으면 다시 넣지 않는다(added false). 남기지 못하면 nil
+    func appendWatch(id: String, kind: String, at: Date, walkStart: Double) -> (id: String, added: Bool)? {
+        add(id: id, type: kind, at: at, walkStart: walkStart, ref: nil, of: nil)
     }
 
     /// nil이면 파일을 읽지 못한 것이다(drain은 거절해 웹이 빈 목록으로 오해하지 않게 한다)
