@@ -1,5 +1,5 @@
 // 워치 앱과 주고받기(0.5.3, 06 "이번 업데이트 때 위젯이랑 워치"). 폰 앱 쪽.
-// 1) 웹이 산책 상태를 보낼 때(PaddWidget.update) 워치에 산책 중인지, 시작 시각, 보이는 횟수를 보낸다(applicationContext, 가장 최근 것만 남음).
+// 1) 웹이 산책 상태를 보낼 때(PaddWidget.update) 워치에 산책 중인지, 시작 시각, 거리, 보이는 횟수를 보낸다(applicationContext, 가장 최근 것만 남음).
 // 2) 워치에서 누른 똥, 킁킁, 꾹은 산책 카드 버튼과 같은 큐(TapQueue)에 남긴다. 웹은 걷는 동안 늘 그 큐를 가져가므로(widgetDrain)
 //    앱 화면 코드는 바꾸지 않는다. 카드가 떠 있으면 카드 숫자도 바로 올린다.
 // 워치는 메시지가 실패하면 같은 눌림을 transferUserInfo로 다시 보낸다. 같은 아이디가 두 번 오면 한 번만 남긴다.
@@ -33,6 +33,7 @@ final class WatchLink: NSObject, WCSessionDelegate {
             let shown = CardMath.shown(base: CardCounts(pee: u.pee, poop: u.poop, sniff: u.sniff),
                                        delta: CardMath.delta(queue, walkStart: u.startedAt, taken: Set(u.taken)))
             ctx["ws"] = u.startedAt
+            ctx["km"] = u.km   // 워치 앱 덩어리 화면 구석의 거리(11/27)
             ctx["pee"] = shown.pee
             ctx["poop"] = shown.poop
             ctx["sniff"] = shown.sniff
