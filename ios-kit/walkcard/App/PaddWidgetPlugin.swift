@@ -14,8 +14,26 @@ public class PaddWidgetPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "consumeLaunch", returnType: CAPPluginReturnPromise)
     ]
 
+    /// 홈 화면 위젯 '산책 시작'으로 열렸는데 웹이 아직 가져가지 않았다(0.5.3)
+    private var pendingStart = false
+
     override public func load() {
         print("[walkcard] plugin loaded")
+        WatchLink.shared.start()   // 앱을 켤 때 AppDelegate가 이미 했으면 아무것도 하지 않는다
+        // 위젯은 kkukkkukkkuk://walk/start 로 앱을 연다. Capacitor 8은 처음 켤 때 받은 주소도
+        // 플러그인이 등록된 뒤(capacitorViewDidAppear)에 이 알림으로 다시 보내 준다(CAPSceneDelegateProxy)
+        NotificationCenter.default.addObserver(self, selector: #selector(openedURL(_:)),
+                                               name: Notification.Name.capacitorOpenURL, object: nil)
+    }
+
+    @objc private func openedURL(_ note: Notification) {
+        guard let o = note.object as? [String: Any], let url = o["url"] as? URL, WalkLink.isStart(url) else { return }
+        DispatchQueue.main.async {
+            self.pendingStart = true
+            print("[walkcard] launch start")
+            // 웹이 아직 듣고 있지 않으면 들을 때까지 남겨 둔다(웹은 켤 때 consumeLaunch로도 한 번 묻는다)
+            self.notifyListeners("launch", data: [:], retainUntilConsumed: true)
+        }
     }
 
     private static func number(_ v: JSValue?) -> Double? {
@@ -62,6 +80,7 @@ public class PaddWidgetPlugin: CAPPlugin, CAPBridgedPlugin {
         if #available(iOS 16.2, *) {
             WalkCardController.shared.sync(u)
         }
+        WatchLink.shared.send(u)   // 0.5.3: 워치 앱에도 산책 상태를 보낸다
         call.resolve()   // 실패로 끝내면 웹이 다리를 끈다. 카드를 못 띄워도 성공으로 답한다
     }
 
@@ -84,6 +103,11 @@ public class PaddWidgetPlugin: CAPPlugin, CAPBridgedPlugin {
     }
 
     @objc func consumeLaunch(_ call: CAPPluginCall) {
-        call.resolve(["action": ""])   // 이번 판에는 시작 버튼이 없다
+        // 한 번 가져가면 지운다(같은 누름으로 산책이 두 번 시작되지 않게)
+        DispatchQueue.main.async {
+            let start = self.pendingStart
+            self.pendingStart = false
+            call.resolve(["action": start ? "start" : ""])
+        }
     }
 }
