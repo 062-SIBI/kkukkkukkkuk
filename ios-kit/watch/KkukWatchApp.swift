@@ -24,6 +24,7 @@ struct KkukWatchApp: App {
 
 /// 폰과 주고받기. 폰은 산책 상태를 applicationContext로 보내고(가장 최근 것만), 워치는 누른 것을 메시지로 보낸다.
 /// 폰이 닿지 않거나 메시지가 실패하면 transferUserInfo로 맡겨 두었다가 닿을 때 보낸다(순서대로, 잃지 않게).
+/// 폰이 저장하지 못했다고 답해도 같은 아이디로 다시 맡기고, 끝난 산책이라고 답하면 숫자를 되돌리고 산책 화면을 닫는다.
 final class PhoneLink: NSObject, ObservableObject, WCSessionDelegate {
     static let shared = PhoneLink()
 
@@ -57,7 +58,14 @@ final class PhoneLink: NSObject, ObservableObject, WCSessionDelegate {
 
     @MainActor func tap(_ kind: String) {
         guard walking, ws > 0 else { return }
-        let m: [String: Any] = ["kind": kind, "ws": ws, "t": Date().timeIntervalSince1970 * 1000, "id": UUID().uuidString]
+        let now = Date().timeIntervalSince1970 * 1000
+        // 폰 소식이 5시간 넘게 없으면 끝난 산책으로 본다(앱도 5시간 지난 산책은 끝낸다). 옛 산책에 눌림을 보내지 않는다
+        if lastAt > 0 && now - lastAt > 5 * 3600 * 1000 {
+            walking = false
+            return
+        }
+        let m: [String: Any] = ["kind": kind, "ws": ws, "t": now, "id": UUID().uuidString]
+        let sentWs = ws, sentAt = lastAt   // 이 눌림을 보낸 산책과 그때의 폰 소식(늦게 온 답이 새 산책을 건드리지 않게)
         counts[kind, default: 0] += 1   // 폰의 답을 기다리지 않고 바로 올린다(폰이 다음 상태로 맞춘다)
         flash = kind
         WKInterfaceDevice.current().play(.click)
@@ -66,9 +74,30 @@ final class PhoneLink: NSObject, ObservableObject, WCSessionDelegate {
         }
         let s = WCSession.default
         if s.activationState == .activated && s.isReachable {
-            s.sendMessage(m, replyHandler: { _ in }, errorHandler: { _ in s.transferUserInfo(m) })
+            // 폰 답(PR #23 Codex P0, 11/27): ok면 끝, retry(폰이 저장하지 못함)면 같은 아이디로 맡겨 두었다가 다시,
+            // 그 밖(끝난 산책이거나 읽지 못한 눌림)이면 올린 숫자를 되돌린다
+            s.sendMessage(m, replyHandler: { [weak self] reply in
+                if (reply["ok"] as? Bool) == true { return }
+                if (reply["retry"] as? Bool) == true {
+                    s.transferUserInfo(m)
+                    return
+                }
+                let ended = (reply["ended"] as? Bool) == true
+                Task { @MainActor in self?.refused(kind, ended: ended, ws: sentWs, at: sentAt) }
+            }, errorHandler: { _ in s.transferUserInfo(m) })
         } else {
             s.transferUserInfo(m)
+        }
+    }
+
+    /// 폰이 받지 않은 눌림: 올린 숫자를 되돌린다. 끝난 산책이면 산책 화면을 닫는다.
+    /// 그사이 폰이 새 상태(다른 산책이거나 같은 산책의 새 횟수)를 보냈으면 그 상태가 맞으므로 건드리지 않는다(PR #24 Codex)
+    @MainActor private func refused(_ kind: String, ended: Bool, ws sentWs: Double, at sentAt: Double) {
+        guard ws == sentWs, lastAt == sentAt else { return }
+        counts[kind] = max(0, (counts[kind] ?? 0) - 1)
+        if ended {
+            walking = false
+            flash = nil
         }
     }
 
